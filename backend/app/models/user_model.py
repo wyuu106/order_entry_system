@@ -9,6 +9,5 @@ class User(Base):
     id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid4()))
     name: Mapped[str] = mapped_column(String, unique=True)
     hashed_password: Mapped[str] = mapped_column(String)
+    
     role: Mapped[str] = mapped_column(String, default='staff')
-
-    role: Mapped[str] = mapped_column(String)
