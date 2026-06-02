@@ -12,8 +12,10 @@ from sqlalchemy.orm import Session
 from app.db import get_db
 from app.models import user_model
 
+# .env読み込み
 load_dotenv()
 
+# osで.envの中身を環境変数として取得
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 ALGORITHM = "HS256"

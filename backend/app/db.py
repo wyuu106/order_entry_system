@@ -4,9 +4,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.orm import Session
 
+# .envを読み込む
 load_dotenv()
 
-# PostgreSQLの接続URL
+# osで.envの中身を環境変数として取得
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 # DBエンジン作成
