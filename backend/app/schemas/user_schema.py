@@ -7,5 +7,5 @@ class UserCreate(BaseModel):
 class UserCreateResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     
-    id: str
+    id: int
     name: str
