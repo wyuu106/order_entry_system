@@ -7,7 +7,7 @@ from app.models import user_model
 from app.schemas import user_schema
 
 # ユーザー登録申請
-def create_user(user: user_schema.UserCreate, db: Session) -> dict:
+def create_request(user: user_schema.UserCreate, db: Session) -> user_schema.RequestResponse:
     exist_user = db.execute(select(user_model.User).where(
         user_model.User.name == user.name
     )).scalar_one_or_none()
@@ -30,10 +30,16 @@ def create_user(user: user_schema.UserCreate, db: Session) -> dict:
     db.commit()
     db.refresh(db_request)
 
-    return {"message": "申請しました"}
+    request = user_schema.RequestResponse(
+        id = db_request.id,
+        name = db_request.name,
+        message = '申請しました'
+    )
+
+    return request
 
 # ユーザー登録申請許可
-def approve_user(request_id: int, db: Session) -> user_schema.UserCreateResponse:
+def approve_request(request_id: int, db: Session) -> user_schema.UserCreateResponse:
     stmt = select(user_model.UserRequest).where(
         user_model.UserRequest.id == request_id
     )
@@ -66,7 +72,7 @@ def approve_user(request_id: int, db: Session) -> user_schema.UserCreateResponse
     return db_user
 
 # ユーザー登録申請却下
-def reject_user(request_id: int, db: Session) -> dict:
+def reject_request(request_id: int, db: Session) -> dict:
     stmt = select(user_model.UserRequest).where(
         user_model.UserRequest.id == request_id
     )
@@ -83,6 +89,13 @@ def reject_user(request_id: int, db: Session) -> dict:
     db.commit()
 
     return {'message': '申請を却下しました'}
+
+# 申請一覧
+def get_requests(db: Session) -> list[user_schema.RequestData]:
+    stmt = select(user_model.UserRequest).where(
+        user_model.UserRequest.status == 'pending'
+    )
+    return db.execute(stmt).scalars().all()
 
 # ユーザー一覧
 def get_users(db: Session) -> list[user_schema.UserCreateResponse]:

@@ -3,7 +3,7 @@ from sqlalchemy import Integer, String
 from app.db import Base
 
 class UserRequest(Base):
-    __tablename__ = 'register_requests'
+    __tablename__ = 'user_requests'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String)
