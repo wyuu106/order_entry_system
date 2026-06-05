@@ -6,9 +6,7 @@ from app.schemas import seat_schema
 
 # 席情報作成
 def create_seat(seat: seat_schema.SeatCreate, db: Session) -> seat_schema.SeatCreateResponse:
-    stmt = select(seat_model.Seat).where(
-        seat_model.Seat.name == seat.name
-    )
+    stmt = select(seat_model.Seat).where(seat_model.Seat.name == seat.name)
     exist_seat = db.execute(stmt)
 
     if exist_seat:
@@ -28,9 +26,7 @@ def get_seats(db: Session) -> list[seat_schema.SeatCreateResponse]:
 
 # 席の状態更新
 def update_seat_status(seat_id: int, status: str, db: Session) -> seat_schema.SeatCreateResponse:
-    stmt = select(seat_model.Seat).where(
-        seat_model.Seat.id == seat_id
-    )
+    stmt = select(seat_model.Seat).where(seat_model.Seat.id == seat_id)
     db_seat = db.execute(stmt).scalar_one_or_none()
 
     if not db_seat:
@@ -45,9 +41,7 @@ def update_seat_status(seat_id: int, status: str, db: Session) -> seat_schema.Se
 
 # 席情報削除
 def delete_seat(seat_id: int, db: Session):
-    stmt = select(seat_model.Seat).where(
-        seat_model.Seat.id == seat_id
-    )
+    stmt = select(seat_model.Seat).where(seat_model.Seat.id == seat_id)
     db_seat = db.execute(stmt).scalar_one_or_none()
 
     if not db_seat:

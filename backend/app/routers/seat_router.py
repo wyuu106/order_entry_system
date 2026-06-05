@@ -27,7 +27,7 @@ def get_seats(db: Session = Depends(get_db)):
     return seat_crud.get_seats(db)
 
 # 席の状態更新
-@router.put('/seats', response_model = seat_schema.SeatCreateResponse)
+@router.put('/seats/{seat_id}', response_model = seat_schema.SeatCreateResponse)
 def update_seat_status(
     seat_id: int,
     status: str,
@@ -36,7 +36,7 @@ def update_seat_status(
     return seat_crud.update_seat_status(seat_id, status, db)
 
 # 席情報削除
-@router.delete('/seats')
+@router.delete('/seats/{seat_id}')
 def delete_seat(
     seat_id: int,
     db: Session = Depends(get_db),

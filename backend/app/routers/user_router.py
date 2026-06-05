@@ -15,6 +15,15 @@ router = APIRouter()
 def create_user(user: user_schema.UserCreate, db: Session = Depends(get_db)):
     return user_crud.create_request(user, db)
 
+# 申請一覧
+@router.get('/requests', response_model = list[user_schema.RequestData])
+def get_requests(db: Session = Depends(get_db),
+                 current_user: user_model.User = Depends(get_current_user)):
+    if not current_user.role == 'admin':
+        raise HTTPException(status_code=403, detail="権限がありません")
+    
+    return user_crud.get_requests(db)
+
 # ユーザー登録許可
 @router.post('/register/approve', response_model = user_schema.UserCreateResponse)
 def approve_user(
@@ -28,7 +37,7 @@ def approve_user(
     return user_crud.approve_request(request_id, db)
 
 # ユーザー登録却下
-@router.post('/regidter/reject', response_model = dict)
+@router.post('/register/reject', response_model = dict)
 def reject_user(
     request_id: int,
     db: Session = Depends(get_db),
@@ -38,15 +47,6 @@ def reject_user(
         raise HTTPException(status_code=403, detail="権限がありません")
     
     return user_crud.reject_request(request_id, db)
-
-# 申請一覧
-@router.get('/requests', response_model = user_schema.RequestData)
-def get_requests(db: Session = Depends(get_db),
-                 current_user: user_model.User = Depends(get_current_user)):
-    if not current_user.role == 'admin':
-        raise HTTPException(status_code=403, detail="権限がありません")
-    
-    return user_crud.get_requests(db)
 
 # ユーザー一覧
 @router.get('/users', response_model = list[user_schema.UserCreateResponse])

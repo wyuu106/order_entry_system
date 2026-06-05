@@ -38,11 +38,14 @@ def create_request(user: user_schema.UserCreate, db: Session) -> user_schema.Req
 
     return request
 
+# 申請一覧
+def get_requests(db: Session) -> list[user_schema.RequestData]:
+    stmt = select(user_model.UserRequest).where(user_model.UserRequest.status == 'pending')
+    return db.execute(stmt).scalars().all()
+
 # ユーザー登録申請許可
 def approve_request(request_id: int, db: Session) -> user_schema.UserCreateResponse:
-    stmt = select(user_model.UserRequest).where(
-        user_model.UserRequest.id == request_id
-    )
+    stmt = select(user_model.UserRequest).where(user_model.UserRequest.id == request_id)
     db_request = db.execute(stmt).scalar_one_or_none()
 
     if not db_request:
@@ -73,9 +76,7 @@ def approve_request(request_id: int, db: Session) -> user_schema.UserCreateRespo
 
 # ユーザー登録申請却下
 def reject_request(request_id: int, db: Session) -> dict:
-    stmt = select(user_model.UserRequest).where(
-        user_model.UserRequest.id == request_id
-    )
+    stmt = select(user_model.UserRequest).where(user_model.UserRequest.id == request_id)
     db_request = db.execute(stmt).scalar_one_or_none()
 
     if not db_request:
@@ -90,39 +91,31 @@ def reject_request(request_id: int, db: Session) -> dict:
 
     return {'message': '申請を却下しました'}
 
-# 申請一覧
-def get_requests(db: Session) -> list[user_schema.RequestData]:
-    stmt = select(user_model.UserRequest).where(
-        user_model.UserRequest.status == 'pending'
-    )
-    return db.execute(stmt).scalars().all()
-
 # ユーザー一覧
 def get_users(db: Session) -> list[user_schema.UserCreateResponse]:
     return db.execute(select(user_model.User)).scalars().all()
 
 # ログイン
-def login(form_data: OAuth2PasswordRequestForm, db: Session) -> dict[str, str]:
+def login(form_data: OAuth2PasswordRequestForm, db: Session) -> dict[str, str, str]:
     stmt = select(user_model.User).where(user_model.User.name == form_data.username)
-    user = db.execute(stmt).scalar_one_or_none()
+    db_user = db.execute(stmt).scalar_one_or_none()
 
-    if user is None or not verify_password(form_data.password, user.hashed_password):
+    if db_user is None or not verify_password(form_data.password, db_user.hashed_password):
         raise HTTPException(status_code=400, detail="IDまたはパスワードが違います")
 
     access_token = create_access_token(
-        data={"sub": str(user.id)}
+        data={"sub": str(db_user.id)}
     )
 
     return {
         "access_token": access_token,
-        "token_type": "bearer"
+        "token_type": "bearer",
+        "role": db_user.role
     }
 
 # ユーザー削除
 def delete_user(user_id: str, db: Session):
-    stmt = select(user_model.User).where(
-        user_model.User.id == user_id
-    )
+    stmt = select(user_model.User).where(user_model.User.id == user_id)
     db_user = db.execute(stmt).scalar_one_or_none()
 
     if not db_user:

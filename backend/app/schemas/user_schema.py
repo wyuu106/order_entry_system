@@ -17,6 +17,7 @@ class UserCreateResponse(BaseModel):
     
     id: int
     name: str
+    role: str
 
 # 申請データ
 class RequestData(BaseModel):

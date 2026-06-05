@@ -1,0 +1,179 @@
+// 席に関するページ
+
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+function Seat() {
+  const [seats, setSeats] = useState([]);
+  const [showCreate, setShowCreate] = useState(false);
+  const [name, setName] = useState("");
+
+  const [showModal, setShowModal] = useState(false);
+  const [targetId, setTargetId] = useState(null);
+
+  const token = localStorage.getItem("token");
+
+  // 席一覧取得
+  const getSeats = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:8000/seats"
+      );
+
+      setSeats(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // この画面が表示された時にgetSeats()を１度実行
+  useEffect(() => {
+    getSeats();
+  }, []);
+
+  // 席作成
+  const createSeat = async () => {
+    try {
+      await axios.post(
+        "http://localhost:8000/seats",
+        {
+          name: name,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setName("");
+      setShowCreate(false);
+      getSeats();
+    } catch (error) {
+      alert(error.response.data.detail);
+    }
+  };
+
+  // 席削除
+  const deleteSeat = async (id) => {
+    try {
+      await axios.delete(
+        `http://localhost:8000/seats/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      getSeats();
+    } catch (error) {
+      alert(error.response.data.detail);
+    }
+  };
+
+  return (
+    <div>
+      <h1>席管理</h1>
+
+      {!showCreate && (
+        <button
+          onClick={() => setShowCreate(true)}
+        >
+          席を追加
+        </button>
+      )}
+
+      {showCreate && (
+        <div
+          style={{
+            border: "1px solid black",
+            padding: "10px",
+            marginTop: "10px",
+            marginBottom: "20px",
+          }}
+        >
+          <h3>席追加</h3>
+
+          <input
+            placeholder="席名"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+
+          <br />
+          <br />
+
+          <button onClick={createSeat}>
+            登録
+          </button>
+
+          <button
+            onClick={() => {
+              setShowCreate(false);
+              setName("");
+            }}
+          >
+            キャンセル
+          </button>
+        </div>
+      )}
+
+      <hr />
+
+      <h2>席一覧</h2>
+
+      <table border="1">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>席名</th>
+            <th>状態</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {seats.map((seat) => ( // mapは配列の要素を１つずつ処理
+            <tr key={seat.id}>
+              <td>{seat.id}</td>
+              <td>{seat.name}</td>
+              <td>{seat.status}</td>
+              <td>
+                <button
+                  onClick={() => {
+                    setTargetId(seat.id);
+                    setShowModal(true);
+                  }}
+                >
+                  削除
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      
+      {showModal && (
+        <div>
+          <p>本当に削除する？</p>
+
+          <button
+            onClick={async () => {
+              await deleteSeat(targetId);
+              setShowModal(false);
+            }}
+          >
+            削除
+          </button>
+
+          <button onClick={() => setShowModal(false)}>
+            キャンセル
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default Seat;

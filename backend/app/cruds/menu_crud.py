@@ -7,9 +7,7 @@ from app.schemas import menu_schema
 # カテゴリ作成
 def create_category(category: menu_schema.CategoryCreate,
                     db: Session) -> menu_schema.CategoryCreateResponse:
-    stmt = select(menu_model.Category).where(
-        menu_model.Category.name == category.name
-    )
+    stmt = select(menu_model.Category).where(menu_model.Category.name == category.name)
     exist_category = db.execute(stmt).scalar_one_or_none()
 
     if exist_category:
@@ -50,14 +48,17 @@ def update_category(
 
 # カテゴリ削除
 def delete_category(category_id: int, db: Session):
-    stmt = select(menu_model.Category).where(
-        menu_model.Category.id == category_id
-    )
-    db_category = db.execute(stmt).scalar_one_or_none()
+    stmt1 = select(menu_model.Category).where(menu_model.Category.id == category_id)
+    db_category = db.execute(stmt1).scalar_one_or_none()
 
     if not db_category:
         raise HTTPException(status_code=404, detail="該当するカテゴリが存在しません")
 
+    stmt2 = select(menu_model.Menu).where(menu_model.Menu.category_id == category_id)
+    db_menus = db.execute(stmt2).scalars().all()
+
+    for db_menu in db_menus:
+        db.delete(db_menu)
     db.delete(db_category)
     db.commit()
 
@@ -67,17 +68,13 @@ def delete_category(category_id: int, db: Session):
 
 # メニュー作成
 def create_menu(menu: menu_schema.MenuCreate, db: Session) -> menu_schema.MenuCreateResponse:
-    stmt1 = select(menu_model.Category.id).where(
-        menu_model.Category.name == menu.category_name
-    )
-    category_id = db.execute(stmt1).scalar_one_or_none()
+    stmt1 = select(menu_model.Category).where(menu_model.Category.id == menu.category_id)
+    category = db.execute(stmt1).scalar_one_or_none()
 
-    if not category_id:
+    if not category:
         raise HTTPException(status_code=404, detail="カテゴリが存在しません")
     
-    stmt2 = select(menu_model.Menu).where(
-        menu_model.Menu.name == menu.name
-    )
+    stmt2 = select(menu_model.Menu).where(menu_model.Menu.name == menu.name)
     exist_menu = db.execute(stmt2).scalar_one_or_none()
 
     if exist_menu:
@@ -86,7 +83,7 @@ def create_menu(menu: menu_schema.MenuCreate, db: Session) -> menu_schema.MenuCr
     db_menu = menu_model.Menu(
         name = menu.name,
         price = menu.price,
-        category_id = category_id
+        category_id = menu.category_id
     )
 
     db.add(db_menu)
@@ -107,9 +104,7 @@ def update_menu(
         new_menu: menu_schema.MenuCreate,
         db: Session
 ) -> menu_schema.MenuCreateResponse:
-    stmt = select(menu_model.Menu).where(
-        menu_model.Menu.id == menu_id
-    )
+    stmt = select(menu_model.Menu).where(menu_model.Menu.id == menu_id)
     db_menu = db.execute(stmt).scalar_one_or_none()
 
     if not db_menu:
@@ -125,9 +120,7 @@ def update_menu(
 
 # メニュー削除
 def delete_menu(menu_id: int, db: Session):
-    stmt = select(menu_model.Menu).where(
-        menu_model.Menu.id == menu_id
-    )
+    stmt = select(menu_model.Menu).where(menu_model.Menu.id == menu_id)
     db_menu = db.execute(stmt).scalar_one_or_none()
 
     if not db_menu:

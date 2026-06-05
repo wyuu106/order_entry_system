@@ -10,7 +10,7 @@ class CategoryCreateResponse(BaseModel):
 class MenuCreate(BaseModel):
     name: str
     price: int
-    category_name: str
+    category_id: str
 
 class MenuCreateResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)

@@ -1,55 +1,88 @@
-import { useState } from "react";
+// ログインページ
 
-/* JavaScriptの関数
-Reactでは、画面 = 関数 */
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
 function Login() {
-  const [username, setUsername] = useState("");
+  const [users, setUsers] = useState([]);
+  const [selectedUserId, setSelectedUserId] = useState("");
   const [password, setPassword] = useState("");
 
-  // formData作成 -> サーバに送る用
+  const navigate = useNavigate();
+
+  // ユーザー一覧取得
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const res = await axios.get("http://localhost:8000/users");
+      setUsers(res.data);
+    };
+    fetchUsers();
+  }, []);
+
   const handleLogin = async () => {
-    const formData = new URLSearchParams();
+    try {
+      const formData = new URLSearchParams();
+      formData.append("username", selectedUserId); // formdataのusernameにidを入れる
+      formData.append("password", password);
 
-    formData.append("username", username);
-    formData.append("password", password);
+      const res = await axios.post(
+        "http://localhost:8000/login",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        }
+      );
 
-    // 指定されたURL（サーバ）にデータを送る -> resにサーバからのレスポンスを入れる
-    const res = await fetch("http://localhost:8000/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: formData,
-    });
+      localStorage.setItem("token", res.data.access_token);
+      localStorage.setItem("role", res.data.role);
 
-    // resをJSが読める形に変換
-    const data = await res.json();
-    // 結果表示
-    console.log(data);
+      navigate(res.data.role === "admin" ? "/admin" : "/staff");
+
+    } catch (error) {
+      alert(error.response.data.detail);
+    }
   };
 
-  // 画面に表示するUIを返す
   return (
     <div>
       <h1>ログイン</h1>
 
-      <input
-        placeholder="ユーザーネーム"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
+      {/* ユーザー選択 */}
+      <select
+        value={selectedUserId}
+        onChange={(e) => {
+          setSelectedUserId(e.target.value);
+          setPassword(""); // ユーザー変えたらリセット
+        }}
+      >
+        <option value="">ユーザーを選択</option>
+        {users.map((u) => (
+          <option key={u.id} value={u.id}>
+            {u.name}
+          </option>
+        ))}
+      </select>
 
-      <input
-        placeholder="パスワード"
-        type="password" // パスワード形式の入力
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+      <br />
 
-      <button onClick={handleLogin}>ログイン</button>
+      {/* ユーザー選択でパスワード表示 */}
+      {selectedUserId && (
+        <>
+          <input
+            type="password"
+            placeholder="パスワード"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <button onClick={handleLogin}>ログイン</button>
+        </>
+      )}
     </div>
   );
 }
 
-// Login関数を他のファイルで使えるようにする
 export default Login;
