@@ -37,7 +37,7 @@ def approve_user(
     return user_crud.approve_request(request_id, db)
 
 # ユーザー登録却下
-@router.post('/register/reject', response_model = dict)
+@router.put('/register/reject', response_model = dict)
 def reject_user(
     request_id: int,
     db: Session = Depends(get_db),

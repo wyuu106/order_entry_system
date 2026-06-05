@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Admin from "./pages/Admin";
+import AdminCategory from "./pages/AdminCategory"
 import AdminMenu from "./pages/AdminMenu"
 import AdminSeat from "./pages/AdminSeat";
 import AdminUser from "./pages/AdminUser"

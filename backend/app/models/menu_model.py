@@ -15,4 +15,4 @@ class Menu(Base):
     name: Mapped[str] = mapped_column(String, unique=True)
     price: Mapped[int] = mapped_column(Integer)
 
-    category_id: Mapped[int] = mapped_column(Integer, ForeignKey('categories'))
+    category_id: Mapped[int] = mapped_column(Integer, ForeignKey('categories.id'))

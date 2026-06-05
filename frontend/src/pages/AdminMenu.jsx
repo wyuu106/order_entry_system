@@ -51,7 +51,7 @@ function Menu() {
         {
           name: menuName,
           price: price,
-          category_id: selectedCategory,
+          category_id: selectedCategory
         },
         {
           headers: {
@@ -76,6 +76,7 @@ function Menu() {
         {
           name: menuName,
           price: price,
+          category_id: selectedCategory
         },
         {
           headers: {

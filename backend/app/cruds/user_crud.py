@@ -121,6 +121,9 @@ def delete_user(user_id: str, db: Session):
     if not db_user:
         raise HTTPException(status_code=404, detail="該当するユーザーが見つかりませんでした")
     
+    if db_user.role == 'admin':
+        raise HTTPException(status_code=403, detail="このユーザーは削除できません")
+    
     db.delete(db_user)
     db.commit()
 
