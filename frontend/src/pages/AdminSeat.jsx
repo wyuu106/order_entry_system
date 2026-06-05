@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-function Seat() {
+function AdminSeat() {
   const [seats, setSeats] = useState([]);
   const [showCreate, setShowCreate] = useState(false);
   const [name, setName] = useState("");
@@ -126,7 +126,6 @@ function Seat() {
       <table border="1">
         <thead>
           <tr>
-            <th>ID</th>
             <th>席名</th>
             <th>状態</th>
             <th>操作</th>
@@ -136,7 +135,6 @@ function Seat() {
         <tbody>
           {seats.map((seat) => ( // mapは配列の要素を１つずつ処理
             <tr key={seat.id}>
-              <td>{seat.id}</td>
               <td>{seat.name}</td>
               <td>{seat.status}</td>
               <td>
@@ -176,4 +174,4 @@ function Seat() {
   );
 }
 
-export default Seat;
+export default AdminSeat;

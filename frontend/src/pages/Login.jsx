@@ -6,7 +6,7 @@ import axios from "axios";
 
 function Login() {
   const [users, setUsers] = useState([]);
-  const [selectedUserId, setSelectedUserId] = useState("");
+  const [selectedUsername, setSelectedUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ function Login() {
   const handleLogin = async () => {
     try {
       const formData = new URLSearchParams();
-      formData.append("username", selectedUserId); // formdataのusernameにidを入れる
+      formData.append("username", selectedUsername);
       formData.append("password", password);
 
       const res = await axios.post(
@@ -52,15 +52,15 @@ function Login() {
 
       {/* ユーザー選択 */}
       <select
-        value={selectedUserId}
+        value={selectedUsername}
         onChange={(e) => {
-          setSelectedUserId(e.target.value);
+          setSelectedUsername(e.target.value);
           setPassword(""); // ユーザー変えたらリセット
         }}
       >
         <option value="">ユーザーを選択</option>
         {users.map((u) => (
-          <option key={u.id} value={u.id}>
+          <option key={u.id} value={u.name}>
             {u.name}
           </option>
         ))}
@@ -69,7 +69,7 @@ function Login() {
       <br />
 
       {/* ユーザー選択でパスワード表示 */}
-      {selectedUserId && (
+      {selectedUsername && (
         <>
           <input
             type="password"
@@ -81,6 +81,13 @@ function Login() {
           <button onClick={handleLogin}>ログイン</button>
         </>
       )}
+
+      <br />
+      <br />
+
+      <button onClick={() => navigate("/register")}>
+        ユーザー登録申請へ
+      </button>
     </div>
   );
 }

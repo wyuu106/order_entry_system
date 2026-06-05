@@ -3,9 +3,10 @@
 import { useState } from "react";
 import axios from "axios";
 
-function RegisterPage() {
+function Register() {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const [message, setMessage] = useState("")
 
   const handleRegister = async () => {
     try {
@@ -64,4 +65,4 @@ function RegisterPage() {
   );
 }
 
-export default RegisterPage;
+export default Register;

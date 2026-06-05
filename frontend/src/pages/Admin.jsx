@@ -2,7 +2,7 @@
 
 import { useNavigate } from "react-router-dom";
 
-function AdminMenuPage() {
+function Admin() {
   const navigate = useNavigate();
 
   return (
@@ -43,4 +43,4 @@ function AdminMenuPage() {
   );
 }
 
-export default AdminMenuPage;
+export default Admin;

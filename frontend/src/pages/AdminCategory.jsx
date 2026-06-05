@@ -4,15 +4,17 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-function Request() {
+function AdminCategory() {
   const token = localStorage.getItem("token");
 
   const [categories, setCategories] = useState([]);
   const [categoryName, setCategoryName] = useState("");
-  const [editingCategory, setEditingCategory] = useState(null);
+  const [editingCategoryId, setEditingCategoryId] = useState(null);
 
   const [showModal, setShowModal] = useState(false);
   const [targetId, setTargetId] = useState(null);
+
+  const navigate = useNavigate();
 
   // カテゴリ一覧
   const getCategories = async () => {
@@ -59,7 +61,7 @@ function Request() {
   const updateCategory = async () => {
     try{
       await axios.put(
-        `http://localhost:8000/category/${editingCategory}`,
+        `http://localhost:8000/category/${editingCategoryId}`,
         {
           name: categoryName,
         },
@@ -70,7 +72,7 @@ function Request() {
         }
       );
 
-      setEditingCategory(null);
+      setEditingCategoryId(null);
       setCategoryName("");
       getCategories();
 
@@ -107,15 +109,15 @@ function Request() {
           <span>{category.name}</span>
 
           <button
-            onClick={() => navigate(`/menu?categoryId=${category.id}`)}
+            onClick={() => navigate(`/admin/menus?categoryId=${category.id}`)}
           >
             メニューを見る
           </button>
 
           <button
             onClick={() => {
-              setEditingId(category.id);
-              setName(category.name);
+              setEditingCategoryId(category.id);
+              setCategoryName(category.name);
             }}
           >
             編集
@@ -136,13 +138,13 @@ function Request() {
 
       {/* フォーム（新規・編集共通） */}
       <input
-        value={name}
-        onChange={(e) => setName(e.target.value)}
+        value={categoryName}
+        onChange={(e) => setCategoryName(e.target.value)}
         placeholder="名前"
       />
 
-      <button onClick={editingId ? updateCategory : createCategory}>
-        {editingId ? "更新" : "追加"}
+      <button onClick={editingCategoryId ? updateCategory : createCategory}>
+        {editingCategoryId ? "更新" : "追加"}
       </button>
 
       {/* 削除モーダル */}
@@ -168,4 +170,4 @@ function Request() {
   );
 }
 
-export default Category;
+export default AdminCategory;

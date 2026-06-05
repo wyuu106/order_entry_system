@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-function Request() {
+function AdminRequest() {
   const [requests, setRequests] = useState([]);
 
   const token = localStorage.getItem("token");
@@ -12,7 +12,12 @@ function Request() {
   const getRequests = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/requests"
+        "http://localhost:8000/requests",
+        {
+          headers: {
+          Authorization: `Bearer ${token}`,
+          },
+        }
       );
   
       setRequests(response.data);
@@ -110,4 +115,4 @@ function Request() {
   );
 }
 
-export default Request;
+export default AdminRequest;

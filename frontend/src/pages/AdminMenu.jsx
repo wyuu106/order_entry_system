@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-function Menu() {
+function AdminMenu() {
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -10,7 +10,7 @@ function Menu() {
   const [selectedCategory, setSelectedCategory] = useState("");
 
   const [menuName, setMenuName] = useState("");
-  const [price, setPrice] = useState("");
+  const [menuPrice, setMenuPrice] = useState("");
   const [editingMenuId, setEditingMenuId] = useState(null);
 
   const [showModal, setShowModal] = useState(false);
@@ -50,8 +50,8 @@ function Menu() {
         "http://localhost:8000/menu",
         {
           name: menuName,
-          price: price,
-          category_id: selectedCategory
+          price: Number(menuPrice),
+          category_id: Number(selectedCategory)
         },
         {
           headers: {
@@ -61,7 +61,7 @@ function Menu() {
       );
 
       setMenuName("");
-      setPrice("");
+      setMenuPrice("");
       getMenus(selectedCategory);
     } catch (error) {
       console.log(error);
@@ -75,8 +75,8 @@ function Menu() {
         `http://localhost:8000/menu/${editingMenuId}`,
         {
           name: menuName,
-          price: price,
-          category_id: selectedCategory
+          price: Number(menuPrice),
+          category_id: Number(selectedCategory)
         },
         {
           headers: {
@@ -87,7 +87,7 @@ function Menu() {
 
       setEditingMenuId(null);
       setMenuName("");
-      setPrice("");
+      setMenuPrice("");
       getMenus(selectedCategory);
     } catch (error) {
       console.log(error);
@@ -126,8 +126,8 @@ function Menu() {
 
         <input
           placeholder="価格"
-          value={price}
-          onChange={(e) => setPrice(e.target.value)}
+          value={menuPrice}
+          onChange={(e) => setMenuPrice(e.target.value)}
         />
 
         <button onClick={editingMenuId ? updateMenu : createMenu}>
@@ -143,7 +143,11 @@ function Menu() {
           <span>{menu.name}</span>
           <span>{menu.price}円</span>
 
-          <button onClick={() => startEdit(menu)}>
+          <button onClick={() => {
+            setEditingMenuId(menu.id);
+            setMenuName(menu.name);
+            setMenuPrice(menu.price)
+          }}>
             編集
           </button>
 
@@ -181,4 +185,4 @@ function Menu() {
   );
 }
 
-export default Menu;
+export default AdminMenu;

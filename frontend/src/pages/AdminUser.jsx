@@ -47,7 +47,6 @@ function AdminUser() {
       <table border="1" cellPadding="8">
         <thead>
           <tr>
-            <th>ID</th>
             <th>ユーザー名</th>
             <th>ロール</th>
             <th>操作</th>
@@ -57,7 +56,6 @@ function AdminUser() {
         <tbody>
           {users.map((user) => (
             <tr key={user.id}>
-              <td>{user.id}</td>
               <td>{user.name}</td>
               <td>{user.role}</td>
               <td>

@@ -38,6 +38,11 @@ function App() {
           element={<AdminCategory />}
         />
 
+        <Route
+          path="/admin/menus"
+          element={<AdminMenu />}
+        />
+
         {/* 席情報管理 */}
         <Route
           path="/admin/seats"
@@ -50,7 +55,7 @@ function App() {
           element={<AdminUser />}
         />
 
-        {/* 登録申請 */}
+        {/* 登録申請一覧 */}
         <Route
           path="/admin/requests"
           element={<AdminRequest />}
