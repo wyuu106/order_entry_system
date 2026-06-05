@@ -7,7 +7,7 @@ from app.schemas import seat_schema
 # 席情報作成
 def create_seat(seat: seat_schema.SeatCreate, db: Session) -> seat_schema.SeatCreateResponse:
     stmt = select(seat_model.Seat).where(seat_model.Seat.name == seat.name)
-    exist_seat = db.execute(stmt)
+    exist_seat = db.execute(stmt).scalar_one_or_none()
 
     if exist_seat:
         raise HTTPException(status_code=400, detail='この席は既に存在します')
