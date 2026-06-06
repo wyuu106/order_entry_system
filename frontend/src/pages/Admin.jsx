@@ -10,6 +10,22 @@ function Admin() {
       <h1>管理者メニュー</h1>
 
       <button
+        onClick={() => navigate("/orders")}
+      >
+        注文
+      </button>
+
+      <br />
+
+      <button
+        onClick={() => navigate("/seats")}
+      >
+        席の状態
+      </button>
+
+      <br />
+
+      <button
         onClick={() => navigate("/admin/categories")}
       >
         メニュー設定

@@ -38,7 +38,8 @@ function Login() {
 
       localStorage.setItem("token", res.data.access_token);
       localStorage.setItem("role", res.data.role);
-
+      
+      // ユーザーデータのroleで遷移先変更
       navigate(res.data.role === "admin" ? "/admin" : "/staff");
 
     } catch (error) {

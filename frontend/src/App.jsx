@@ -9,6 +9,7 @@ import AdminMenu from "./pages/AdminMenu"
 import AdminSeat from "./pages/AdminSeat";
 import AdminUser from "./pages/AdminUser"
 import AdminRequest from "./pages/AdminRequest"
+import Staff from "./pages/Staff"
 
 function App() {
   return (
@@ -59,6 +60,12 @@ function App() {
         <Route
           path="/admin/requests"
           element={<AdminRequest />}
+        />
+
+        {/* スタッフ画面 */}
+        <Route
+          path="/staff"
+          element={<Staff />}
         />
       </Routes>
     </BrowserRouter>
