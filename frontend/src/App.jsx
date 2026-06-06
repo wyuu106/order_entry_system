@@ -10,6 +10,8 @@ import AdminSeat from "./pages/AdminSeat";
 import AdminUser from "./pages/AdminUser"
 import AdminRequest from "./pages/AdminRequest"
 import Staff from "./pages/Staff"
+import Seat from "./pages/Seat"
+import Order from "./pages/Order"
 
 function App() {
   return (
@@ -18,7 +20,7 @@ function App() {
         {/* ログイン */}
         <Route
           path="/" // URL
-          element={<Login />} // pageファイル
+          element={<Login />} // page関数
         />
 
         {/* ユーザー登録 */}
@@ -66,6 +68,18 @@ function App() {
         <Route
           path="/staff"
           element={<Staff />}
+        />
+
+        {/* 席画面 */}
+        <Route
+          path="/seats"
+          element={<Seat />}
+        />
+
+        {/* オーダー画面 */}
+        <Route
+          path="/orders"
+          element={<Order />}
         />
       </Routes>
     </BrowserRouter>
