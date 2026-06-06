@@ -17,8 +17,10 @@ def create_user(user: user_schema.UserCreate, db: Session = Depends(get_db)):
 
 # 申請一覧
 @router.get('/requests', response_model = list[user_schema.RequestData])
-def get_requests(db: Session = Depends(get_db),
-                 current_user: user_model.User = Depends(get_current_user)):
+def get_requests(
+    db: Session = Depends(get_db),
+    current_user: user_model.User = Depends(get_current_user)
+):
     if not current_user.role == 'admin':
         raise HTTPException(status_code=403, detail="権限がありません")
     
@@ -50,7 +52,10 @@ def reject_user(
 
 # ユーザー一覧
 @router.get('/users', response_model = list[user_schema.UserCreateResponse])
-def get_users(db: Session = Depends(get_db)):
+def get_users(
+    db: Session = Depends(get_db),
+    current_user: user_model.User = Depends(get_current_user)
+):
     return user_crud.get_users(db)
 
 # ログイン

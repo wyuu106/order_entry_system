@@ -23,7 +23,10 @@ def create_seat(
 
 # 席情報一覧
 @router.get('/seats', response_model = list[seat_schema.SeatCreateResponse])
-def get_seats(db: Session = Depends(get_db)):
+def get_seats(
+    db: Session = Depends(get_db),
+    current_user: user_model.User = Depends(get_current_user)
+):
     return seat_crud.get_seats(db)
 
 # 席の状態更新
@@ -31,7 +34,8 @@ def get_seats(db: Session = Depends(get_db)):
 def update_seat_status(
     seat_id: int,
     status: str,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: user_model.User = Depends(get_current_user)
 ):
     return seat_crud.update_seat_status(seat_id, status, db)
 

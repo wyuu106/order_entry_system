@@ -23,7 +23,10 @@ def create_category(
 
 # カテゴリ一覧
 @router.get('/categories', response_model=list[menu_schema.CategoryCreateResponse])
-def get_categories(db: Session = Depends(get_db)):
+def get_categories(
+    db: Session = Depends(get_db),
+    current_user: user_model.User = Depends(get_current_user)
+):
     return menu_crud.get_categories(db)
 
 # カテゴリ更新
@@ -65,7 +68,11 @@ def create_menu(
 
 # メニュー一覧
 @router.get('/{category_id}/menus', response_model=list[menu_schema.MenuCreateResponse])
-def get_menus(category_id: int, db: Session = Depends(get_db)):
+def get_menus(
+    category_id: int,
+    db: Session = Depends(get_db),
+    current_user: user_model.User = Depends(get_current_user)
+):
     return menu_crud.get_menus(category_id, db)
 
 # メニュー更新
