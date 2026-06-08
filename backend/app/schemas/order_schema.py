@@ -12,6 +12,10 @@ class SessionCreateResponse(BaseModel):
     start_at: datetime
     end_at: datetime | None = None
 
+class SessionResponse(BaseModel):
+    seat_name: str
+    message: str
+
 class OrderCreate(BaseModel):
     session_id: int
     menu_id: int
