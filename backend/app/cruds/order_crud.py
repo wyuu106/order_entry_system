@@ -19,6 +19,13 @@ def create_session(
     if exist_session:
         raise HTTPException(status_code=400, detail='この席は使用中です')
     
+    seat_name = db.execute(select(seat_model.Seat.name).where(
+        seat_model.Seat.id == seat_session.seat_id
+    )).scalar_one_or_none()
+
+    if not seat_name:
+        raise HTTPException(status_code=404, detail='該当する席が見つかりません')
+    
     db_session = order_model.SeatSession(
         seat_id = seat_session.seat_id
     )
@@ -29,10 +36,30 @@ def create_session(
 
     db.refresh(db_session)
 
+    return order_schema.SessionCreateResponse(
+        id = db_session.id,
+        seat_name = seat_name,
+        start_at = db_session.start_at
+    )
+
+# 席ごとのセッションの有無を判定
+def get_session(seat_id: int, db: Session) -> order_schema.SessionCreateResponse | None:
+    stmt = select(order_model.SeatSession).where(
+        order_model.SeatSession.seat_id == seat_id,
+        order_model.SeatSession.end_at.is_(None)
+    )
+    db_session = db.execute(stmt).scalar_one_or_none()
+
+    if not db_session:
+        return None
+    
     seat_name = db.execute(select(seat_model.Seat.name).where(
-        seat_model.Seat.id == seat_session.seat_id
+        seat_model.Seat.id == db_session.seat_id
     )).scalar_one_or_none()
 
+    if not seat_name:
+        raise HTTPException(status_code=404, detail='該当する席が見つかりません')
+    
     return order_schema.SessionCreateResponse(
         id = db_session.id,
         seat_name = seat_name,
@@ -82,7 +109,7 @@ def create_order(
         menu_id = order.menu_id,
         price = price,
         quantity = order.quantity,
-        user_id = order.user_id
+        user_id = current_user.id
     )
 
     seat_id = db.execute(select(order_model.SeatSession.seat_id).where(
@@ -121,9 +148,40 @@ def create_order(
 
 # オーダー一覧
 def get_orders(session_id: int, db: Session) -> list[order_schema.OrderCreateResponse]:
-    return db.execute(select(order_model.Order).where(
+    stmt = select(order_model.Order).where(
         order_model.Order.session_id == session_id
-    )).scalars().all()
+    )
+    db_orders = db.execute(stmt).scalars().all()
+
+    res = []
+
+    seat_id = db.execute(select(order_model.SeatSession.seat_id).where(
+        order_model.SeatSession.id == session_id,
+        order_model.SeatSession.end_at.is_(None)
+    )).scalar_one_or_none()
+
+    seat_name = db.execute(select(seat_model.Seat.name).where(
+        seat_model.Seat.id == seat_id
+    )).scalar_one_or_none()
+
+    for order in db_orders:
+        menu_name = db.execute(select(menu_model.Menu.name).where(
+            menu_model.Menu.id == order.menu_id
+        )).scalar_one_or_none()
+        
+        user_name = db.execute(select(user_model.User.name).where(
+            user_model.User.id == order.user_id
+        )).scalar_one_or_none()
+        
+        res.append(order_schema.OrderCreateResponse(
+            id = order.id,
+            seat_name = seat_name,
+            menu_name = menu_name,
+            quantity = order.quantity,
+            user_name = user_name
+        ))
+
+    return res
 
 # オーダー取り消し
 def delete_order(order_id: int, db: Session):
@@ -141,19 +199,19 @@ def delete_order(order_id: int, db: Session):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 # 提供状況変更
-def update_order(new_order: order_schema.OrderUpdate, db: Session) -> str:
+def update_order(order_id: int, status: str, db: Session) -> str:
     stmt = select(order_model.Order).where(
-        order_model.Order.id == new_order.id
+        order_model.Order.id == order_id
     )
     db_order = db.execute(stmt).scalar_one_or_none()
 
     if not db_order:
         raise HTTPException(status_code=404, detail='該当する注文が見つかりません')
     
-    if new_order.status not in ["waiting", "served"]:
+    if status not in ["waiting", "served"]:
         raise HTTPException(status_code=400, detail="不正なステータスです")
     
-    db_order.status = new_order.status
+    db_order.status = status
 
     db.commit()
     db.refresh(db_order)

@@ -18,8 +18,17 @@ def create_session(
 ):
     return order_crud.create_session(seat_session, db)
 
+# 席ごとのセッションの有無を判定
+@router.get('/seat_session/{seat_id}', response_model=order_schema.SessionCreateResponse | None)
+def get_session(
+    seat_id: int,
+    db: Session = Depends(get_db),
+    current_user: user_model.User = Depends(get_current_user)
+):
+    return order_crud.get_session(seat_id, db)
+
 # セッション終了
-@router.put('seat_session', response_model=order_schema.SessionResponse)
+@router.put('/seat_session', response_model=order_schema.SessionResponse)
 def end_session(
     session_id: int,
     db: Session = Depends(get_db),
@@ -58,13 +67,14 @@ def delete_order(
     return order_crud.delete_order(order_id, db)
 
 # 提供状況変更
-@router.put('/order', response_model=str)
+@router.put('/order/{order_id}', response_model=str)
 def update_order(
-    new_order: order_schema.OrderUpdate,
+    order_id: int,
+    status: str,
     db: Session = Depends(get_db),
     current_user: user_model.User = Depends(get_current_user)
 ):
-    return order_crud.update_order(new_order, db)
+    return order_crud.update_order(order_id, status, db)
 
 # 会計（アドミンのみ）
 @router.post('/checkout', response_model=int)

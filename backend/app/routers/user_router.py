@@ -70,7 +70,7 @@ def login(
     return user_crud.login(form_data, db)
 
 # ユーザー削除
-@router.delete('/delete/{user_id}')
+@router.delete('/user/{user_id}')
 def delete_user(
     user_id: str,
     db: Session = Depends(get_db),

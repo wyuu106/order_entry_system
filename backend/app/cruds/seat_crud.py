@@ -25,17 +25,17 @@ def get_seats(db: Session) -> list[seat_schema.SeatCreateResponse]:
     return db.execute(select(seat_model.Seat)).scalars().all()
 
 # 席の状態更新
-def update_seat_status(new_seat: seat_schema.SeatUpdate, db: Session) -> seat_schema.SeatCreateResponse:
-    stmt = select(seat_model.Seat).where(seat_model.Seat.id == new_seat.id)
+def update_seat_status(seat_id: int, status: str, db: Session) -> seat_schema.SeatCreateResponse:
+    stmt = select(seat_model.Seat).where(seat_model.Seat.id == seat_id)
     db_seat = db.execute(stmt).scalar_one_or_none()
 
     if not db_seat:
         raise HTTPException(status_code=404, detail='該当する席がありません')
     
-    if new_seat.status not in ['available', 'occupied', 'empty']:
+    if status not in ['available', 'occupied', 'empty']:
         raise HTTPException(status_code=400, detail="不正なステータスです")
     
-    db_seat.status = new_seat.status
+    db_seat.status = status
 
     db.commit()
     db.refresh(db_seat)
