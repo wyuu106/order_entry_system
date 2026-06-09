@@ -1,16 +1,23 @@
 // 席の状態に関するページ
 
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-function Seat(){
+function Seat() {
   const [seats, setSeats] = useState([]);
+  const navigate = useNavigate();
 
   // 席一覧取得
   const getSeats = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/seats"
+        "http://localhost:8000/seats",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       );
 
       setSeats(response.data);
@@ -28,7 +35,7 @@ function Seat(){
   const updateSeatStatus = async (seatId, status) => {
     try {
       await axios.put(
-        `http://localhost:8000/seats/${seatId}`,
+        `http://localhost:8000/seat/${seatId}`,
         null,
         {
           params: {
@@ -46,7 +53,7 @@ function Seat(){
     }
   };
 
-  return(
+  return (
     <div>
       <h2>席一覧</h2>
 
@@ -60,19 +67,27 @@ function Seat(){
         </thead>
 
         <tbody>
-          {seats.map((seat) => ( // mapは配列の要素を１つずつ処理
+          {seats.map((seat) => (
             <tr key={seat.id}>
-              <td>{seat.name}</td>
+              <td>
+                <button
+                  onClick={() => navigate(`/seat/${seat.id}`)}
+                >
+                  {seat.name}
+                </button>
+              </td>
+
               <td>{seat.status}</td>
+
               <td>
                 <select
                   value={seat.status}
-                  onChange={(e) => {
+                  onChange={(e) =>
                     updateSeatStatus(
                       seat.id,
                       e.target.value
-                    );
-                  }}
+                    )
+                  }
                 >
                   <option value="empty">
                     空席（セットまだ）

@@ -27,7 +27,7 @@ function AdminUser() {
   // ユーザー削除
   const deleteUser = async (id) => {
     try {
-      await axios.delete(`http://localhost:8000/users/${id}`, {
+      await axios.delete(`http://localhost:8000/user/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -50,7 +50,7 @@ function AdminMenu() {
         "http://localhost:8000/menu",
         {
           name: menuName,
-          price: Number(menuPrice),
+          price: menuPrice === "" ? null : Number(menuPrice),
           category_id: Number(selectedCategory)
         },
         {
@@ -75,7 +75,7 @@ function AdminMenu() {
         `http://localhost:8000/menu/${editingMenuId}`,
         {
           name: menuName,
-          price: Number(menuPrice),
+          price: menuPrice === "" ? null : Number(menuPrice),
           category_id: Number(selectedCategory)
         },
         {

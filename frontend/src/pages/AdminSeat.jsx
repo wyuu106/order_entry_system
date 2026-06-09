@@ -35,7 +35,7 @@ function AdminSeat() {
   const createSeat = async () => {
     try {
       await axios.post(
-        "http://localhost:8000/seats",
+        "http://localhost:8000/seat",
         {
           name: name,
         },
@@ -58,7 +58,7 @@ function AdminSeat() {
   const deleteSeat = async (id) => {
     try {
       await axios.delete(
-        `http://localhost:8000/seats/${id}`,
+        `http://localhost:8000/seat/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -10,19 +10,10 @@ function Staff() {
       <h1>スタッフメニュー</h1>
 
       <button
-        onClick={() => navigate("/orders")}
+        onClick={() => navigate("/seats")}
       >
         注文
       </button>
-
-      <br />
-
-      <button
-        onClick={() => navigate("/seats")}
-      >
-        席の状態
-      </button>
-
     </div>
   );
 }
