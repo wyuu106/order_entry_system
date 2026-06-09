@@ -20,7 +20,6 @@ class OrderCreate(BaseModel):
     session_id: int
     menu_id: int
     quantity: int = 1
-    user_id: int
 
 class OrderCreateResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -31,3 +30,6 @@ class OrderCreateResponse(BaseModel):
     quantity: int
     user_name: str
 
+class OrderUpdate(BaseModel):
+    id: int
+    status: str

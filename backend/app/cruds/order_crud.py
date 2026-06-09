@@ -6,6 +6,7 @@ from app.models import order_model, seat_model, menu_model, user_model
 from app.schemas import order_schema
 from app.cruds import seat_crud
 
+# セッション作成
 def create_session(
         seat_session: order_schema.SessionCreate,
         db: Session
@@ -38,6 +39,7 @@ def create_session(
         start_at = db_session.start_at
     )
 
+# セッション終了
 def end_session(session_id: int, db: Session) -> order_schema.SessionResponse:
     stmt = select(order_model.SeatSession).where(
         order_model.SeatSession.id == session_id
@@ -64,13 +66,21 @@ def end_session(session_id: int, db: Session) -> order_schema.SessionResponse:
         message = 'お会計'
     )
     
+# オーダー作成
 def create_order(
         order: order_schema.OrderCreate,
+        current_user: user_model.User,
         db: Session
 ) -> order_schema.OrderCreateResponse:
+    
+    price = db.execute(select(menu_model.Menu.price).where(
+        menu_model.Menu.id == order.menu_id
+    )).scalar_one_or_none()
+    
     db_order = order_model.Order(
         session_id = order.session_id,
         menu_id = order.menu_id,
+        price = price,
         quantity = order.quantity,
         user_id = order.user_id
     )
@@ -97,13 +107,6 @@ def create_order(
     if not menu_name:
         raise HTTPException(status_code=404, detail='該当するメニューが見つかりません')
 
-    user_name = db.execute(select(user_model.User.name).where(
-        user_model.User.id == order.user_id
-    )).scalar_one_or_none()
-
-    if not user_name:
-        raise HTTPException(status_code=404, detail='該当するユーザーが見つかりません')
-
     db.add(db_order)
     db.commit()
     db.refresh(db_order)
@@ -113,10 +116,16 @@ def create_order(
         seat_name = seat_name,
         menu_name = menu_name,
         quantity = db_order.quantity,
-        user_name = user_name
+        user_name = current_user.name
     )
 
+# オーダー一覧
+def get_orders(session_id: int, db: Session) -> list[order_schema.OrderCreateResponse]:
+    return db.execute(select(order_model.Order).where(
+        order_model.Order.session_id == session_id
+    )).scalars().all()
 
+# オーダー取り消し
 def delete_order(order_id: int, db: Session):
     stmt = select(order_model.Order).where(
         order_model.Order.id == order_id
@@ -130,3 +139,50 @@ def delete_order(order_id: int, db: Session):
     db.commit()
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+# 提供状況変更
+def update_order(new_order: order_schema.OrderUpdate, db: Session) -> str:
+    stmt = select(order_model.Order).where(
+        order_model.Order.id == new_order.id
+    )
+    db_order = db.execute(stmt).scalar_one_or_none()
+
+    if not db_order:
+        raise HTTPException(status_code=404, detail='該当する注文が見つかりません')
+    
+    if new_order.status not in ["waiting", "served"]:
+        raise HTTPException(status_code=400, detail="不正なステータスです")
+    
+    db_order.status = new_order.status
+
+    db.commit()
+    db.refresh(db_order)
+
+    return status
+
+# 会計
+def checkout(session_id: int, db: Session) -> int:
+    stmt = select(
+        order_model.Order.menu_id,
+        order_model.Order.quantity
+    ).where(
+        order_model.Order.session_id == session_id
+    )
+    orders = db.execute(stmt).scalars().all()
+
+    if not orders:
+        raise HTTPException(status_code=404, detail='該当する注文が見つかりません')
+
+    total = 0
+
+    for menu_id, quantity in orders:
+        price = db.execute(select(menu_model.Menu.price).where(
+            menu_model.Menu.id == menu_id
+        )).scalar_one_or_none()
+
+        if price is None:
+            raise HTTPException(status_code=400, detail='値段が設定されていない商品があります')
+
+        total += price * quantity
+    
+    return total

@@ -10,3 +10,7 @@ class SeatCreateResponse(BaseModel):
     id: int
     name: str
     status: str
+
+class SeatUpdate(BaseModel):
+    id: int
+    status: str

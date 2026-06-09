@@ -9,7 +9,7 @@ class CategoryCreateResponse(BaseModel):
 
 class MenuCreate(BaseModel):
     name: str
-    price: int
+    price: int | None = None
     category_id: int
 
 class MenuCreateResponse(BaseModel):

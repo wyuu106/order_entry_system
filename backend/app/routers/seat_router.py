@@ -32,12 +32,11 @@ def get_seats(
 # 席の状態更新
 @router.put('/seats/{seat_id}', response_model = seat_schema.SeatCreateResponse)
 def update_seat_status(
-    seat_id: int,
-    status: str,
+    new_seat: seat_schema.SeatUpdate,
     db: Session = Depends(get_db),
     current_user: user_model.User = Depends(get_current_user)
 ):
-    return seat_crud.update_seat_status(seat_id, status, db)
+    return seat_crud.update_seat_status(new_seat, db)
 
 # 席情報削除
 @router.delete('/seats/{seat_id}')
