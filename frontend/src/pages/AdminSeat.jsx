@@ -1,9 +1,12 @@
 // 席に関するページ
 
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function AdminSeat() {
+  const navigate = useNavigate();
+
   const [seats, setSeats] = useState([]);
   const [showCreate, setShowCreate] = useState(false);
   const [name, setName] = useState("");
@@ -17,7 +20,12 @@ function AdminSeat() {
   const getSeats = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/seats"
+        "http://localhost:8000/seats",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       );
 
       setSeats(response.data);
@@ -77,7 +85,7 @@ function AdminSeat() {
       <button onClick={() => navigate("/admin")}>
         戻る
       </button>
-      
+
       <h1>席管理</h1>
 
       {!showCreate && (

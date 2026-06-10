@@ -1,9 +1,12 @@
 // ユーザー登録申請に関するページ
 
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function AdminRequest() {
+  const navigate = useNavigate();
+
   const [requests, setRequests] = useState([]);
 
   const token = localStorage.getItem("token");
@@ -83,7 +86,7 @@ function AdminRequest() {
       <button onClick={() => navigate("/admin")}>
         戻る
       </button>
-      
+
       <h1>ユーザー登録申請一覧</h1>
 
       {requests.length === 0 ? (

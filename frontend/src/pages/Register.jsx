@@ -1,9 +1,12 @@
 // ユーザー登録のページ
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Register() {
+  const navigate = useNavigate();
+
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("")
@@ -34,10 +37,6 @@ function Register() {
 
   return (
     <div>
-      <button onClick={() => navigate("/")}>
-        ログイン画面へ
-      </button>
-
       <h1>ユーザー登録申請</h1>
 
       <div>
@@ -61,6 +60,10 @@ function Register() {
       <div>
         <button onClick={handleRegister}>
           申請する
+        </button>
+
+        <button onClick={() => navigate("/")}>
+        ログイン画面へ
         </button>
       </div>
 

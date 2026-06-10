@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function AdminCategory() {
+  const navigate = useNavigate();
+  
   const token = localStorage.getItem("token");
 
   const [categories, setCategories] = useState([]);
@@ -13,8 +15,6 @@ function AdminCategory() {
 
   const [showModal, setShowModal] = useState(false);
   const [targetId, setTargetId] = useState(null);
-
-  const navigate = useNavigate();
 
   // カテゴリ一覧
   const getCategories = async () => {
