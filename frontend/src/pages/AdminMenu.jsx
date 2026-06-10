@@ -116,6 +116,10 @@ function AdminMenu() {
     <div>
       <h1>メニュー管理</h1>
 
+      <button onClick={() => navigate("/admin/categories")}>
+        戻る
+      </button>
+
       {/* フォーム */}
       <div>
         <input

@@ -34,6 +34,10 @@ function Register() {
 
   return (
     <div>
+      <button onClick={() => navigate("/")}>
+        ログイン画面へ
+      </button>
+
       <h1>ユーザー登録申請</h1>
 
       <div>

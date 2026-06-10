@@ -8,19 +8,11 @@ function Admin() {
   return (
     <div>
       <h1>管理者メニュー</h1>
-
-      <button
-        onClick={() => navigate("/orders")}
-      >
-        注文
-      </button>
-
-      <br />
-
+      
       <button
         onClick={() => navigate("/seats")}
       >
-        席の状態
+        注文
       </button>
 
       <br />

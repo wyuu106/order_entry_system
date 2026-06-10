@@ -74,6 +74,10 @@ function AdminSeat() {
 
   return (
     <div>
+      <button onClick={() => navigate("/admin")}>
+        戻る
+      </button>
+      
       <h1>席管理</h1>
 
       {!showCreate && (

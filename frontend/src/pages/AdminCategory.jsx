@@ -103,6 +103,10 @@ function AdminCategory() {
     <div>
       <h1>カテゴリ管理</h1>
 
+      <button onClick={() => navigate("/admin")}>
+        戻る
+      </button>
+
       {/* 一覧 */}
       {categories.map((category) => (
         <div key={category.id}>
