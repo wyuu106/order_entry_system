@@ -28,13 +28,25 @@ def get_session(
     return order_crud.get_session(seat_id, db)
 
 # セッション終了
-@router.put('/seat_session', response_model=order_schema.SessionResponse)
+@router.put('/seat_session/{session_id}', response_model=order_schema.SessionResponse)
 def end_session(
     session_id: int,
     db: Session = Depends(get_db),
     current_user: user_model.User = Depends(get_current_user)
 ):
+    if not current_user.role == 'admin':
+        raise HTTPException(status_code=403, detail="権限がありません")
+    
     return order_crud.end_session(session_id, db)
+
+# 合計金額取得
+@router.get('/total', response_model=int)
+def get_total(
+    session_id: int,
+    db: Session = Depends(get_db),
+    current_user: user_model.User = Depends(get_current_user)
+):
+    return order_crud.get_total(session_id, db)
 
 # オーダー作成
 @router.post('/order', response_model=order_schema.OrderCreateResponse)
@@ -43,10 +55,10 @@ def create_order(
     current_user: user_model.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    return order_crud.create_user(order, current_user, db)
+    return order_crud.create_order(order, current_user, db)
 
 # オーダー一覧
-@router.get('/orders', response_model=list[order_schema.OrderCreateResponse])
+@router.get('/orders/{session_id}', response_model=list[order_schema.OrderCreateResponse])
 def get_orders(
     session_id: int,
     db: Session = Depends(get_db),
@@ -67,7 +79,7 @@ def delete_order(
     return order_crud.delete_order(order_id, db)
 
 # 提供状況変更
-@router.put('/order/{order_id}', response_model=str)
+@router.put('/order/status/{order_id}', response_model=str)
 def update_order(
     order_id: int,
     status: str,
@@ -76,14 +88,15 @@ def update_order(
 ):
     return order_crud.update_order(order_id, status, db)
 
-# 会計（アドミンのみ）
-@router.post('/checkout', response_model=int)
-def checkout(
-    session_id: int,
+# オーダーの金額変更（アドミンのみ）
+@router.put('/order/price/{order_id}', response_model=int)
+def update_price(
+    order_id: int,
+    price: int,
     db: Session = Depends(get_db),
     current_user: user_model.User = Depends(get_current_user)
 ):
     if not current_user.role == 'admin':
         raise HTTPException(status_code=403, detail="権限がありません")
     
-    return order_crud.checkout(session_id, db)
+    return order_crud.update_price(order_id, price, db)

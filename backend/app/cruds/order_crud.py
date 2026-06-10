@@ -31,10 +31,10 @@ def create_session(
     )
 
     db.add(db_session)
+    db.commit()
+    db.refresh(db_session)
 
     seat_crud.update_seat_status(seat_session.seat_id, 'occupied', db)
-
-    db.refresh(db_session)
 
     return order_schema.SessionCreateResponse(
         id = db_session.id,
@@ -69,15 +69,13 @@ def get_session(seat_id: int, db: Session) -> order_schema.SessionCreateResponse
 # セッション終了
 def end_session(session_id: int, db: Session) -> order_schema.SessionResponse:
     stmt = select(order_model.SeatSession).where(
-        order_model.SeatSession.id == session_id
+        order_model.SeatSession.id == session_id,
+        order_model.SeatSession.end_at.is_(None)
     )
     db_session = db.execute(stmt).scalar_one_or_none()
 
     if not db_session:
         raise HTTPException(status_code=404, detail='該当するセッションが見つかりません')
-    
-    if db_session.end_at is not None:
-        raise HTTPException(status_code=400, detail="このセッションは既に終了しています")
 
     db_session.end_at = datetime.utcnow()
 
@@ -90,8 +88,32 @@ def end_session(session_id: int, db: Session) -> order_schema.SessionResponse:
 
     return order_schema.SessionResponse(
         seat_name = seat_name,
-        message = 'お会計'
+        message = '終了'
     )
+
+# 合計金額取得
+def get_total(session_id: int, db: Session) -> int:
+    stmt = select(
+        order_model.Order.menu_id,
+        order_model.Order.quantity
+    ).where(
+        order_model.Order.session_id == session_id
+    )
+    orders = db.execute(stmt).scalars().all()
+
+    total = 0
+
+    for menu_id, quantity in orders:
+        price = db.execute(select(menu_model.Menu.price).where(
+            menu_model.Menu.id == menu_id
+        )).scalar_one_or_none()
+
+        if price is None:
+            raise HTTPException(status_code=400, detail='値段が設定されていない商品があります')
+
+        total += price * quantity
+
+    return total
     
 # オーダー作成
 def create_order(
@@ -218,29 +240,16 @@ def update_order(order_id: int, status: str, db: Session) -> str:
 
     return status
 
-# 会計
-def checkout(session_id: int, db: Session) -> int:
-    stmt = select(
-        order_model.Order.menu_id,
-        order_model.Order.quantity
-    ).where(
-        order_model.Order.session_id == session_id
+# オーダーの金額変更
+def update_price(order_id: int, price: int, db: Session) -> int:
+    stmt = select(order_model.Order).where(
+        order_model.Order.id == order_id
     )
-    orders = db.execute(stmt).scalars().all()
+    db_order = db.execute(stmt).scalar_one_or_none()
 
-    if not orders:
-        raise HTTPException(status_code=404, detail='該当する注文が見つかりません')
+    db_order.price = price
 
-    total = 0
+    db.commit()
+    db.refresh(db_order)
 
-    for menu_id, quantity in orders:
-        price = db.execute(select(menu_model.Menu.price).where(
-            menu_model.Menu.id == menu_id
-        )).scalar_one_or_none()
-
-        if price is None:
-            raise HTTPException(status_code=400, detail='値段が設定されていない商品があります')
-
-        total += price * quantity
-    
-    return total
+    return price
