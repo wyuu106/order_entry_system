@@ -78,7 +78,7 @@ function App() {
 
         {/* オーダー画面 */}
         <Route
-          path='/order/${seat.id}'
+          path="/order/:seatId"
           element={<Order />}
         />
       </Routes>

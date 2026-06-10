@@ -20,10 +20,16 @@ function AdminMenu() {
   params = ?categoryId=${category.id} */
   const params = new URLSearchParams(location.search);
 
+  // メニュー一覧取得
   const getMenus = async (categoryId) => {
     try {
       const res = await axios.get(
-        `http://localhost:8000/${categoryId}/menus`
+        `http://localhost:8000/${categoryId}/menus`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       );
 
       setMenus(res.data);
@@ -142,29 +148,54 @@ function AdminMenu() {
       <hr />
 
       {/* 一覧 */}
-      {menus.map((menu) => (
-        <div key={menu.id}>
-          <span>{menu.name}</span>
-          <span>{menu.price}円</span>
+      <table
+        border="1"
+        cellPadding="8"
+        style={{
+          margin: "0 auto",
+          borderCollapse: "collapse",
+          textAlign: "center",
+        }}
+      >
+        <thead>
+          <tr>
+            <th>メニュー名</th>
+            <th>価格</th>
+            <th>操作</th>
+          </tr>
+        </thead>
 
-          <button onClick={() => {
-            setEditingMenuId(menu.id);
-            setMenuName(menu.name);
-            setMenuPrice(menu.price)
-          }}>
-            編集
-          </button>
+        <tbody>
+          {menus.map((menu) => (
+            <tr key={menu.id}>
+              <td>{menu.name}</td>
 
-          <button
-            onClick={() => {
-              setTargetId(menu.id);
-              setShowModal(true);
-            }}
-          >
-            削除
-          </button>
-        </div>
-      ))}
+              <td>{menu.price}円</td>
+
+              <td>
+                <button
+                  onClick={() => {
+                    setEditingMenuId(menu.id);
+                    setMenuName(menu.name);
+                    setMenuPrice(menu.price);
+                  }}
+                >
+                  編集
+                </button>
+
+                <button
+                  onClick={() => {
+                    setTargetId(menu.id);
+                    setShowModal(true);
+                  }}
+                >
+                  削除
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
       {/* 削除モーダル */}
       {showModal && (

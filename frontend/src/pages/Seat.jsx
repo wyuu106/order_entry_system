@@ -57,6 +57,8 @@ function Seat() {
 
   return (
     <div>
+      <h2>席一覧</h2>
+
       <button onClick={() => 
         navigate(
           role === "admin"
@@ -67,14 +69,11 @@ function Seat() {
         戻る
       </button>
 
-      <h2>席一覧</h2>
-
       <table border="1">
         <thead>
           <tr>
             <th>席名</th>
             <th>状態</th>
-            <th>操作</th>
           </tr>
         </thead>
 
@@ -88,8 +87,6 @@ function Seat() {
                   {seat.name}
                 </button>
               </td>
-
-              <td>{seat.status}</td>
 
               <td>
                 <select

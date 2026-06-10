@@ -20,7 +20,12 @@ function AdminCategory() {
   const getCategories = async () => {
     try{
       const res = await axios.get(
-        "http://localhost:8000/categories"
+        "http://localhost:8000/categories",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       );
 
       setCategories(res.data);
@@ -107,39 +112,6 @@ function AdminCategory() {
         戻る
       </button>
 
-      {/* 一覧 */}
-      {categories.map((category) => (
-        <div key={category.id}>
-          <span>{category.name}</span>
-
-          <button
-            onClick={() => navigate(`/admin/menus?categoryId=${category.id}`)}
-          >
-            メニューを見る
-          </button>
-
-          <button
-            onClick={() => {
-              setEditingCategoryId(category.id);
-              setCategoryName(category.name);
-            }}
-          >
-            編集
-          </button>
-
-          <button
-            onClick={() => {
-              setTargetId(category.id);
-              setShowModal(true);
-            }}
-          >
-            削除
-          </button>
-        </div>  
-      ))}
-
-      <hr />
-
       {/* フォーム（新規・編集共通） */}
       <input
         value={categoryName}
@@ -150,6 +122,62 @@ function AdminCategory() {
       <button onClick={editingCategoryId ? updateCategory : createCategory}>
         {editingCategoryId ? "更新" : "追加"}
       </button>
+
+      <hr />
+
+      {/* 一覧 */}
+      <table
+        border="1"
+        cellPadding="8"
+        style={{
+          margin: "0 auto",
+          borderCollapse: "collapse",
+          textAlign: "center",
+        }}
+      >
+        <thead>
+          <tr>
+            <th>カテゴリ名</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {categories.map((category) => (
+            <tr key={category.id}>
+              <td>{category.name}</td>
+
+              <td>
+                <button
+                  onClick={() =>
+                    navigate(`/admin/menus?categoryId=${category.id}`)
+                  }
+                >
+                  メニューを見る
+                </button>
+
+                <button
+                  onClick={() => {
+                    setEditingCategoryId(category.id);
+                    setCategoryName(category.name);
+                  }}
+                >
+                  編集
+                </button>
+
+                <button
+                  onClick={() => {
+                    setTargetId(category.id);
+                    setShowModal(true);
+                  }}
+                >
+                  削除
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
 
       {/* 削除モーダル */}
       {showModal && (

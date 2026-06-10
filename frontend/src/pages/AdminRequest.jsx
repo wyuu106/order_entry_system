@@ -83,11 +83,11 @@ function AdminRequest() {
 
   return (
     <div>
+      <h1>ユーザー登録申請一覧</h1>
+
       <button onClick={() => navigate("/admin")}>
         戻る
       </button>
-
-      <h1>ユーザー登録申請一覧</h1>
 
       {requests.length === 0 ? (
         <p>申請はありません</p>

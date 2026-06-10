@@ -7,7 +7,7 @@ import axios from "axios";
 function Order() {
   const navigate = useNavigate();
 
-  const { seat_id } = useParams();
+  const { seatId } = useParams();
 
   const [session, setSession] = useState(null);
   const [orders, setOrders] = useState([]);
@@ -25,7 +25,7 @@ function Order() {
   const fetchSession = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:8000/seat_session/${seat_id}`,
+        `http://localhost:8000/seat_session/${seatId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -48,10 +48,12 @@ function Order() {
   // セッション作成
   const createSession = async () => {
     try {
+      console.log(seatId);
+
       const res = await axios.post(
         "http://localhost:8000/seat_session",
         {
-          seat_id: Number(seat_id),
+          seat_id: Number(seatId),
         },
         {
           headers: {
@@ -62,8 +64,8 @@ function Order() {
 
       setSession(res.data);
 
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -81,8 +83,8 @@ function Order() {
 
       setOrders(res.data);
 
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -100,8 +102,8 @@ function Order() {
 
       setTotal(res.data);
 
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -128,8 +130,8 @@ function Order() {
       setMenuId("");
       setQuantity(1);
 
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -173,8 +175,8 @@ function Order() {
       fetchOrders(session.id);
       fetchTotal(session.id);
 
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -197,8 +199,8 @@ function Order() {
       setOrders([]);
       setTotal(0);
 
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error.response.data);
     }
   };
 
@@ -208,13 +210,13 @@ function Order() {
 
   return (
     <div>
-      <button onClick={() => navigate("/staff")}>
+      <h2>注文画面</h2>
+
+      <button onClick={() => navigate("/seats")}>
         戻る
       </button>
 
-      <h2>注文画面</h2>
-
-      <p>席ID : {seat_id}</p>
+      <p>席ID : {seatId}</p>
 
       {!session ? (
         <button onClick={createSession}>

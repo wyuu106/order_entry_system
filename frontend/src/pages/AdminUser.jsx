@@ -45,11 +45,11 @@ function AdminUser() {
 
   return (
     <div>
+      <h1>ユーザー管理</h1>
+
       <button onClick={() => navigate("/admin")}>
         戻る
       </button>
-
-      <h1>ユーザー管理</h1>
 
       <table border="1" cellPadding="8">
         <thead>

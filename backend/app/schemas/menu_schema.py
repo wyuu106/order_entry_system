@@ -17,5 +17,5 @@ class MenuCreateResponse(BaseModel):
 
     id: int
     name: str
-    price: int
+    price: int | None
     category_id: int
