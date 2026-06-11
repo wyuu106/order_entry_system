@@ -27,6 +27,7 @@ class OrderCreateResponse(BaseModel):
     id: int
     seat_name: str
     menu_name: str
+    price: int | None
     quantity: int
     user_name: str
 

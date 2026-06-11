@@ -2,119 +2,10 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from fastapi import Response, HTTPException, status
 from datetime import datetime
-from app.models import order_model, seat_model, menu_model, user_model
+from app.utils.name_util import get_seat_name, get_menu_name, get_user_name
+from app.models import order_model, menu_model, user_model
 from app.schemas import order_schema
-from app.cruds import seat_crud
 
-# セッション作成
-def create_session(
-        seat_session: order_schema.SessionCreate,
-        db: Session
-) -> order_schema.SessionCreateResponse:
-    stmt = select(order_model.SeatSession).where(
-        order_model.SeatSession.seat_id == seat_session.seat_id,
-        order_model.SeatSession.end_at.is_(None)
-    )
-    exist_session = db.execute(stmt).scalar_one_or_none()
-    if exist_session:
-        raise HTTPException(status_code=400, detail='この席は使用中です')
-    
-    seat_name = db.execute(select(seat_model.Seat.name).where(
-        seat_model.Seat.id == seat_session.seat_id
-    )).scalar_one_or_none()
-
-    if not seat_name:
-        raise HTTPException(status_code=404, detail='該当する席が見つかりません')
-    
-    db_session = order_model.SeatSession(
-        seat_id = seat_session.seat_id
-    )
-
-    db.add(db_session)
-    db.commit()
-    db.refresh(db_session)
-
-    seat_crud.update_seat_status(seat_session.seat_id, 'occupied', db)
-
-    return order_schema.SessionCreateResponse(
-        id = db_session.id,
-        seat_name = seat_name,
-        start_at = db_session.start_at
-    )
-
-# 席ごとのセッションの有無を判定
-def get_session(seat_id: int, db: Session) -> order_schema.SessionCreateResponse | None:
-    stmt = select(order_model.SeatSession).where(
-        order_model.SeatSession.seat_id == seat_id,
-        order_model.SeatSession.end_at.is_(None)
-    )
-    db_session = db.execute(stmt).scalar_one_or_none()
-
-    if not db_session:
-        return None
-    
-    seat_name = db.execute(select(seat_model.Seat.name).where(
-        seat_model.Seat.id == db_session.seat_id
-    )).scalar_one_or_none()
-
-    if not seat_name:
-        raise HTTPException(status_code=404, detail='該当する席が見つかりません')
-    
-    return order_schema.SessionCreateResponse(
-        id = db_session.id,
-        seat_name = seat_name,
-        start_at = db_session.start_at
-    )
-
-# セッション終了
-def end_session(session_id: int, db: Session) -> order_schema.SessionResponse:
-    stmt = select(order_model.SeatSession).where(
-        order_model.SeatSession.id == session_id,
-        order_model.SeatSession.end_at.is_(None)
-    )
-    db_session = db.execute(stmt).scalar_one_or_none()
-
-    if not db_session:
-        raise HTTPException(status_code=404, detail='該当するセッションが見つかりません')
-
-    db_session.end_at = datetime.utcnow()
-
-    db.commit()
-    db.refresh(db_session)
-
-    seat_name = db.execute(select(seat_model.Seat.name).where(
-        seat_model.Seat.id == db_session.seat_id
-    )).scalar_one_or_none()
-
-    return order_schema.SessionResponse(
-        seat_name = seat_name,
-        message = '終了'
-    )
-
-# 合計金額取得
-def get_total(session_id: int, db: Session) -> int:
-    stmt = select(
-        order_model.Order.menu_id,
-        order_model.Order.quantity
-    ).where(
-        order_model.Order.session_id == session_id
-    )
-    orders = db.execute(stmt).scalars().all()
-
-    total = 0
-
-    for menu_id, quantity in orders:
-        price = db.execute(select(menu_model.Menu.price).where(
-            menu_model.Menu.id == menu_id
-        )).scalar_one_or_none()
-
-        if price is None:
-            raise HTTPException(status_code=400, detail='値段が設定されていない商品があります')
-
-        total += price * quantity
-
-    return total
-    
 # オーダー作成
 def create_order(
         order: order_schema.OrderCreate,
@@ -142,19 +33,9 @@ def create_order(
     if not seat_id:
         raise HTTPException(status_code=404, detail='該当するセッションが見つかりません')
     
-    seat_name = db.execute(select(seat_model.Seat.name).where(
-        seat_model.Seat.id == seat_id
-    )).scalar_one_or_none()
+    seat_name = get_seat_name(seat_id, db)
 
-    if not seat_name:
-        raise HTTPException(status_code=404, detail='該当する席が見つかりません')
-
-    menu_name = db.execute(select(menu_model.Menu.name).where(
-        menu_model.Menu.id == order.menu_id
-    )).scalar_one_or_none()
-
-    if not menu_name:
-        raise HTTPException(status_code=404, detail='該当するメニューが見つかりません')
+    menu_name = get_menu_name(db_order.menu_id, db)
 
     db.add(db_order)
     db.commit()
@@ -164,6 +45,7 @@ def create_order(
         id = db_order.id,
         seat_name = seat_name,
         menu_name = menu_name,
+        price = price,
         quantity = db_order.quantity,
         user_name = current_user.name
     )
@@ -182,23 +64,18 @@ def get_orders(session_id: int, db: Session) -> list[order_schema.OrderCreateRes
         order_model.SeatSession.end_at.is_(None)
     )).scalar_one_or_none()
 
-    seat_name = db.execute(select(seat_model.Seat.name).where(
-        seat_model.Seat.id == seat_id
-    )).scalar_one_or_none()
+    seat_name = get_seat_name(seat_id, db)
 
     for order in db_orders:
-        menu_name = db.execute(select(menu_model.Menu.name).where(
-            menu_model.Menu.id == order.menu_id
-        )).scalar_one_or_none()
+        menu_name = get_menu_name(order.menu_id, db)
         
-        user_name = db.execute(select(user_model.User.name).where(
-            user_model.User.id == order.user_id
-        )).scalar_one_or_none()
-        
+        user_name = get_user_name(order.user_id, db)
+
         res.append(order_schema.OrderCreateResponse(
             id = order.id,
             seat_name = seat_name,
             menu_name = menu_name,
+            price = order.price,
             quantity = order.quantity,
             user_name = user_name
         ))
@@ -246,6 +123,9 @@ def update_price(order_id: int, price: int, db: Session) -> int:
         order_model.Order.id == order_id
     )
     db_order = db.execute(stmt).scalar_one_or_none()
+
+    if not db_order:
+        raise HTTPException(status_code=404, detail='該当する注文が見つかりません')
 
     db_order.price = price
 
