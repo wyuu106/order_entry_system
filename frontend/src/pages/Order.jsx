@@ -107,34 +107,6 @@ function Order() {
     }
   };
 
-  // オーダー追加
-  const createOrder = async () => {
-    try {
-      await axios.post(
-        "http://localhost:8000/order",
-        {
-          session_id: session.id,
-          menu_id: Number(menuId),
-          quantity: Number(quantity),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      fetchOrders(session.id);
-      fetchTotal(session.id);
-
-      setMenuId("");
-      setQuantity(1);
-
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   // オーダー削除
   const deleteOrder = async (orderId) => {
     try {
@@ -150,8 +122,8 @@ function Order() {
       fetchOrders(session.id);
       fetchTotal(session.id);
 
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -216,7 +188,7 @@ function Order() {
         戻る
       </button>
 
-      <p>席ID : {seatId}</p>
+      <p>席名 : {session?.seat_name}</p>
 
       {!session ? (
         <button onClick={createSession}>
@@ -226,17 +198,11 @@ function Order() {
         <div>
           <h3>セッション情報</h3>
 
-          <p>
-            セッションID : {session.id}
-          </p>
-
           <button onClick={endSession}>
             セッション終了
           </button>
 
           <hr />
-
-          <h3>オーダー追加</h3>
 
           <input
             type="number"
@@ -252,7 +218,7 @@ function Order() {
             onChange={(e) => setQuantity(e.target.value)}
           />
 
-          <button onClick={createOrder}>
+          <button onClick={() => navigate(`/order/${session.id}/categories`)}>
             追加
           </button>
 

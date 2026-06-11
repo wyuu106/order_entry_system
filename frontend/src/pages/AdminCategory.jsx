@@ -35,9 +35,9 @@ function AdminCategory() {
   };
 
   // 画面が最初に表示された時にgetCategoriesを実行
-    useEffect(() => {
-      getCategories();
-    }, []);
+  useEffect(() => {
+    getCategories();
+  }, []);
 
   // カテゴリ作成
   const createCategory = async () => {

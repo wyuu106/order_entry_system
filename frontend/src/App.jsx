@@ -12,6 +12,8 @@ import AdminRequest from "./pages/AdminRequest"
 import Staff from "./pages/Staff"
 import Seat from "./pages/Seat"
 import Order from "./pages/Order"
+import OrderCategory from "./pages/OrderCategory"
+import OrderManu from "./pages/OrderMenu"
 
 function App() {
   return (
@@ -80,6 +82,18 @@ function App() {
         <Route
           path="/order/:seatId"
           element={<Order />}
+        />
+
+        {/* オーダーカテゴリー画面 */}
+        <Route
+          path="/order/:sessionId/categories"
+          element={<OrderCategory />}
+        />
+
+        {/* オーダーメニュー画面 */}
+        <Route
+          path="/order/:sessionId/menus/:categoryId"
+          element={<OrderMenu />}
         />
       </Routes>
     </BrowserRouter>
