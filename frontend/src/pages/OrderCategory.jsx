@@ -6,7 +6,7 @@ import axios from "axios";
 
 function OrderCategory() {
   const navigate = useNavigate();
-  const { sessionId } = useParams();
+  const { seatId, sessionId } = useParams();
   
   const token = localStorage.getItem("token");
 
@@ -39,7 +39,7 @@ function OrderCategory() {
     <div>
       <h1>カテゴリ一覧</h1>
 
-      <button onClick={() => navigate("/admin")}>
+      <button onClick={() => navigate(`/orders/${seatId}`)}>
         戻る
       </button>
 
@@ -68,7 +68,7 @@ function OrderCategory() {
               <td>
                 <button
                   onClick={() =>
-                    navigate(`/order/${sessionId}/menus/${category.id}`)
+                    navigate(`/orders/${seatId}/${sessionId}/menus/${category.id}`)
                   }
                 >
                   メニューを見る
@@ -82,3 +82,5 @@ function OrderCategory() {
   );
 
 }
+
+export default OrderCategory;

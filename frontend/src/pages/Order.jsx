@@ -13,9 +13,6 @@ function Order() {
   const [orders, setOrders] = useState([]);
   const [total, setTotal] = useState(0);
 
-  const [menuId, setMenuId] = useState("");
-  const [quantity, setQuantity] = useState(1);
-
   const [showModal, setShowModal] = useState(false);
   const [targetId, setTargetId] = useState(null);
 
@@ -92,7 +89,7 @@ function Order() {
   const fetchTotal = async (sessionId) => {
     try {
       const res = await axios.get(
-        `http://localhost:8000/total?session_id=${sessionId}`,
+        `http://localhost:8000/total/${sessionId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -171,6 +168,8 @@ function Order() {
       setOrders([]);
       setTotal(0);
 
+      navigate(`/seats/`)
+
     } catch (error) {
       console.log(error.response.data);
     }
@@ -204,21 +203,7 @@ function Order() {
 
           <hr />
 
-          <input
-            type="number"
-            placeholder="menu_id"
-            value={menuId}
-            onChange={(e) => setMenuId(e.target.value)}
-          />
-
-          <input
-            type="number"
-            placeholder="数量"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-          />
-
-          <button onClick={() => navigate(`/order/${session.id}/categories`)}>
+          <button onClick={() => navigate(`/orders/${seatId}/${session.id}/categories`)}>
             追加
           </button>
 
@@ -240,7 +225,6 @@ function Order() {
                   <th>商品</th>
                   <th>数量</th>
                   <th>金額</th>
-                  <th>状態</th>
                   <th>操作</th>
                 </tr>
               </thead>
@@ -255,8 +239,6 @@ function Order() {
                     <td>{order.quantity}</td>
 
                     <td>{order.price}</td>
-
-                    <td>{order.status}</td>
 
                     <td>
                       <button

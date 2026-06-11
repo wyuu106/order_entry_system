@@ -13,7 +13,7 @@ import Staff from "./pages/Staff"
 import Seat from "./pages/Seat"
 import Order from "./pages/Order"
 import OrderCategory from "./pages/OrderCategory"
-import OrderManu from "./pages/OrderMenu"
+import OrderMenu from "./pages/OrderMenu"
 
 function App() {
   return (
@@ -80,19 +80,19 @@ function App() {
 
         {/* オーダー画面 */}
         <Route
-          path="/order/:seatId"
+          path="/orders/:seatId"
           element={<Order />}
         />
 
         {/* オーダーカテゴリー画面 */}
         <Route
-          path="/order/:sessionId/categories"
+          path="/orders/:seatId/:sessionId/categories"
           element={<OrderCategory />}
         />
 
         {/* オーダーメニュー画面 */}
         <Route
-          path="/order/:sessionId/menus/:categoryId"
+          path="/orders/:seatId/:sessionId/menus/:categoryId"
           element={<OrderMenu />}
         />
       </Routes>

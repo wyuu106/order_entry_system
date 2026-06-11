@@ -21,6 +21,10 @@ function Seat() {
           },
         }
       );
+      
+      setSeats(
+        response.data.sort((a, b) => a.id - b.id)
+      );
 
       setSeats(response.data);
     } catch (error) {
@@ -82,7 +86,7 @@ function Seat() {
             <tr key={seat.id}>
               <td>
                 <button
-                  onClick={() => navigate(`/order/${seat.id}`)}
+                  onClick={() => navigate(`/orders/${seat.id}`)}
                 >
                   {seat.name}
                 </button>
