@@ -47,7 +47,8 @@ def create_order(
         menu_name = menu_name,
         price = price,
         quantity = db_order.quantity,
-        user_name = current_user.name
+        user_name = current_user.name,
+        status = db_order.status
     )
 
 # オーダー一覧
@@ -77,7 +78,8 @@ def get_orders(session_id: int, db: Session) -> list[order_schema.OrderCreateRes
             menu_name = menu_name,
             price = order.price,
             quantity = order.quantity,
-            user_name = user_name
+            user_name = user_name,
+            status = order.status
         ))
 
     return res

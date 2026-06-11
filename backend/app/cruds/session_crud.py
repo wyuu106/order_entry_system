@@ -83,24 +83,19 @@ def end_session(session_id: int, db: Session) -> order_schema.SessionResponse:
 # 合計金額取得
 def get_total(session_id: int, db: Session) -> int:
     stmt = select(
-        order_model.Order.menu_id,
+        order_model.Order.price,
         order_model.Order.quantity
     ).where(
         order_model.Order.session_id == session_id
     )
-    orders = db.execute(stmt).scalars().all()
+    db_orders = db.execute(stmt).all()
 
     total = 0
 
-    for menu_id, quantity in orders:
-        price = db.execute(select(menu_model.Menu.price).where(
-            menu_model.Menu.id == menu_id
-        )).scalar_one_or_none()
-
+    for price, quantity in db_orders:
         if price is None:
             raise HTTPException(status_code=400, detail='値段が設定されていない商品があります')
 
         total += price * quantity
 
     return total
-

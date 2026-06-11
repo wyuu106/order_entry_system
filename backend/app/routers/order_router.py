@@ -40,7 +40,7 @@ def end_session(
     return session_crud.end_session(session_id, db)
 
 # 合計金額取得
-@router.get('/total', response_model=int)
+@router.get('/total/{session_id}', response_model=int)
 def get_total(
     session_id: int,
     db: Session = Depends(get_db),

@@ -30,6 +30,7 @@ class OrderCreateResponse(BaseModel):
     price: int | None
     quantity: int
     user_name: str
+    status: str
 
 class OrderUpdate(BaseModel):
     id: int
