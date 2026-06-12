@@ -32,6 +32,8 @@ class OrderCreateResponse(BaseModel):
     user_name: str
     status: str
 
-class OrderUpdate(BaseModel):
-    id: int
-    status: str
+class SeatOrderResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    seat_name: str
+    orders: list[OrderCreateResponse]

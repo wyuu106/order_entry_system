@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from fastapi import Response, HTTPException, status
 from datetime import datetime
-from app.utils.name_util import get_seat_name, get_menu_name, get_user_name
+from app.utils.order_util import get_seat_name, get_menu_name, get_user_name
 from app.models import order_model, menu_model, user_model
 from app.schemas import order_schema
 from app.cruds import seat_crud

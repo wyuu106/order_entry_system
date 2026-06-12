@@ -57,14 +57,22 @@ def create_order(
 ):
     return order_crud.create_order(order, current_user, db)
 
-# オーダー一覧
+# セッションごとのオーダー一覧
 @router.get('/orders/{session_id}', response_model=list[order_schema.OrderCreateResponse])
-def get_orders(
+def get_session_orders(
     session_id: int,
     db: Session = Depends(get_db),
     current_user: user_model.User = Depends(get_current_user)
 ):
-    return order_crud.get_orders(session_id, db)
+    return order_crud.get_session_orders(session_id, db)
+
+# 席ごとのオーダー一覧
+@router.get('/seat_orders/', response_model=list[order_schema.SeatOrderResponse])
+def get_seat_orders(
+    db: Session = Depends(get_db),
+    current_user: user_model.User = Depends(get_current_user)
+):
+    return order_crud.get_seat_orders(db)
 
 # オーダー取り消し（アドミンのみ）
 @router.delete('/order')

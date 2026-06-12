@@ -1,9 +1,8 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from fastapi import Response, HTTPException, status
-from datetime import datetime
-from app.utils.name_util import get_seat_name, get_menu_name, get_user_name
-from app.models import order_model, menu_model, user_model
+from app.utils.order_util import get_seat_name, create_order_response
+from app.models import order_model, menu_model, user_model, seat_model
 from app.schemas import order_schema
 
 # オーダー作成
@@ -35,24 +34,16 @@ def create_order(
     
     seat_name = get_seat_name(seat_id, db)
 
-    menu_name = get_menu_name(db_order.menu_id, db)
-
     db.add(db_order)
     db.commit()
     db.refresh(db_order)
 
-    return order_schema.OrderCreateResponse(
-        id = db_order.id,
-        seat_name = seat_name,
-        menu_name = menu_name,
-        price = price,
-        quantity = db_order.quantity,
-        user_name = current_user.name,
-        status = db_order.status
-    )
+    res = create_order_response(db_order, seat_name, db)
 
-# オーダー一覧
-def get_orders(session_id: int, db: Session) -> list[order_schema.OrderCreateResponse]:
+    return res
+
+# セッションごとのオーダー一覧
+def get_session_orders(session_id: int, db: Session) -> list[order_schema.OrderCreateResponse]:
     stmt = select(order_model.Order).where(
         order_model.Order.session_id == session_id
     )
@@ -65,21 +56,41 @@ def get_orders(session_id: int, db: Session) -> list[order_schema.OrderCreateRes
         order_model.SeatSession.end_at.is_(None)
     )).scalar_one_or_none()
 
+    if not seat_id:
+        raise HTTPException(status_code=404, detail='該当するセッションが見つかりません')
+    
     seat_name = get_seat_name(seat_id, db)
 
     for order in db_orders:
-        menu_name = get_menu_name(order.menu_id, db)
-        
-        user_name = get_user_name(order.user_id, db)
+        res.append(create_order_response(order, seat_name, db))
 
-        res.append(order_schema.OrderCreateResponse(
-            id = order.id,
-            seat_name = seat_name,
-            menu_name = menu_name,
-            price = order.price,
-            quantity = order.quantity,
-            user_name = user_name,
-            status = order.status
+    return res
+
+# 席ごとのオーダー一覧
+def get_seat_orders(db: Session) -> list[order_schema.SeatOrderResponse]:
+    stmt1 = select(seat_model.Seat).order_by(seat_model.Seat.id)
+    db_seats = db.execute(stmt1).scalars().all()
+
+    res = []
+
+    # 各席について
+    for seat in db_seats:
+        stmt2 = select(order_model.SeatSession).where(
+            order_model.SeatSession.seat_id == seat.id,
+            order_model.SeatSession.end_at.is_(None)
+        )
+        db_session = db.execute(stmt2).scalar_one_or_none()
+
+        orders = []
+
+        # セッションがある場合、セッションごとのオーダー取得
+        if db_session:
+            orders = get_session_orders(db_session.id, db)
+
+        res.append(order_schema.SeatOrderResponse(
+            seat_id = seat.id,
+            seat_name = seat.name,
+            orders = orders
         ))
 
     return res
