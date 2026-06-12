@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { getErrorMessage } from "../utils/error_util";
 
 function OrderCategory() {
   const navigate = useNavigate();
@@ -11,6 +12,8 @@ function OrderCategory() {
   const token = localStorage.getItem("token");
 
   const [categories, setCategories] = useState([]);
+
+  const [errorMessage, setErrorMessage] = useState("");
 
   // カテゴリ一覧
   const getCategories = async () => {
@@ -25,9 +28,14 @@ function OrderCategory() {
       );
 
       setCategories(res.data);
-      } catch (error) {
+    
+    } catch (error) {
       console.log(error);
-      }
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
+    }
   };
 
   // 画面が最初に表示された時にgetCategoriesを実行
@@ -78,6 +86,13 @@ function OrderCategory() {
           ))}
         </tbody>
       </table>
+
+      {/* エラー */}
+      {errorMessage && (
+        <p style={{ color: "red" }}>
+          {errorMessage}
+        </p>
+      )}
     </div>
   );
 

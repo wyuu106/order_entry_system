@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { getErrorMessage } from "../utils/error_util";
 
 function OrderMenu() {
   const navigate = useNavigate();
@@ -10,6 +11,8 @@ function OrderMenu() {
   const { seatId, sessionId, categoryId } = useParams();
 
   const [menus, setMenus] = useState([]);
+
+  const [errorMessage, setErrorMessage] = useState("");
 
   // 選択中の商品一覧
   const [cart, setCart] = useState([]);
@@ -36,6 +39,10 @@ function OrderMenu() {
 
     } catch (error) {
       console.log(error);
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
     }
   };
 
@@ -118,6 +125,10 @@ function OrderMenu() {
 
     } catch (error) {
       console.log(error);
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
     }
   };
 
@@ -278,6 +289,13 @@ function OrderMenu() {
             </button>
           </div>
         </div>
+      )}
+
+      {/* エラー */}
+      {errorMessage && (
+        <p style={{ color: "red" }}>
+          {errorMessage}
+        </p>
       )}
     </div>
   );

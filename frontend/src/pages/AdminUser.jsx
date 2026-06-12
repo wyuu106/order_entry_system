@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { getErrorMessage } from "../utils/error_util";
 
 function AdminUser() {
   const navigate = useNavigate();
@@ -13,13 +14,20 @@ function AdminUser() {
   const [showModal, setShowModal] = useState(false);
   const [targetId, setTargetId] = useState(null);
 
+  const [errorMessage, setErrorMessage] = useState("");
+
   // ユーザー一覧取得
   const fetchUsers = async () => {
     try {
       const res = await axios.get("http://localhost:8000/users");
       setUsers(res.data);
+    
     } catch (error) {
       console.log(error);
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
     }
   };
 
@@ -37,9 +45,13 @@ function AdminUser() {
       });
 
       fetchUsers();
+    
     } catch (error) {
       console.log(error);
-      alert("削除失敗");
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
     }
   };
 
@@ -97,6 +109,13 @@ function AdminUser() {
             キャンセル
           </button>
         </div>
+      )}
+
+      {/* エラー */}
+      {errorMessage && (
+        <p style={{ color: "red" }}>
+          {errorMessage}
+        </p>
       )}
     </div>
   );

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { getErrorMessage } from "../utils/error_util";
 
 function AdminSeat() {
   const navigate = useNavigate();
@@ -13,6 +14,8 @@ function AdminSeat() {
 
   const [showModal, setShowModal] = useState(false);
   const [targetId, setTargetId] = useState(null);
+
+  const [errorMessage, setErrorMessage] = useState("");
 
   const token = localStorage.getItem("token");
 
@@ -29,8 +32,13 @@ function AdminSeat() {
       );
 
       setSeats(response.data);
+    
     } catch (error) {
       console.log(error);
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
     }
   };
 
@@ -57,8 +65,13 @@ function AdminSeat() {
       setName("");
       setShowCreate(false);
       getSeats();
+    
     } catch (error) {
-      alert(error.response.data.detail);
+      console.log(error);
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
     }
   };
 
@@ -75,8 +88,13 @@ function AdminSeat() {
       );
 
       getSeats();
+    
     } catch (error) {
-      alert(error.response.data.detail);
+      console.log(error);
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
     }
   };
 
@@ -181,6 +199,13 @@ function AdminSeat() {
             キャンセル
           </button>
         </div>
+      )}
+
+      {/* エラー */}
+      {errorMessage && (
+        <p style={{ color: "red" }}>
+          {errorMessage}
+        </p>
       )}
     </div>
   );

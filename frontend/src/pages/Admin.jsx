@@ -8,6 +8,14 @@ function Admin() {
   return (
     <div>
       <h1>管理者メニュー</h1>
+
+      <button
+        onClick={() => navigate("/admin/orders")}
+      >
+        注文一覧
+      </button>
+
+      <br />
       
       <button
         onClick={() => navigate("/seats")}

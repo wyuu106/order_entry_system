@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { getErrorMessage } from "../utils/error_util";
 
 function AdminCategory() {
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ function AdminCategory() {
 
   const [showModal, setShowModal] = useState(false);
   const [targetId, setTargetId] = useState(null);
+
+  const [errorMessage, setErrorMessage] = useState("");
 
   // カテゴリ一覧
   const getCategories = async () => {
@@ -57,9 +60,13 @@ function AdminCategory() {
       setCategoryName("");
       getCategories();
 
-      } catch (error) {
+    } catch (error) {
       console.log(error);
-      }
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
+    }
   };
   
   // カテゴリ更新
@@ -81,9 +88,13 @@ function AdminCategory() {
       setCategoryName("");
       getCategories();
 
-      } catch (error) {
+    } catch (error) {
       console.log(error);
-      }
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
+    }
   };
 
   // カテゴリ削除
@@ -99,9 +110,13 @@ function AdminCategory() {
 
       getCategories();
 
-      } catch (error) {
+    } catch (error) {
       console.log(error);
-      }
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
+    }
   };
 
   return(
@@ -197,6 +212,13 @@ function AdminCategory() {
             キャンセル
           </button>
         </div>
+      )}
+
+      {/* エラー */}
+      {errorMessage && (
+        <p style={{ color: "red" }}>
+          {errorMessage}
+        </p>
       )}
     </div>
   );

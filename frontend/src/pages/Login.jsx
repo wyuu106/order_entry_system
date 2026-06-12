@@ -3,13 +3,16 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { getErrorMessage } from "../utils/error_util";
 
 function Login() {
+  const navigate = useNavigate();
+
   const [users, setUsers] = useState([]);
   const [selectedUsername, setSelectedUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState("");
 
   // ユーザー一覧取得
   useEffect(() => {
@@ -43,7 +46,11 @@ function Login() {
       navigate(res.data.role === "admin" ? "/admin" : "/staff");
 
     } catch (error) {
-      alert(error.response.data.detail);
+      console.log(error);
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
     }
   };
 
@@ -89,6 +96,13 @@ function Login() {
       <button onClick={() => navigate("/register")}>
         ユーザー登録申請へ
       </button>
+
+      {/* エラー */}
+      {errorMessage && (
+        <p style={{ color: "red" }}>
+          {errorMessage}
+        </p>
+      )}
     </div>
   );
 }

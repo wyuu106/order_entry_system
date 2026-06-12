@@ -3,10 +3,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { getErrorMessage } from "../utils/error_util";
 
 function Seat() {
   const [seats, setSeats] = useState([]);
   const navigate = useNavigate();
+
+  const [errorMessage, setErrorMessage] = useState("");
 
   const role = localStorage.getItem("role");
 
@@ -21,14 +24,19 @@ function Seat() {
           },
         }
       );
-      
+
       setSeats(
         response.data.sort((a, b) => a.id - b.id)
       );
 
       setSeats(response.data);
+    
     } catch (error) {
       console.log(error);
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
     }
   };
 
@@ -54,8 +62,13 @@ function Seat() {
       );
 
       getSeats();
+    
     } catch (error) {
       console.log(error);
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
     }
   };
 
@@ -119,6 +132,13 @@ function Seat() {
           ))}
         </tbody>
       </table>
+
+      {/* エラー */}
+      {errorMessage && (
+        <p style={{ color: "red" }}>
+          {errorMessage}
+        </p>
+      )}
     </div>
   );
 }

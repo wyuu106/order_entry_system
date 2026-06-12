@@ -3,11 +3,14 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { getErrorMessage } from "../utils/error_util";
 
 function AdminRequest() {
   const navigate = useNavigate();
 
   const [requests, setRequests] = useState([]);
+
+  const [errorMessage, setErrorMessage] = useState("");
 
   const token = localStorage.getItem("token");
 
@@ -27,6 +30,10 @@ function AdminRequest() {
 
     } catch (error) {
       console.log(error);
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
     }
   };
     
@@ -53,9 +60,13 @@ function AdminRequest() {
 
       getRequests();
 
-      } catch (error) {
+    } catch (error) {
       console.log(error);
-      }
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
+    }
   };
 
   // 申請却下
@@ -76,9 +87,13 @@ function AdminRequest() {
 
       getRequests();
 
-      } catch (error) {
+    } catch (error) {
       console.log(error);
-      }
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
+    }
   };
 
   return (
@@ -117,6 +132,13 @@ function AdminRequest() {
             </button>
           </div>
         ))
+      )}
+
+      {/* エラー */}
+      {errorMessage && (
+        <p style={{ color: "red" }}>
+          {errorMessage}
+        </p>
       )}
     </div>
   );

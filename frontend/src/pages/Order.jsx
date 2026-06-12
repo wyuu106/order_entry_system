@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { getErrorMessage } from "../utils/error_util";
 
 function Order() {
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ function Order() {
 
   const [showModal, setShowModal] = useState(false);
   const [targetId, setTargetId] = useState(null);
+
+  const [errorMessage, setErrorMessage] = useState("");
 
   const token = localStorage.getItem("token");
 
@@ -37,8 +40,12 @@ function Order() {
         fetchTotal(res.data.id);
       }
 
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      console.log(error);
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
     }
   };
 
@@ -63,6 +70,10 @@ function Order() {
 
     } catch (error) {
       console.log(error);
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
     }
   };
 
@@ -82,6 +93,10 @@ function Order() {
 
     } catch (error) {
       console.log(error);
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
     }
   };
 
@@ -101,6 +116,10 @@ function Order() {
 
     } catch (error) {
       console.log(error);
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
     }
   };
 
@@ -121,6 +140,10 @@ function Order() {
 
     } catch (error) {
       console.log(error);
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
     }
   };
 
@@ -146,6 +169,10 @@ function Order() {
 
     } catch (error) {
       console.log(error);
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
     }
   };
 
@@ -171,7 +198,11 @@ function Order() {
       navigate(`/seats/`)
 
     } catch (error) {
-      console.log(error.response.data);
+      console.log(error);
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
     }
   };
 
@@ -238,7 +269,7 @@ function Order() {
 
                     <td>{order.quantity}</td>
 
-                    <td>{order.price}</td>
+                    <td>{order.price ?? "未設定"}</td>
 
                     <td>
                       <button
@@ -284,6 +315,12 @@ function Order() {
         </div>
       )}
 
+      {/* エラー */}
+      {errorMessage && (
+        <p style={{ color: "red" }}>
+          {errorMessage}
+        </p>
+      )}
     </div>
   );
 }

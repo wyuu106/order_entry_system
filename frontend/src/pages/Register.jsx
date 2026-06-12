@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { getErrorMessage } from "../utils/error_util";
 
 function Register() {
   const navigate = useNavigate();
@@ -10,6 +11,8 @@ function Register() {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("")
+
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleRegister = async () => {
     try {
@@ -26,12 +29,13 @@ function Register() {
       // 入力欄を空にする
       setName("");
       setPassword("");
+    
     } catch (error) {
-      if (error.response) {
-        setMessage(error.response.data.detail);
-      } else {
-        setMessage("サーバーに接続できません");
-      }
+      console.log(error);
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
     }
   };
 
@@ -68,6 +72,13 @@ function Register() {
       </div>
 
       <p>{message}</p>
+
+      {/* エラー */}
+      {errorMessage && (
+        <p style={{ color: "red" }}>
+          {errorMessage}
+        </p>
+      )}
     </div>
   );
 }

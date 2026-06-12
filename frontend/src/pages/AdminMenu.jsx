@@ -1,6 +1,9 @@
+// 管理者メニュー管理画面
+
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { getErrorMessage } from "../utils/error_util";
 
 function AdminMenu() {
   const location = useLocation();
@@ -15,6 +18,8 @@ function AdminMenu() {
 
   const [showModal, setShowModal] = useState(false);
   const [targetId, setTargetId] = useState(null);
+
+  const [errorMessage, setErrorMessage] = useState("");
   
   /* lacation.search で送られてきたクエリパラメータを取得
   params = ?categoryId=${category.id} */
@@ -33,8 +38,13 @@ function AdminMenu() {
       );
 
       setMenus(res.data);
+
     } catch (error) {
       console.log(error);
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
     }
   };
   
@@ -69,8 +79,13 @@ function AdminMenu() {
       setMenuName("");
       setMenuPrice("");
       getMenus(selectedCategory);
+    
     } catch (error) {
       console.log(error);
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
     }
   };
 
@@ -95,8 +110,13 @@ function AdminMenu() {
       setMenuName("");
       setMenuPrice("");
       getMenus(selectedCategory);
+    
     } catch (error) {
       console.log(error);
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
     }
   };
 
@@ -113,8 +133,13 @@ function AdminMenu() {
       );
 
       getMenus(selectedCategory);
+    
     } catch (error) {
       console.log(error);
+
+      setErrorMessage(
+        getErrorMessage(error)
+      );
     }
   };
 
@@ -215,6 +240,13 @@ function AdminMenu() {
             キャンセル
           </button>
         </div>
+      )}
+
+      {/* エラー */}
+      {errorMessage && (
+        <p style={{ color: "red" }}>
+          {errorMessage}
+        </p>
       )}
     </div>
   );
