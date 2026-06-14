@@ -12,8 +12,6 @@ function Login() {
   const [selectedUsername, setSelectedUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const [errorMessage, setErrorMessage] = useState("");
-
   // ユーザー一覧取得
   useEffect(() => {
     const fetchUsers = async () => {
@@ -47,10 +45,7 @@ function Login() {
 
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -96,13 +91,6 @@ function Login() {
       <button onClick={() => navigate("/register")}>
         ユーザー登録申請へ
       </button>
-
-      {/* エラー */}
-      {errorMessage && (
-        <p style={{ color: "red" }}>
-          {errorMessage}
-        </p>
-      )}
     </div>
   );
 }

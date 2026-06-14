@@ -10,8 +10,6 @@ function AdminRequest() {
 
   const [requests, setRequests] = useState([]);
 
-  const [errorMessage, setErrorMessage] = useState("");
-
   const token = localStorage.getItem("token");
 
   // 申請一覧取得
@@ -30,10 +28,7 @@ function AdminRequest() {
 
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
     
@@ -62,10 +57,7 @@ function AdminRequest() {
 
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -89,10 +81,7 @@ function AdminRequest() {
 
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -132,13 +121,6 @@ function AdminRequest() {
             </button>
           </div>
         ))
-      )}
-
-      {/* エラー */}
-      {errorMessage && (
-        <p style={{ color: "red" }}>
-          {errorMessage}
-        </p>
       )}
     </div>
   );

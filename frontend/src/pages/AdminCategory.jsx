@@ -17,8 +17,6 @@ function AdminCategory() {
   const [showModal, setShowModal] = useState(false);
   const [targetId, setTargetId] = useState(null);
 
-  const [errorMessage, setErrorMessage] = useState("");
-
   // カテゴリ一覧
   const getCategories = async () => {
     try{
@@ -32,9 +30,10 @@ function AdminCategory() {
       );
 
       setCategories(res.data);
-      } catch (error) {
+    } catch (error) {
       console.log(error);
-      }
+      alert(getErrorMessage(error));
+    }
   };
 
   // 画面が最初に表示された時にgetCategoriesを実行
@@ -62,10 +61,7 @@ function AdminCategory() {
 
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
   
@@ -90,10 +86,7 @@ function AdminCategory() {
 
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -112,10 +105,7 @@ function AdminCategory() {
 
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -212,13 +202,6 @@ function AdminCategory() {
             キャンセル
           </button>
         </div>
-      )}
-
-      {/* エラー */}
-      {errorMessage && (
-        <p style={{ color: "red" }}>
-          {errorMessage}
-        </p>
       )}
     </div>
   );

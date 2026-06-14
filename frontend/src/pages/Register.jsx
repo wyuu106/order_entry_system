@@ -12,8 +12,6 @@ function Register() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("")
 
-  const [errorMessage, setErrorMessage] = useState("");
-
   const handleRegister = async () => {
     try {
       const response = await axios.post(
@@ -32,10 +30,7 @@ function Register() {
     
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -72,13 +67,6 @@ function Register() {
       </div>
 
       <p>{message}</p>
-
-      {/* エラー */}
-      {errorMessage && (
-        <p style={{ color: "red" }}>
-          {errorMessage}
-        </p>
-      )}
     </div>
   );
 }

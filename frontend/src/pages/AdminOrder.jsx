@@ -11,8 +11,6 @@ function Orders() {
 
   const [seatOrders, setSeatOrders] = useState([]);
 
-  const [errorMessage, setErrorMessage] = useState("");
-
   // 席ごとの注文一覧取得
   const getSeatOrders = async () => {
 
@@ -33,10 +31,7 @@ function Orders() {
 
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -109,13 +104,6 @@ function Orders() {
           </div>
         ))}
       </div>
-
-      {/* エラー */}
-      {errorMessage && (
-        <p style={{ color: "red" }}>
-          {errorMessage}
-        </p>
-      )}
     </div>
   );
 }

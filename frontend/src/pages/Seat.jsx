@@ -9,8 +9,6 @@ function Seat() {
   const [seats, setSeats] = useState([]);
   const navigate = useNavigate();
 
-  const [errorMessage, setErrorMessage] = useState("");
-
   const role = localStorage.getItem("role");
 
   // 席一覧取得
@@ -33,10 +31,7 @@ function Seat() {
     
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -65,10 +60,7 @@ function Seat() {
     
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -132,13 +124,6 @@ function Seat() {
           ))}
         </tbody>
       </table>
-
-      {/* エラー */}
-      {errorMessage && (
-        <p style={{ color: "red" }}>
-          {errorMessage}
-        </p>
-      )}
     </div>
   );
 }

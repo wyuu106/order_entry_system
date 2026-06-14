@@ -17,8 +17,6 @@ function Order() {
   const [showModal, setShowModal] = useState(false);
   const [targetId, setTargetId] = useState(null);
 
-  const [errorMessage, setErrorMessage] = useState("");
-
   const token = localStorage.getItem("token");
 
   // セッション取得
@@ -42,10 +40,7 @@ function Order() {
 
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -70,10 +65,7 @@ function Order() {
 
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -93,10 +85,7 @@ function Order() {
 
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -116,10 +105,7 @@ function Order() {
 
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -140,10 +126,7 @@ function Order() {
 
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -169,10 +152,7 @@ function Order() {
 
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -199,10 +179,7 @@ function Order() {
 
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -313,13 +290,6 @@ function Order() {
             キャンセル
           </button>
         </div>
-      )}
-
-      {/* エラー */}
-      {errorMessage && (
-        <p style={{ color: "red" }}>
-          {errorMessage}
-        </p>
       )}
     </div>
   );

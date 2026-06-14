@@ -18,8 +18,6 @@ function AdminMenu() {
 
   const [showModal, setShowModal] = useState(false);
   const [targetId, setTargetId] = useState(null);
-
-  const [errorMessage, setErrorMessage] = useState("");
   
   /* lacation.search で送られてきたクエリパラメータを取得
   params = ?categoryId=${category.id} */
@@ -41,10 +39,7 @@ function AdminMenu() {
 
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
   
@@ -82,10 +77,7 @@ function AdminMenu() {
     
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -113,10 +105,7 @@ function AdminMenu() {
     
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -136,10 +125,7 @@ function AdminMenu() {
     
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -240,13 +226,6 @@ function AdminMenu() {
             キャンセル
           </button>
         </div>
-      )}
-
-      {/* エラー */}
-      {errorMessage && (
-        <p style={{ color: "red" }}>
-          {errorMessage}
-        </p>
       )}
     </div>
   );

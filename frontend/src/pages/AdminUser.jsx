@@ -14,8 +14,6 @@ function AdminUser() {
   const [showModal, setShowModal] = useState(false);
   const [targetId, setTargetId] = useState(null);
 
-  const [errorMessage, setErrorMessage] = useState("");
-
   // ユーザー一覧取得
   const fetchUsers = async () => {
     try {
@@ -24,10 +22,7 @@ function AdminUser() {
     
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -48,10 +43,7 @@ function AdminUser() {
     
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -109,13 +101,6 @@ function AdminUser() {
             キャンセル
           </button>
         </div>
-      )}
-
-      {/* エラー */}
-      {errorMessage && (
-        <p style={{ color: "red" }}>
-          {errorMessage}
-        </p>
       )}
     </div>
   );

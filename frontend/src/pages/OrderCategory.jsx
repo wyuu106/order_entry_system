@@ -13,8 +13,6 @@ function OrderCategory() {
 
   const [categories, setCategories] = useState([]);
 
-  const [errorMessage, setErrorMessage] = useState("");
-
   // カテゴリ一覧
   const getCategories = async () => {
     try{
@@ -31,10 +29,7 @@ function OrderCategory() {
     
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -86,13 +81,6 @@ function OrderCategory() {
           ))}
         </tbody>
       </table>
-
-      {/* エラー */}
-      {errorMessage && (
-        <p style={{ color: "red" }}>
-          {errorMessage}
-        </p>
-      )}
     </div>
   );
 

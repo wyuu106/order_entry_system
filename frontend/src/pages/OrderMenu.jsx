@@ -12,8 +12,6 @@ function OrderMenu() {
 
   const [menus, setMenus] = useState([]);
 
-  const [errorMessage, setErrorMessage] = useState("");
-
   // 選択中の商品一覧
   const [cart, setCart] = useState([]);
 
@@ -39,10 +37,7 @@ function OrderMenu() {
 
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -125,10 +120,7 @@ function OrderMenu() {
 
     } catch (error) {
       console.log(error);
-
-      setErrorMessage(
-        getErrorMessage(error)
-      );
+      alert(getErrorMessage(error));
     }
   };
 
@@ -289,13 +281,6 @@ function OrderMenu() {
             </button>
           </div>
         </div>
-      )}
-
-      {/* エラー */}
-      {errorMessage && (
-        <p style={{ color: "red" }}>
-          {errorMessage}
-        </p>
       )}
     </div>
   );
