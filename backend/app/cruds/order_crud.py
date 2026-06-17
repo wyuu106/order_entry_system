@@ -39,7 +39,7 @@ def create_order(
     db.commit()
     db.refresh(db_order)
 
-    res = create_order_response(db_order, seat_name, db)
+    res = create_order_response(db_order, seat_id, seat_name, db)
 
     return res
 
@@ -63,7 +63,7 @@ def get_session_orders(session_id: int, db: Session) -> list[order_schema.OrderC
     seat_name = get_seat_name(seat_id, db)
 
     for order in db_orders:
-        res.append(create_order_response(order, seat_name, db))
+        res.append(create_order_response(order, seat_id, seat_name, db))
 
     return res
 

@@ -26,6 +26,7 @@ class OrderCreateResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
+    seat_id: int
     seat_name: str
     menu_name: str
     price: int | None

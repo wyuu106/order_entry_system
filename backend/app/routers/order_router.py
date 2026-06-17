@@ -6,6 +6,7 @@ from app.utils.auth import get_current_user
 from app.models import user_model
 from app.schemas import order_schema
 from app.cruds import session_crud, order_crud
+from app.utils.websocket import broadcast_new_order
 
 router = APIRouter()
 
@@ -50,12 +51,16 @@ def get_total(
 
 # オーダー作成
 @router.post('/order', response_model=order_schema.OrderCreateResponse)
-def create_order(
+async def create_order(
     order: order_schema.OrderCreate,
     current_user: user_model.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    return order_crud.create_order(order, current_user, db)
+    order = order_crud.create_order(order, current_user, db)
+
+    await broadcast_new_order(order)
+
+    return order
 
 # セッションごとのオーダー一覧
 @router.get('/orders/{session_id}', response_model=list[order_schema.OrderCreateResponse])

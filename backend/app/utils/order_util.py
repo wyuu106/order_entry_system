@@ -36,15 +36,18 @@ def get_user_name(user_id: int, db: Session) -> str:
 
 def create_order_response(
     order: order_model.Order,
+    seat_id: int,
     seat_name: str,
     db: Session
 ) -> order_schema.OrderCreateResponse:
+    
     menu_name = get_menu_name(order.menu_id, db)
 
     user_name = get_user_name(order.user_id, db)
 
     return order_schema.OrderCreateResponse(
         id = order.id,
+        seat_id = seat_id,
         seat_name = seat_name,
         menu_name = menu_name,
         price = order.price,
