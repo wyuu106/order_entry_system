@@ -21,6 +21,7 @@ def create_order(
         menu_id = order.menu_id,
         price = price,
         quantity = order.quantity,
+        remark = order.remark,
         user_id = current_user.id
     )
 

@@ -49,6 +49,7 @@ def create_order_response(
         menu_name = menu_name,
         price = order.price,
         quantity = order.quantity,
+        remark = order.remark,
         user_name = user_name,
         status = order.status
     )

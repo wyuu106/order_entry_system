@@ -19,5 +19,6 @@ class Order(Base):
     menu_id: Mapped[int] = mapped_column(Integer, ForeignKey('menus.id'))
     price: Mapped[int] = mapped_column(Integer, nullable=True)
     quantity: Mapped[int] = mapped_column(Integer, default=1)
+    remark: Mapped[str] = mapped_column(String, nullable=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))
     status: Mapped[str] = mapped_column(String, default='waiting')

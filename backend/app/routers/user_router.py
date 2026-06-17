@@ -27,7 +27,7 @@ def get_requests(
     return user_crud.get_requests(db)
 
 # ユーザー登録許可
-@router.post('/register/approve', response_model = user_schema.UserCreateResponse)
+@router.post('/register/approve/{request_id}', response_model = user_schema.UserCreateResponse)
 def approve_user(
     request_id: int,
     db: Session = Depends(get_db),
@@ -39,7 +39,7 @@ def approve_user(
     return user_crud.approve_request(request_id, db)
 
 # ユーザー登録却下
-@router.put('/register/reject', response_model = dict)
+@router.put('/register/reject/{request_id}', response_model = dict)
 def reject_user(
     request_id: int,
     db: Session = Depends(get_db),

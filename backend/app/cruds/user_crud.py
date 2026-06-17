@@ -20,6 +20,9 @@ def create_request(user: user_schema.UserCreate, db: Session) -> user_schema.Req
     )).scalar_one_or_none()
     if exist_request:
         raise HTTPException(status_code=400, detail='このユーザー名は申請中です')
+    
+    if not (user.name.strip() and user.password.strip()):
+        raise HTTPException(status_code=400, detail="名前かパスワードが不正です")
 
     db_request = user_model.UserRequest(
         name = user.name,
@@ -30,13 +33,7 @@ def create_request(user: user_schema.UserCreate, db: Session) -> user_schema.Req
     db.commit()
     db.refresh(db_request)
 
-    request = user_schema.RequestResponse(
-        id = db_request.id,
-        name = db_request.name,
-        message = '申請しました'
-    )
-
-    return request
+    return db_request
 
 # 申請一覧
 def get_requests(db: Session) -> list[user_schema.RequestData]:
@@ -51,7 +48,7 @@ def approve_request(request_id: int, db: Session) -> user_schema.UserCreateRespo
     if not db_request:
         raise HTTPException(status_code=404, detail='該当する申請が見つかりませんでした')
     
-    if not db_request.status == 'pending':
+    if db_request.status != 'pending':
         raise HTTPException(status_code=400, detail='既に処理済みの申請です')
 
     exist_user = db.execute(select(user_model.User).where(
