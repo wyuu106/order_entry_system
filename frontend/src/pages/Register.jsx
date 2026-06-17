@@ -10,7 +10,6 @@ function Register() {
 
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
-  const [message, setMessage] = useState("")
 
   const handleRegister = async () => {
     try {
@@ -22,11 +21,13 @@ function Register() {
         }
       );
 
-      setMessage(response.data.message);
+      alert("申請しました");
 
       // 入力欄を空にする
       setName("");
       setPassword("");
+
+      navigate('/')
     
     } catch (error) {
       console.log(error);
@@ -65,8 +66,6 @@ function Register() {
         ログイン画面へ
         </button>
       </div>
-
-      <p>{message}</p>
     </div>
   );
 }

@@ -97,6 +97,17 @@ function Orders() {
                   >
 
                     {order.menu_name} × {order.quantity}
+
+                    {order.remark != null && (
+                      <div
+                        style={{
+                          fontSize: "0.9em",
+                          marginLeft: "10px"
+                        }}
+                      >
+                        備考: {order.remark}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>

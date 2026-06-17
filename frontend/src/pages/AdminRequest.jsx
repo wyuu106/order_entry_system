@@ -39,14 +39,19 @@ function AdminRequest() {
 
   // 申請許可
   const approveRequest = async (id) => {
+    const ok = window.confirm(
+      "本当に申請を許可しますか？"
+    )
+
+    if (!ok) {
+      return
+    }
+
     try{
       await axios.post(
-        "http://localhost:8000/register/approve",
+        `http://localhost:8000/register/approve/${id}`,
         null,
         {
-          params: {
-            request_id: id,
-          },
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -63,14 +68,19 @@ function AdminRequest() {
 
   // 申請却下
   const rejectRequest = async (id) => {
+    const ok = window.confirm(
+      "本当に申請を却下しますか？"
+    )
+
+    if (!ok) {
+      return
+    }
+
     try{
-      await axios.post(
-        "http://localhost:8000/register/reject",
+      await axios.put(
+        `http://localhost:8000/register/reject/${id}`,
         null,
         {
-          params: {
-            request_id: id,
-          },
           headers: {
             Authorization: `Bearer ${token}`,
           },

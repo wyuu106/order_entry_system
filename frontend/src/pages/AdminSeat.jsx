@@ -12,9 +12,6 @@ function AdminSeat() {
   const [showCreate, setShowCreate] = useState(false);
   const [name, setName] = useState("");
 
-  const [showModal, setShowModal] = useState(false);
-  const [targetId, setTargetId] = useState(null);
-
   const token = localStorage.getItem("token");
 
   // 席一覧取得
@@ -27,6 +24,11 @@ function AdminSeat() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
+      );
+
+      // 席の表示順を id 順にソート
+      setSeats(
+        response.data.sort((a, b) => a.id - b.id)
       );
 
       setSeats(response.data);
@@ -69,6 +71,14 @@ function AdminSeat() {
 
   // 席削除
   const deleteSeat = async (id) => {
+    const ok = window.confirm(
+      "本当に席を削除しますか？"
+    )
+
+    if (!ok) {
+      return
+    }
+
     try {
       await axios.delete(
         `http://localhost:8000/seat/${id}`,
@@ -158,10 +168,7 @@ function AdminSeat() {
               <td>{seat.status}</td>
               <td>
                 <button
-                  onClick={() => {
-                    setTargetId(seat.id);
-                    setShowModal(true);
-                  }}
+                  onClick={() => deleteSeat(seat.id)}
                 >
                   削除
                 </button>
@@ -170,25 +177,6 @@ function AdminSeat() {
           ))}
         </tbody>
       </table>
-      
-      {showModal && (
-        <div>
-          <p>本当に削除する？</p>
-
-          <button
-            onClick={async () => {
-              await deleteSeat(targetId);
-              setShowModal(false);
-            }}
-          >
-            削除
-          </button>
-
-          <button onClick={() => setShowModal(false)}>
-            キャンセル
-          </button>
-        </div>
-      )}
     </div>
   );
 }

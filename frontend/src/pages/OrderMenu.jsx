@@ -18,6 +18,7 @@ function OrderMenu() {
   // 数量選択モーダル用
   const [selectedMenu, setSelectedMenu] = useState(null);
   const [quantity, setQuantity] = useState(1);
+  const [remark, setRemark] = useState("")
 
   const token = localStorage.getItem("token");
 
@@ -47,18 +48,19 @@ function OrderMenu() {
 
   // カート追加
   const addCart = () => {
+    const normalizedRemark = remark.trim() || null;
 
-    // 既にカートにあるか
     const exist = cart.find(
-      (item) => item.menu_id === selectedMenu.id
+      (item) =>
+        item.menu_id === selectedMenu.id &&
+        item.remark === normalizedRemark
     );
 
     if (exist) {
-
-      // 数量加算
       setCart(
         cart.map((item) =>
-          item.menu_id === selectedMenu.id
+          item.menu_id === selectedMenu.id &&
+          item.remark === normalizedRemark
             ? {
                 ...item,
                 quantity: item.quantity + quantity,
@@ -68,8 +70,6 @@ function OrderMenu() {
       );
 
     } else {
-
-      // 新規追加
       setCart([
         ...cart,
         {
@@ -77,15 +77,13 @@ function OrderMenu() {
           name: selectedMenu.name,
           price: selectedMenu.price,
           quantity: quantity,
+          remark: normalizedRemark,
         },
       ]);
     }
-
-    // モーダル閉じる
     setSelectedMenu(null);
-
-    // 数量リセット
     setQuantity(1);
+    setRemark("");
   };
 
   // 注文送信
@@ -105,6 +103,7 @@ function OrderMenu() {
             session_id: Number(sessionId),
             menu_id: item.menu_id,
             quantity: item.quantity,
+            remark: item.remark,
           },
           {
             headers: {
@@ -124,164 +123,159 @@ function OrderMenu() {
     }
   };
 
-  // 合計金額
-  const totalPrice = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
-
   return (
-    <div
-      style={{
-        display: "flex",
-        gap: "20px",
-      }}
-    >
-
+    <div>
+      <h1>メニュー選択</h1>
+      
       <button onClick={() => navigate(`/orders/${seatId}/${sessionId}/categories`)}>
         戻る
       </button>
 
-      {/* 左側 メニュー一覧 */}
-      <div style={{ flex: 1 }}>
-        <h2>メニュー一覧</h2>
-
-        {menus.length === 0 ? (
-          <p>メニューなし</p>
-        ) : (
-          menus.map((menu) => (
-            <div
-              key={menu.id}
-              style={{
-                border: "1px solid black",
-                marginBottom: "10px",
-                padding: "10px",
-                cursor: "pointer",
-              }}
-              onClick={() => {
-                setSelectedMenu(menu);
-                setQuantity(1);
-              }}
-            >
-              <p>{menu.name}</p>
-
-              <p>{menu.price}</p>
-            </div>
-          ))
-        )}
-      </div>
-
-      {/* 右側 注文一覧 */}
       <div
         style={{
-          width: "300px",
-          borderLeft: "2px solid black",
-          paddingLeft: "20px",
+          display: "flex",
+          gap: "20px",
         }}
       >
-        <h2>選択中</h2>
 
-        {cart.length === 0 ? (
-          <p>未選択</p>
-        ) : (
-          cart.map((item) => (
-            <div
-              key={item.menu_id}
-              style={{
-                borderBottom: "1px solid gray",
-                marginBottom: "10px",
-              }}
-            >
-              <p>{item.name}</p>
+        {/* 左側 メニュー一覧 */}
+        <div style={{ flex: 1 }}>
+          <h2>メニュー一覧</h2>
 
-              <p>
-                {item.quantity}個
-              </p>
-
-              <p>
-                {item.price * item.quantity}円
-              </p>
-            </div>
-          ))
-        )}
-
-        <hr />
-
-        <h3>
-          合計 : {totalPrice}円
-        </h3>
-
-        <button onClick={createOrders}>
-          注文する
-        </button>
-      </div>
-
-      {/* 数量選択モーダル */}
-      {selectedMenu && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            background: "rgba(0,0,0,0.5)",
-
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <div
-            style={{
-              background: "white",
-              padding: "20px",
-              width: "300px",
-            }}
-          >
-            <h2>{selectedMenu.name}</h2>
-
-            <p>{selectedMenu.price}</p>
-
-            <div>
-              <button
+          {menus.length === 0 ? (
+            <p>メニューなし</p>
+          ) : (
+            menus.map((menu) => (
+              <div
+                key={menu.id}
+                style={{
+                  border: "1px solid black",
+                  marginBottom: "10px",
+                  padding: "10px",
+                  cursor: "pointer",
+                }}
                 onClick={() => {
-                  if (quantity > 1) {
-                    setQuantity(quantity - 1);
-                  }
+                  setSelectedMenu(menu);
+                  setQuantity(1);
                 }}
               >
-                -
-              </button>
+                <p>{menu.name}</p>
 
-              <span style={{ margin: "0 10px" }}>
-                {quantity}
-              </span>
+                <p>{menu.price}</p>
+              </div>
+            ))
+          )}
+        </div>
 
-              <button
-                onClick={() => setQuantity(quantity + 1)}
+        {/* 右側 注文一覧 */}
+        <div
+          style={{
+            width: "300px",
+            borderLeft: "2px solid black",
+            paddingLeft: "20px",
+          }}
+        >
+          <h2>選択中</h2>
+
+          {cart.length === 0 ? (
+            <p>未選択</p>
+          ) : (
+            cart.map((item) => (
+              <div
+                key={item.menu_id}
+                style={{
+                  borderBottom: "1px solid gray",
+                  marginBottom: "10px",
+                }}
               >
-                +
-              </button>
-            </div>
+                <p>{item.name}</p>
 
-            <hr />
+                <p>
+                  {item.quantity}個
+                </p>
+              </div>
+            ))
+          )}
 
-            <button onClick={addCart}>
-              決定
-            </button>
+          <button onClick={createOrders}>
+            注文する
+          </button>
+        </div>
 
-            <button
-              onClick={() => {
-                setSelectedMenu(null);
-                setQuantity(1);
+        {/* 数量選択モーダル */}
+        {selectedMenu && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              background: "rgba(0,0,0,0.5)",
+
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <div
+              style={{
+                background: "white",
+                padding: "20px",
+                width: "300px",
               }}
             >
-              キャンセル
-            </button>
+              <h2>{selectedMenu.name}</h2>
+
+              <p>{selectedMenu.price}</p>
+
+              <div>
+                <button
+                  onClick={() => {
+                    if (quantity > 1) {
+                      setQuantity(quantity - 1);
+                    }
+                  }}
+                >
+                  -
+                </button>
+
+                <span style={{ margin: "0 10px" }}>
+                  {quantity}
+                </span>
+
+                <button
+                  onClick={() => setQuantity(quantity + 1)}
+                >
+                  +
+                </button>
+              </div>
+
+              <textarea
+                placeholder="備考"
+                value={remark}
+                onChange={(e) => setRemark(e.target.value)}
+              />
+
+              <hr />
+
+              <button onClick={addCart}>
+                決定
+              </button>
+
+              <button
+                onClick={() => {
+                  setSelectedMenu(null);
+                  setQuantity(1);
+                  setRemark("")
+                }}
+              >
+                キャンセル
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

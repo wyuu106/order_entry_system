@@ -14,8 +14,7 @@ function Order() {
   const [orders, setOrders] = useState([]);
   const [total, setTotal] = useState(0);
 
-  const [showModal, setShowModal] = useState(false);
-  const [targetId, setTargetId] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const token = localStorage.getItem("token");
 
@@ -102,15 +101,24 @@ function Order() {
       );
 
       setTotal(res.data);
+      setErrorMessage(null)
 
     } catch (error) {
       console.log(error);
-      alert(getErrorMessage(error));
+      setErrorMessage(getErrorMessage(error));
     }
   };
 
   // オーダー削除
   const deleteOrder = async (orderId) => {
+    const ok = window.confirm(
+      "本当にオーダーを削除しますか？"
+    )
+
+    if (!ok) {
+      return
+    }
+
     try {
       await axios.delete(
         `http://localhost:8000/order?order_id=${orderId}`,
@@ -189,7 +197,7 @@ function Order() {
 
   return (
     <div>
-      <h2>注文画面</h2>
+      <h1>注文画面</h1>
 
       <button onClick={() => navigate("/seats")}>
         戻る
@@ -232,6 +240,7 @@ function Order() {
                   <th>注文者</th>
                   <th>商品</th>
                   <th>数量</th>
+                  <th>備考</th>
                   <th>金額</th>
                   <th>操作</th>
                 </tr>
@@ -246,14 +255,13 @@ function Order() {
 
                     <td>{order.quantity}</td>
 
+                    <td>{order.remark}</td>
+
                     <td>{order.price ?? "未設定"}</td>
 
                     <td>
                       <button
-                        onClick={() => {
-                          setTargetId(order.id);
-                          setShowModal(true);
-                        }}
+                        onClick={() => deleteOrder(order.id)}
                       >
                         取り消し
                       </button>
@@ -272,25 +280,23 @@ function Order() {
         </div>
       )}
 
-      {/* 削除モーダル */}
-      {showModal && (
-        <div>
-          <p>本当に削除する？</p>
-
-          <button
-            onClick={async () => {
-              await deleteOrder(targetId);
-              setShowModal(false);
-            }}
-          >
-            削除
-          </button>
-
-          <button onClick={() => setShowModal(false)}>
-            キャンセル
-          </button>
+      {errorMessage && (
+        <div
+          style={{
+            margin: "20px auto",
+            width: "fit-content",
+            padding: "10px 20px",
+            border: "1px solid red",
+            borderRadius: "5px",
+            color: "red",
+            backgroundColor: "#ffeaea",
+            fontWeight: "bold",
+          }}
+        >
+          {errorMessage}
         </div>
       )}
+
     </div>
   );
 }

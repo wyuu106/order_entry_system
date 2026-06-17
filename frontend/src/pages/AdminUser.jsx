@@ -11,9 +11,6 @@ function AdminUser() {
   const [users, setUsers] = useState([]);
   const token = localStorage.getItem("token");
 
-  const [showModal, setShowModal] = useState(false);
-  const [targetId, setTargetId] = useState(null);
-
   // ユーザー一覧取得
   const fetchUsers = async () => {
     try {
@@ -32,6 +29,14 @@ function AdminUser() {
 
   // ユーザー削除
   const deleteUser = async (id) => {
+    const ok = window.confirm(
+      "本当にユーザーを削除しますか？"
+    )
+
+    if (!ok) {
+      return
+    }
+
     try {
       await axios.delete(`http://localhost:8000/user/${id}`, {
         headers: {
@@ -68,13 +73,16 @@ function AdminUser() {
           {users.map((user) => (
             <tr key={user.id}>
               <td>{user.name}</td>
-              <td>{user.role}</td>
+              <td>
+                {user.role === "admin"
+                  ? "管理者"
+                  : user.role === "staff"
+                  ? "スタッフ"
+                  : user.role}
+              </td>
               <td>
                 <button
-                  onClick={() => {
-                  setTargetId(user.id);
-                  setShowModal(true);
-                  }}
+                  onClick={() => deleteUser(user.id)}
                 >
                   削除
                 </button>
@@ -83,25 +91,6 @@ function AdminUser() {
           ))}
         </tbody>
       </table>
-
-      {showModal && (
-        <div>
-          <p>本当に削除する？</p>
-
-          <button
-            onClick={async () => {
-              await deleteSeat(targetId);
-              setShowModal(false);
-            }}
-          >
-            削除
-          </button>
-
-          <button onClick={() => setShowModal(false)}>
-            キャンセル
-          </button>
-        </div>
-      )}
     </div>
   );
 }

@@ -15,9 +15,6 @@ function AdminMenu() {
   const [menuName, setMenuName] = useState("");
   const [menuPrice, setMenuPrice] = useState("");
   const [editingMenuId, setEditingMenuId] = useState(null);
-
-  const [showModal, setShowModal] = useState(false);
-  const [targetId, setTargetId] = useState(null);
   
   /* lacation.search で送られてきたクエリパラメータを取得
   params = ?categoryId=${category.id} */
@@ -111,6 +108,14 @@ function AdminMenu() {
 
   // メニュー削除
   const deleteMenu = async (id) => {
+    const ok = window.confirm(
+      "本当にメニューを削除しますか？"
+    )
+
+    if (!ok) {
+      return
+    }
+
     try {
       await axios.delete(
         `http://localhost:8000/menu/${id}`,
@@ -195,10 +200,7 @@ function AdminMenu() {
                 </button>
 
                 <button
-                  onClick={() => {
-                    setTargetId(menu.id);
-                    setShowModal(true);
-                  }}
+                  onClick={() => deleteMenu(menu.id)}
                 >
                   削除
                 </button>
@@ -207,26 +209,6 @@ function AdminMenu() {
           ))}
         </tbody>
       </table>
-
-      {/* 削除モーダル */}
-      {showModal && (
-        <div>
-          <p>本当に削除する？</p>
-
-          <button
-            onClick={async () => {
-              await deleteMenu(targetId);
-              setShowModal(false);
-            }}
-          >
-            削除
-          </button>
-
-          <button onClick={() => setShowModal(false)}>
-            キャンセル
-          </button>
-        </div>
-      )}
     </div>
   );
 }

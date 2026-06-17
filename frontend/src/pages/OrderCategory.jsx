@@ -40,7 +40,7 @@ function OrderCategory() {
 
   return(
     <div>
-      <h1>カテゴリ一覧</h1>
+      <h1>カテゴリー選択</h1>
 
       <button onClick={() => navigate(`/orders/${seatId}`)}>
         戻る

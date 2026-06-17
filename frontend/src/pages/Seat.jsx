@@ -23,6 +23,7 @@ function Seat() {
         }
       );
 
+      // 席の表示を id 順に表示
       setSeats(
         response.data.sort((a, b) => a.id - b.id)
       );
@@ -66,7 +67,7 @@ function Seat() {
 
   return (
     <div>
-      <h2>席一覧</h2>
+      <h1>席一覧</h1>
 
       <button onClick={() => 
         navigate(

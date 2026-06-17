@@ -14,9 +14,6 @@ function AdminCategory() {
   const [categoryName, setCategoryName] = useState("");
   const [editingCategoryId, setEditingCategoryId] = useState(null);
 
-  const [showModal, setShowModal] = useState(false);
-  const [targetId, setTargetId] = useState(null);
-
   // カテゴリ一覧
   const getCategories = async () => {
     try{
@@ -92,6 +89,14 @@ function AdminCategory() {
 
   // カテゴリ削除
   const deleteCategory = async (id) => {
+    const ok = window.confirm(
+      "本当にカテゴリーを削除しますか？"
+    )
+
+    if (!ok) {
+      return
+    }
+
     try{
       await axios.delete(
           `http://localhost:8000/category/${id}`,
@@ -171,10 +176,7 @@ function AdminCategory() {
                 </button>
 
                 <button
-                  onClick={() => {
-                    setTargetId(category.id);
-                    setShowModal(true);
-                  }}
+                  onClick={() => deleteCategory(category.id)}
                 >
                   削除
                 </button>
@@ -183,26 +185,6 @@ function AdminCategory() {
           ))}
         </tbody>
       </table>
-
-      {/* 削除モーダル */}
-      {showModal && (
-        <div>
-          <p>本当に削除する？</p>
-
-          <button
-            onClick={async () => {
-              await deleteCategory(targetId);
-              setShowModal(false);
-            }}
-          >
-            削除
-          </button>
-
-          <button onClick={() => setShowModal(false)}>
-            キャンセル
-          </button>
-        </div>
-      )}
     </div>
   );
 }
