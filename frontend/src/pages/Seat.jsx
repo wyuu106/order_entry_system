@@ -98,12 +98,15 @@ function Seat() {
         <tbody>
           {seats.map((seat) => (
             <tr key={seat.id}>
-              <td>
-                <button
-                  onClick={() => navigate(`/orders/${seat.id}`)}
-                >
-                  {seat.name}
-                </button>
+              <td
+                onClick={() => navigate(`/orders/${seat.id}`)}
+                style={{
+                  border: "1px solid black",
+                  padding: "10px",
+                  cursor: "pointer",
+                }}
+              >
+                {seat.name}
               </td>
 
               <td>

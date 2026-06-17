@@ -245,20 +245,18 @@ function Order() {
             >
               <thead>
                 <tr>
-                  <th>注文者</th>
                   <th>商品</th>
                   <th>数量</th>
                   <th>備考</th>
                   <th>金額</th>
                   <th>操作</th>
+                  <th>注文者</th>
                 </tr>
               </thead>
 
               <tbody>
                 {orders.map((order) => (
                   <tr key={order.id}>
-                    <td>{order.user_name}</td>
-
                     <td>{order.menu_name}</td>
 
                     <td>{order.quantity}</td>
@@ -280,6 +278,8 @@ function Order() {
                         金額変更
                       </button>
                     </td>
+
+                    <td>{order.user_name}</td>
                   </tr>
                 ))}
               </tbody>
