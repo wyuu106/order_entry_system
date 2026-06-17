@@ -79,7 +79,15 @@ function Seat() {
         戻る
       </button>
 
-      <table border="1">
+      <table
+        border="1"
+        cellPadding="8"
+        style={{
+          margin: "0 auto",
+          borderCollapse: "collapse",
+          textAlign: "center",
+        }}
+      >
         <thead>
           <tr>
             <th>席名</th>

@@ -60,7 +60,15 @@ function AdminUser() {
         戻る
       </button>
 
-      <table border="1" cellPadding="8">
+      <table
+        border="1"
+        cellPadding="8"
+        style={{
+          margin: "0 auto",
+          borderCollapse: "collapse",
+          textAlign: "center",
+        }}
+      >
         <thead>
           <tr>
             <th>ユーザー名</th>

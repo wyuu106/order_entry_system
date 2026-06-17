@@ -122,6 +122,8 @@ function AdminCategory() {
         戻る
       </button>
 
+      <br />
+
       {/* フォーム（新規・編集共通） */}
       <input
         value={categoryName}
