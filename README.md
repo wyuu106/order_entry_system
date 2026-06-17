@@ -3,6 +3,8 @@
 飲食店の業務を効率化するためのWebアプリケーションです。  
 注文管理・席管理などを一元化しています。
 
+社員との話合いも行い、実際に店舗に導入し、運用する予定です。
+
 ---
 
 ## 技術スタック
@@ -50,12 +52,21 @@
 ## スクリーンショット
 
 - ログイン画面
-- 予約画面
-- 席管理画面
-- オーダー画面
+- 登録申請画面
 
-（ここに画像を貼る）
+<p>
+  <img src="images/login.png" width="20%">
+  <img src="images/register.png" width="30%">
+</p>
 
----
+- 管理者画面
+- 席ごとの注文管理画面
+- 注文一覧画面
 
-## 📁 API一覧（一部）
+<p>
+  <img src="images/admin.png" width="30%">
+  <img src="images/order.png" width="30%">
+</p>
+<p>
+  <img src="images/orders.png" width="100%">
+</p>
