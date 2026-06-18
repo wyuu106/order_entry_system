@@ -1,9 +1,10 @@
 // オーダー時のカテゴリ選択画面
 
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useOutletContext, } from "react-router-dom";
 import axios from "axios";
 import { getErrorMessage } from "../utils/error_util";
+import OrderCart from "../components/OrderCart";
 
 function OrderCategory() {
   const navigate = useNavigate();
@@ -12,6 +13,8 @@ function OrderCategory() {
   const token = localStorage.getItem("token");
 
   const [categories, setCategories] = useState([]);
+
+  const { cart } = useOutletContext();
 
   // カテゴリ一覧
   const getCategories = async () => {
@@ -47,40 +50,56 @@ function OrderCategory() {
       </button>
 
       {/* 一覧 */}
-      <table
-        border="1"
-        cellPadding="8"
+      <div
         style={{
-          margin: "0 auto",
-          borderCollapse: "collapse",
-          textAlign: "center",
+          display: "flex",
+          gap: "20px",
         }}
       >
-        <thead>
-          <tr>
-            <th>カテゴリ名</th>
-            <th>操作</th>
-          </tr>
-        </thead>
 
-        <tbody>
-          {categories.map((category) => (
-            <tr key={category.id}>
-              <td>{category.name}</td>
+        {/* 左側 カテゴリー一覧）*/}
+        <div style={{ flex: 1 }}>
+          <table
+            border="1"
+            cellPadding="8"
+            style={{
+              margin: "0 auto",
+              borderCollapse: "collapse",
+              textAlign: "center",
+            }}
+          >
+            <thead>
+              <tr>
+                <th>カテゴリ名</th>
+                <th>操作</th>
+              </tr>
+            </thead>
 
-              <td>
-                <button
-                  onClick={() =>
-                    navigate(`/orders/${seatId}/${sessionId}/menus/${category.id}`)
-                  }
-                >
-                  メニューを見る
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            <tbody>
+              {categories.map((category) => (
+                <tr key={category.id}>
+                  <td>{category.name}</td>
+
+                  <td>
+                    <button
+                      onClick={() =>
+                        navigate(
+                          `/orders/${seatId}/${sessionId}/menus/${category.id}`
+                        )
+                      }
+                    >
+                      メニューを見る
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        
+        {/* 右側（カート）*/}
+        <OrderCart cart={cart} />
+      </div>
     </div>
   );
 

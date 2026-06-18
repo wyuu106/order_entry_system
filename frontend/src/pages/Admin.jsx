@@ -28,7 +28,7 @@ function Admin() {
 
       <div
         style={menuStyle}
-        onClick={() => navigate("/admin/orders")}
+        onClick={() => navigate("/orders")}
       >
         注文一覧
       </div>

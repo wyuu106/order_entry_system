@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Admin from "./pages/Admin";
-import AdminOrder from "./pages/AdminOrder"
+import Orders from "./pages/Orders"
 import AdminCategory from "./pages/AdminCategory"
 import AdminMenu from "./pages/AdminMenu"
 import AdminSeat from "./pages/AdminSeat";
@@ -13,8 +13,11 @@ import AdminRequest from "./pages/AdminRequest"
 import Staff from "./pages/Staff"
 import Seat from "./pages/Seat"
 import Order from "./pages/Order"
+import OrderHome from "./pages/OrderHome"
 import OrderCategory from "./pages/OrderCategory"
 import OrderMenu from "./pages/OrderMenu"
+
+import OrderCart from "./components/OrderCart"
 
 function App() {
   return (
@@ -40,8 +43,8 @@ function App() {
 
         {/* 管理者画面 */}
         <Route
-          path="/admin/orders"
-          element={<AdminOrder />}
+          path="/orders"
+          element={<Orders />}
         />
 
         {/* メニュー管理 */}
@@ -50,6 +53,7 @@ function App() {
           element={<AdminCategory />}
         />
 
+        {/* 席情報管理 */}
         <Route
           path="/admin/menus"
           element={<AdminMenu />}
@@ -85,23 +89,13 @@ function App() {
           element={<Seat />}
         />
 
-        {/* オーダー画面 */}
-        <Route
-          path="/orders/:seatId"
-          element={<Order />}
-        />
+        {/* オーダー画面（cart情報を保持するために、各画面をOrderの管轄に入れる */}
+        <Route path="/orders/:seatId" element={<Order />}>
+          <Route index element={<OrderHome />} />
+          <Route path=":sessionId/categories" element={<OrderCategory />} />
+          <Route path=":sessionId/menus/:categoryId" element={<OrderMenu />} />
+        </Route>
 
-        {/* オーダーカテゴリー画面 */}
-        <Route
-          path="/orders/:seatId/:sessionId/categories"
-          element={<OrderCategory />}
-        />
-
-        {/* オーダーメニュー画面 */}
-        <Route
-          path="/orders/:seatId/:sessionId/menus/:categoryId"
-          element={<OrderMenu />}
-        />
       </Routes>
     </BrowserRouter>
   );

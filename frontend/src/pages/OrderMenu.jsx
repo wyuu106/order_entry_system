@@ -1,9 +1,10 @@
 // オーダー時のメニュー選択画面
 
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useOutletContext, } from "react-router-dom";
 import axios from "axios";
 import { getErrorMessage } from "../utils/error_util";
+import OrderCart from "../components/OrderCart";
 
 function OrderMenu() {
   const navigate = useNavigate();
@@ -12,13 +13,12 @@ function OrderMenu() {
 
   const [menus, setMenus] = useState([]);
 
-  // 選択中の商品一覧
-  const [cart, setCart] = useState([]);
-
   // 数量選択モーダル用
   const [selectedMenu, setSelectedMenu] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [remark, setRemark] = useState("")
+
+  const { cart, setCart } = useOutletContext();
 
   const token = localStorage.getItem("token");
 
@@ -44,7 +44,7 @@ function OrderMenu() {
 
   useEffect(() => {
     getMenus();
-  }, []);
+  }, [categoryId]);
 
   // カート追加
   const addCart = () => {
@@ -84,43 +84,6 @@ function OrderMenu() {
     setSelectedMenu(null);
     setQuantity(1);
     setRemark("");
-  };
-
-  // 注文送信
-  const createOrders = async () => {
-    try {
-
-      if (cart.length === 0) {
-        alert("商品を選択してください");
-        return;
-      }
-
-      for (const item of cart) {
-
-        await axios.post(
-          "http://localhost:8000/order",
-          {
-            session_id: Number(sessionId),
-            menu_id: item.menu_id,
-            quantity: item.quantity,
-            remark: item.remark,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-      }
-
-      alert("注文完了");
-
-      navigate(`/orders/${seatId}`);
-
-    } catch (error) {
-      console.log(error);
-      alert(getErrorMessage(error));
-    }
   };
 
   return (
@@ -166,41 +129,9 @@ function OrderMenu() {
             ))
           )}
         </div>
-
-        {/* 右側 注文一覧 */}
-        <div
-          style={{
-            width: "300px",
-            borderLeft: "2px solid black",
-            paddingLeft: "20px",
-          }}
-        >
-          <h2>選択中</h2>
-
-          {cart.length === 0 ? (
-            <p>未選択</p>
-          ) : (
-            cart.map((item) => (
-              <div
-                key={item.menu_id}
-                style={{
-                  borderBottom: "1px solid gray",
-                  marginBottom: "10px",
-                }}
-              >
-                <p>{item.name}</p>
-
-                <p>
-                  {item.quantity}個
-                </p>
-              </div>
-            ))
-          )}
-
-          <button onClick={createOrders}>
-            注文する
-          </button>
-        </div>
+        
+        {/* 右側（カート） */}
+        <OrderCart cart={cart}/>
 
         {/* 数量選択モーダル */}
         {selectedMenu && (

@@ -143,7 +143,12 @@ function Orders() {
             }}
           >
 
-            <h2>{seat.seat_name}</h2>
+            <h2
+              style={{ cursor: "pointer", color: "blue" }}
+              onClick={() => navigate(`/orders/${seat.seat_id}`)}
+            >
+              {seat.seat_name}
+            </h2>
 
             {seat.orders.length === 0 ? (
 

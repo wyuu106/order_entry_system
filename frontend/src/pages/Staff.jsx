@@ -28,7 +28,7 @@ function Staff() {
 
       <div
         style={menuStyle}
-        onClick={() => navigate("/seats")}
+        onClick={() => navigate("/orders")}
       >
         注文
       </div>
