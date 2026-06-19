@@ -124,13 +124,14 @@ function AdminCategory() {
 
       <br />
 
-      {/* フォーム（新規・編集共通） */}
+      {/* フォーム（追加・更新） */}
       <input
         value={categoryName}
         onChange={(e) => setCategoryName(e.target.value)}
         placeholder="名前"
       />
 
+      {/* ボタン（追加・更新） */}
       <button onClick={editingCategoryId ? updateCategory : createCategory}>
         {editingCategoryId ? "更新" : "追加"}
       </button>
@@ -160,6 +161,7 @@ function AdminCategory() {
               <td>{category.name}</td>
 
               <td>
+                {/* メニュー画面へ遷移 */}
                 <button
                   onClick={() =>
                     navigate(`/admin/menus?categoryId=${category.id}`)
@@ -168,6 +170,7 @@ function AdminCategory() {
                   メニューを見る
                 </button>
 
+                {/* 編集 */}
                 <button
                   onClick={() => {
                     setEditingCategoryId(category.id);
@@ -176,7 +179,8 @@ function AdminCategory() {
                 >
                   編集
                 </button>
-
+                
+                {/* 削除 */}
                 <button
                   onClick={() => deleteCategory(category.id)}
                 >

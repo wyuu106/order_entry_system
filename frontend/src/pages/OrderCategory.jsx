@@ -1,4 +1,4 @@
-// オーダー時のカテゴリ選択画面
+// オーダーのカテゴリ選択画面
 
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useOutletContext, } from "react-router-dom";
@@ -14,7 +14,7 @@ function OrderCategory() {
 
   const [categories, setCategories] = useState([]);
 
-  const { cart } = useOutletContext();
+  const { cart, setCart } = useOutletContext(); // cart を Outlet で定義
 
   // カテゴリ一覧
   const getCategories = async () => {
@@ -41,6 +41,45 @@ function OrderCategory() {
     getCategories();
   }, []);
 
+  // 注文送信
+  const createOrders = async () => {
+    try {
+
+      if (cart.length === 0) {
+        alert("商品を選択してください");
+        return;
+      }
+
+      for (const item of cart) {
+
+        await axios.post(
+          "http://localhost:8000/order",
+          {
+            session_id: sessionId,
+            menu_id: item.menu_id,
+            quantity: item.quantity,
+            remark: item.remark,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+      }
+
+      alert("注文完了");
+
+      setCart([]); // cartの中身を空にする
+
+      navigate(`/orders/${seatId}`);  // 注文完了 -> 戻る
+
+    } catch (error) {
+      console.log(error);
+      alert(getErrorMessage(error));
+    }
+  };
+
   return(
     <div>
       <h1>カテゴリー選択</h1>
@@ -49,7 +88,6 @@ function OrderCategory() {
         戻る
       </button>
 
-      {/* 一覧 */}
       <div
         style={{
           display: "flex",
@@ -97,8 +135,8 @@ function OrderCategory() {
           </table>
         </div>
         
-        {/* 右側（カート）*/}
-        <OrderCart cart={cart} />
+        {/* 右側（カート表示）*/}
+        <OrderCart cart={cart} createOrders={createOrders}/>
       </div>
     </div>
   );

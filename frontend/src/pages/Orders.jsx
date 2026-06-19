@@ -11,7 +11,7 @@ function Orders() {
 
   const [seatOrders, setSeatOrders] = useState([]);
 
-  // 追加：通知キュー & 現在表示中
+  // 通知キュー、現在表示中
   const [queue, setQueue] = useState([]);
   const [current, setCurrent] = useState(null);
 
@@ -104,7 +104,7 @@ function Orders() {
     });
   };
 
-  // queueが来たら最初だけ表示開始
+  // キューが来たら最初だけ表示開始
   useEffect(() => {
     if (!current && queue.length > 0) {
       showNext();
@@ -115,6 +115,50 @@ function Orders() {
   const sortedSeats = [...seatOrders].sort(
     (a, b) => Number(a.seat_id) - Number(b.seat_id)
   );
+
+  // 提供状況変更
+  const updateOrderStatus = async (order) => {
+    const confirmed = window.confirm(
+      order.status === "waiting"
+        ? "この注文を提供済みにしますか？"
+        : "この注文を未提供に戻しますか？"
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const token = localStorage.getItem("token");
+  
+      const newStatus =
+        order.status === "waiting"
+          ? "served"
+          : "waiting";
+
+      await axios.put(
+        `http://localhost:8000/order/${order.id}/status?status=${newStatus}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setSeatOrders((prev) =>
+        prev.map((seat) => ({
+          ...seat,
+          orders: seat.orders.map((o) =>
+            o.id === order.id
+              ? { ...o, status: newStatus }
+              : o
+          ),
+        }))
+      );
+    } catch (error) {
+      console.log(error);
+      alert(getErrorMessage(error));
+    }
+  };
 
   return (
     <div>
@@ -135,7 +179,6 @@ function Orders() {
       >
 
         {sortedSeats.map((seat) => (
-
           <div
             key={seat.seat_id}
             style={{
@@ -170,8 +213,16 @@ function Orders() {
                     key={order.id}
                     style={{
                       borderBottom: "1px solid gray",
-                      paddingBottom: "5px"
+                      paddingBottom: "5px",
+                      cursor: "pointer",
+                      textDecoration: // CSS（ピンクの線）
+                        order.status === "served"
+                          ? "line-through"
+                          : "none",
+                      textDecorationColor: "deeppink",
+                      textDecorationThickness: "3px",
                     }}
+                    onClick={() => updateOrderStatus(order)}
                   >
 
                     {order.menu_name} × {order.quantity}

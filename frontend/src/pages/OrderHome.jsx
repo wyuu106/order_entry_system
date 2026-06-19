@@ -1,4 +1,4 @@
-// 席ごとのオーダー詳細に関するページ
+// 席ごとのオーダー詳細ページ
 
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useOutletContext, } from "react-router-dom";
@@ -15,7 +15,7 @@ function OrderHome() {
   const [orders, setOrders] = useState([]);
   const [total, setTotal] = useState(0);
 
-  const { cart, setCart } = useOutletContext();
+  const { cart, setCart } = useOutletContext(); // cart を Outlet で定義
 
   const [errorMessage, setErrorMessage] = useState(null);
 
@@ -120,7 +120,7 @@ function OrderHome() {
 
       alert("注文完了");
 
-      window.location.reload();
+      window.location.reload();  // 注文完了 -> reload
 
     } catch (error) {
       console.log(error);
@@ -186,6 +186,7 @@ function OrderHome() {
 
     try {
       await axios.put(
+        // クエリパラメータとしてpriceを送る
         `http://localhost:8000/order/price/${orderId}?price=${newPrice}`,
         {},
         {
@@ -223,7 +224,7 @@ function OrderHome() {
       setOrders([]);
       setTotal(0);
 
-      navigate(`/seats/`)
+      navigate("/orders") // セッション終了 -> 注文一覧へ戻る
 
     } catch (error) {
       console.log(error);
@@ -250,7 +251,7 @@ function OrderHome() {
         }}
       >
 
-        {/* 左側 */}
+        {/* 左側（オーダー詳細） */}
         <div style={{ flex: 1 }}>
           <p>席名 : {session?.seat_name}</p>
 
@@ -355,7 +356,7 @@ function OrderHome() {
           )} 
         </div>
 
-        {/* 右側（カート）*/}
+        {/* 右側（カート表示）、createOrder を入れる */}
         <OrderCart cart={cart} createOrders={createOrders}/>
       </div>
     </div>

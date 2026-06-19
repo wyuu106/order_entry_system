@@ -36,6 +36,7 @@ function OrderCart({
         ))
       )}
 
+      {/* createOrders != null の時に表示 */}
       {createOrders && (
         <button onClick={createOrders}>
           注文する

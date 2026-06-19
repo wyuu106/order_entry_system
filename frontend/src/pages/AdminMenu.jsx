@@ -58,7 +58,7 @@ function AdminMenu() {
         "http://localhost:8000/menu",
         {
           name: menuName,
-          price: menuPrice === "" ? null : Number(menuPrice),
+          price: menuPrice === "" ? null : Number(menuPrice), // nullでも可
           category_id: Number(selectedCategory)
         },
         {
