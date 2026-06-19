@@ -6,7 +6,13 @@ from sqlalchemy import select
 from fastapi import HTTPException
 from app.utils.auth import hash_password
 from app.models.user_model import User
-from app.routers import user_router, menu_router, seat_router, order_router
+from app.routers import(
+    user_router,
+    menu_router,
+    seat_router,
+    session_router,
+    order_router
+)
 from app.ws import order_ws
 from app.db import get_db, Base, engine
 from fastapi.middleware.cors import CORSMiddleware
@@ -51,5 +57,6 @@ def init(db: Session = Depends(get_db)) -> str:
 app.include_router(user_router.router)
 app.include_router(menu_router.router)
 app.include_router(seat_router.router)
+app.include_router(session_router.router)
 app.include_router(order_router.router)
 app.include_router(order_ws.router)

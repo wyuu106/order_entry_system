@@ -1,20 +1,20 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select
-from fastapi import Response, HTTPException, status
+from fastapi import HTTPException
 from datetime import datetime
-from app.utils.order_util import get_seat_name, get_menu_name, get_user_name
-from app.models import order_model, menu_model, user_model
-from app.schemas import order_schema
+from app.utils.order_util import get_seat_name
+from app.models import session_model, order_model
+from app.schemas import session_schema
 from app.cruds import seat_crud
 
 # セッション作成
 def create_session(
-        seat_session: order_schema.SessionCreate,
+        seat_session: session_schema.SessionCreate,
         db: Session
-) -> order_schema.SessionCreateResponse:
-    stmt = select(order_model.SeatSession).where(
-        order_model.SeatSession.seat_id == seat_session.seat_id,
-        order_model.SeatSession.end_at.is_(None)
+) -> session_schema.SessionCreateResponse:
+    stmt = select(session_model.SeatSession).where(
+        session_model.SeatSession.seat_id == seat_session.seat_id,
+        session_model.SeatSession.end_at.is_(None)
     )
     exist_session = db.execute(stmt).scalar_one_or_none()
     if exist_session:
@@ -22,7 +22,7 @@ def create_session(
     
     seat_name = get_seat_name(seat_session.seat_id, db)
     
-    db_session = order_model.SeatSession(
+    db_session = session_model.SeatSession(
         seat_id = seat_session.seat_id
     )
 
@@ -32,17 +32,17 @@ def create_session(
 
     seat_crud.update_seat_status(seat_session.seat_id, 'occupied', db)
 
-    return order_schema.SessionCreateResponse(
+    return session_schema.SessionCreateResponse(
         id = db_session.id,
         seat_name = seat_name,
         start_at = db_session.start_at
     )
 
 # 席ごとのセッションの有無を判定
-def get_session(seat_id: int, db: Session) -> order_schema.SessionCreateResponse | None:
-    stmt = select(order_model.SeatSession).where(
-        order_model.SeatSession.seat_id == seat_id,
-        order_model.SeatSession.end_at.is_(None)
+def get_session(seat_id: int, db: Session) -> session_schema.SessionCreateResponse | None:
+    stmt = select(session_model.SeatSession).where(
+        session_model.SeatSession.seat_id == seat_id,
+        session_model.SeatSession.end_at.is_(None)
     )
     db_session = db.execute(stmt).scalar_one_or_none()
 
@@ -51,17 +51,17 @@ def get_session(seat_id: int, db: Session) -> order_schema.SessionCreateResponse
     
     seat_name = get_seat_name(seat_id, db)
     
-    return order_schema.SessionCreateResponse(
+    return session_schema.SessionCreateResponse(
         id = db_session.id,
         seat_name = seat_name,
         start_at = db_session.start_at
     )
 
 # セッション終了
-def end_session(session_id: int, db: Session) -> order_schema.SessionResponse:
-    stmt = select(order_model.SeatSession).where(
-        order_model.SeatSession.id == session_id,
-        order_model.SeatSession.end_at.is_(None)
+def end_session(session_id: int, db: Session) -> session_schema.SessionResponse:
+    stmt = select(session_model.SeatSession).where(
+        session_model.SeatSession.id == session_id,
+        session_model.SeatSession.end_at.is_(None)
     )
     db_session = db.execute(stmt).scalar_one_or_none()
 
@@ -75,7 +75,7 @@ def end_session(session_id: int, db: Session) -> order_schema.SessionResponse:
 
     seat_name = get_seat_name(db_session.seat_id, db)
 
-    return order_schema.SessionResponse(
+    return session_schema.SessionResponse(
         seat_name = seat_name,
         message = '終了'
     )

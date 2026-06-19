@@ -10,45 +10,6 @@ from app.utils.websocket import broadcast_new_order
 
 router = APIRouter()
 
-# セッション作成
-@router.post('/seat_session', response_model=order_schema.SessionCreateResponse)
-def create_session(
-    seat_session: order_schema.SessionCreate,
-    db: Session = Depends(get_db),
-    current_user: user_model.User = Depends(get_current_user)
-):
-    return session_crud.create_session(seat_session, db)
-
-# 席ごとのセッションの有無を判定
-@router.get('/seat_session/{seat_id}', response_model=order_schema.SessionCreateResponse | None)
-def get_session(
-    seat_id: int,
-    db: Session = Depends(get_db),
-    current_user: user_model.User = Depends(get_current_user)
-):
-    return session_crud.get_session(seat_id, db)
-
-# セッション終了
-@router.put('/seat_session/{session_id}', response_model=order_schema.SessionResponse)
-def end_session(
-    session_id: int,
-    db: Session = Depends(get_db),
-    current_user: user_model.User = Depends(get_current_user)
-):
-    if not current_user.role == 'admin':
-        raise HTTPException(status_code=403, detail="権限がありません")
-    
-    return session_crud.end_session(session_id, db)
-
-# 合計金額取得
-@router.get('/total/{session_id}', response_model=int)
-def get_total(
-    session_id: int,
-    db: Session = Depends(get_db),
-    current_user: user_model.User = Depends(get_current_user)
-):
-    return session_crud.get_total(session_id, db)
-
 # オーダー作成
 @router.post('/order', response_model=order_schema.OrderCreateResponse)
 async def create_order(
@@ -92,7 +53,7 @@ def delete_order(
     return order_crud.delete_order(order_id, db)
 
 # 提供状況変更
-@router.put('/order/status/{order_id}', response_model=str)
+@router.put('/order/{order_id}/status', response_model=str)
 def update_order(
     order_id: int,
     status: str,

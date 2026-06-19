@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from fastapi import Response, HTTPException, status
 from app.utils.order_util import get_seat_name, create_order_response
-from app.models import order_model, menu_model, user_model, seat_model
+from app.models import session_model, order_model, menu_model, user_model, seat_model
 from app.schemas import order_schema
 
 # オーダー作成
@@ -25,9 +25,9 @@ def create_order(
         user_id = current_user.id
     )
 
-    seat_id = db.execute(select(order_model.SeatSession.seat_id).where(
-        order_model.SeatSession.id == order.session_id,
-        order_model.SeatSession.end_at.is_(None)
+    seat_id = db.execute(select(session_model.SeatSession.seat_id).where(
+        session_model.SeatSession.id == order.session_id,
+        session_model.SeatSession.end_at.is_(None)
     )).scalar_one_or_none()
 
     if not seat_id:
@@ -52,9 +52,9 @@ def get_session_orders(session_id: int, db: Session) -> list[order_schema.OrderC
 
     res = []
 
-    seat_id = db.execute(select(order_model.SeatSession.seat_id).where(
-        order_model.SeatSession.id == session_id,
-        order_model.SeatSession.end_at.is_(None)
+    seat_id = db.execute(select(session_model.SeatSession.seat_id).where(
+        session_model.SeatSession.id == session_id,
+        session_model.SeatSession.end_at.is_(None)
     )).scalar_one_or_none()
 
     if not seat_id:
@@ -76,9 +76,9 @@ def get_seat_orders(db: Session) -> list[order_schema.SeatOrderResponse]:
 
     # 各席について
     for seat in db_seats:
-        stmt2 = select(order_model.SeatSession).where(
-            order_model.SeatSession.seat_id == seat.id,
-            order_model.SeatSession.end_at.is_(None)
+        stmt2 = select(session_model.SeatSession).where(
+            session_model.SeatSession.seat_id == seat.id,
+            session_model.SeatSession.end_at.is_(None)
         )
         db_session = db.execute(stmt2).scalar_one_or_none()
 
