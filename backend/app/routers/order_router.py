@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
+from datetime import date
 from app.db import get_db
 from app.utils.auth import get_current_user
 from app.models import user_model
@@ -74,3 +75,14 @@ def update_price(
         raise HTTPException(status_code=403, detail="権限がありません")
     
     return order_crud.update_price(order_id, price, db)
+
+@router.get('/day_orders', response_model=list[order_schema.DayOrderResponse])
+def get_day_orders(
+    target_date: date,
+    db: Session = Depends(get_db),
+    current_user: user_model.User = Depends(get_current_user)
+):
+    if not current_user.role == 'admin':
+        raise HTTPException(status_code=403, detail="権限がありません")
+    
+    return order_crud.get_day_orders(target_date, db)

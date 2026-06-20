@@ -10,6 +10,7 @@ class CategoryCreateResponse(BaseModel):
 class MenuCreate(BaseModel):
     name: str
     price: int | None = None
+    is_drink: bool
     category_id: int
 
 class MenuCreateResponse(BaseModel):
@@ -18,4 +19,5 @@ class MenuCreateResponse(BaseModel):
     id: int
     name: str
     price: int | None
+    is_drink: bool
     category_id: int

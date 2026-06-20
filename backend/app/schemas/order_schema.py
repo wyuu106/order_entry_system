@@ -19,6 +19,7 @@ class OrderCreateResponse(BaseModel):
     remark: str | None
     user_name: str
     status: str
+    is_drink: bool
 
 class SeatOrderResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -26,3 +27,18 @@ class SeatOrderResponse(BaseModel):
     seat_id: int
     seat_name: str
     orders: list[OrderCreateResponse]
+
+class DayOrderItem(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    menu_id: int
+    menu_name: str
+    quantity: int
+    sales: int
+
+class DayOrderResponse(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    session_id: int
+    seat_name: str
+    orders: list[DayOrderItem]

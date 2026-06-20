@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from fastapi import HTTPException
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from app.utils.order_util import get_seat_name
 from app.models import session_model, order_model
 from app.schemas import session_schema
@@ -68,7 +69,7 @@ def end_session(session_id: int, db: Session) -> session_schema.SessionResponse:
     if not db_session:
         raise HTTPException(status_code=404, detail='該当するセッションが見つかりません')
 
-    db_session.end_at = datetime.utcnow()
+    db_session.end_at = datetime.now(ZoneInfo("Asia/Tokyo"))
 
     db.commit()
     db.refresh(db_session)

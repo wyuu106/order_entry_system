@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from fastapi import Response, HTTPException, status
 from app.models import menu_model
 from app.schemas import menu_schema
@@ -54,11 +54,8 @@ def delete_category(category_id: int, db: Session):
     if not db_category:
         raise HTTPException(status_code=404, detail="該当するカテゴリが存在しません")
 
-    stmt2 = select(menu_model.Menu).where(menu_model.Menu.category_id == category_id)
-    db_menus = db.execute(stmt2).scalars().all()
+    db.execute(delete(menu_model.Menu).where(menu_model.Menu.category_id == category_id))
 
-    for db_menu in db_menus:
-        db.delete(db_menu)
     db.delete(db_category)
     db.commit()
 
@@ -83,6 +80,7 @@ def create_menu(menu: menu_schema.MenuCreate, db: Session) -> menu_schema.MenuCr
     db_menu = menu_model.Menu(
         name = menu.name,
         price = menu.price,
+        is_drink = menu.is_drink,
         category_id = menu.category_id
     )
 
@@ -112,6 +110,7 @@ def update_menu(
 
     db_menu.name = new_menu.name
     db_menu.price = new_menu.price
+    db_menu.is_drink = new_menu.is_drink
 
     db.commit()
     db.refresh(db_menu)

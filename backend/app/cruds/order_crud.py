@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, func
 from fastapi import Response, HTTPException, status
+from datetime import date, time, datetime, timedelta
 from app.utils.order_util import get_seat_name, create_order_response
 from app.models import session_model, order_model, menu_model, user_model, seat_model
 from app.schemas import order_schema
@@ -67,7 +68,7 @@ def get_session_orders(session_id: int, db: Session) -> list[order_schema.OrderC
 
     return res
 
-# 席ごとのオーダー一覧
+# 席ごとのオーダー一覧（ドリンクは除外）
 def get_seat_orders(db: Session) -> list[order_schema.SeatOrderResponse]:
     stmt1 = select(seat_model.Seat).order_by(seat_model.Seat.id)
     db_seats = db.execute(stmt1).scalars().all()
@@ -86,7 +87,13 @@ def get_seat_orders(db: Session) -> list[order_schema.SeatOrderResponse]:
 
         # セッションがある場合、セッションごとのオーダー取得
         if db_session:
-            orders = get_session_orders(db_session.id, db)
+            session_orders = get_session_orders(db_session.id, db)
+
+            # ドリンクを除外
+            orders = [
+                order for order in session_orders
+                if not order.is_drink
+            ]
 
         res.append(order_schema.SeatOrderResponse(
             seat_id = seat.id,
@@ -147,3 +154,81 @@ def update_price(order_id: int, price: int, db: Session) -> int:
     db.refresh(db_order)
 
     return price
+
+# 任意の日付の売り上げを取得
+def get_day_orders(
+    target_date: date,
+    db: Session,
+) -> list[order_schema.DayOrderResponse]:
+
+    start = datetime.combine(target_date, time(0, 0))
+    end = datetime.combine(target_date + timedelta(days=1), time(0, 0))
+
+    stmt = (
+        select(
+            session_model.SeatSession.id.label("session_id"),
+            seat_model.Seat.name.label("seat_name"),
+            menu_model.Menu.id.label("menu_id"),
+            menu_model.Menu.name.label("menu_name"),
+            func.sum(order_model.Order.quantity).label("quantity"),
+            func.sum(
+                order_model.Order.price * order_model.Order.quantity
+            ).label("sales"),
+        )
+        .join(
+            session_model.SeatSession,
+            order_model.Order.session_id
+            == session_model.SeatSession.id,
+        )
+        .join(
+            seat_model.Seat,
+            session_model.SeatSession.seat_id
+            == seat_model.Seat.id,
+        )
+        .join(
+            menu_model.Menu,
+            order_model.Order.menu_id
+            == menu_model.Menu.id,
+        )
+        .where(
+            session_model.SeatSession.start_at >= start,
+            session_model.SeatSession.start_at < end,
+        )
+        .group_by(
+            session_model.SeatSession.id,
+            seat_model.Seat.name,
+            menu_model.Menu.id,
+            menu_model.Menu.name,
+        )
+        .order_by(
+            session_model.SeatSession.id
+        )
+    )
+
+    rows = db.execute(stmt).mappings().all()
+
+    sessions = {}
+
+    for row in rows:
+        session_id = row["session_id"]
+
+        if session_id not in sessions:
+            sessions[session_id] = {
+                "session_id": session_id,
+                "seat_name": row["seat_name"],
+                "orders": [],
+            }
+
+        sessions[session_id]["orders"].append(
+            {
+                "menu_id": row["menu_id"],
+                "menu_name": row["menu_name"],
+                "quantity": row["quantity"],
+                "sales": row["sales"],
+            }
+        )
+
+    return [
+        order_schema.DayOrderResponse(**session)
+        for session in sessions.values()
+    ]
