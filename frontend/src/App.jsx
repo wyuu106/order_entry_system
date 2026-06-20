@@ -16,6 +16,7 @@ import Order from "./pages/Order"
 import OrderHome from "./pages/OrderHome"
 import OrderCategory from "./pages/OrderCategory"
 import OrderMenu from "./pages/OrderMenu"
+import DaySales from "./pages/DaySales"
 
 import OrderCart from "./components/OrderCart"
 
@@ -95,6 +96,12 @@ function App() {
           <Route path=":sessionId/categories" element={<OrderCategory />} />
           <Route path=":sessionId/menus/:categoryId" element={<OrderMenu />} />
         </Route>
+
+        {/* 売り上げ表 */}
+        <Route
+          path="/admin/day_sales"
+          element={<DaySales />}
+        />
 
       </Routes>
     </BrowserRouter>

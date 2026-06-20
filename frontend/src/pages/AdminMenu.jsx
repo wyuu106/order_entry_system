@@ -14,6 +14,10 @@ function AdminMenu() {
 
   const [menuName, setMenuName] = useState("");
   const [menuPrice, setMenuPrice] = useState("");
+  const [isDrink, setIsDrink] = useState(false);
+
+  const [isOpen, setIsOpen] = useState(false);
+
   const [editingMenuId, setEditingMenuId] = useState(null);
   
   /* lacation.search で送られてきたクエリパラメータを取得
@@ -51,6 +55,14 @@ function AdminMenu() {
     }
   }, []);
 
+  // 状態リセット用関数
+  const resetForm = () => {
+    setEditingMenuId(null);
+    setMenuName("");
+    setMenuPrice("");
+    setIsDrink(false);
+  };
+
   // メニュー作成
   const createMenu = async () => {
     try {
@@ -59,7 +71,8 @@ function AdminMenu() {
         {
           name: menuName,
           price: menuPrice === "" ? null : Number(menuPrice), // nullでも可
-          category_id: Number(selectedCategory)
+          category_id: Number(selectedCategory),
+          is_drink: isDrink
         },
         {
           headers: {
@@ -68,8 +81,8 @@ function AdminMenu() {
         }
       );
 
-      setMenuName("");
-      setMenuPrice("");
+      setIsOpen(false)
+      resetForm()
       getMenus(selectedCategory);
     
     } catch (error) {
@@ -95,9 +108,8 @@ function AdminMenu() {
         }
       );
 
-      setEditingMenuId(null);
-      setMenuName("");
-      setMenuPrice("");
+      setIsOpen(false)
+      resetForm()
       getMenus(selectedCategory);
     
     } catch (error) {
@@ -142,26 +154,105 @@ function AdminMenu() {
         戻る
       </button>
 
-      {/* フォーム */}
-      <div>
-        <input
-          placeholder="メニュー名"
-          value={menuName}
-          onChange={(e) => setMenuName(e.target.value)}
-        />
+      <br />
 
-        <input
-          placeholder="価格"
-          value={menuPrice}
-          onChange={(e) => setMenuPrice(e.target.value)}
-        />
+      <button
+        onClick={() => {
+          resetForm();
+          setIsOpen(true);
+        }}
+      >
+        メニュー追加
+      </button>
 
-        <button onClick={editingMenuId ? updateMenu : createMenu}>
-          {editingMenuId ? "更新" : "追加"}
-        </button>
-      </div>
+      {/* 入力モーダル */}
+      {isOpen && (
+        <div
+          onClick={() => setIsOpen(false)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              backgroundColor: "white",
+              padding: "30px",
+              borderRadius: "10px",
+              minWidth: "350px",
+            }}
+          >
+            <h2>
+              {editingMenuId ? "メニュー編集" : "メニュー追加"}
+            </h2>
 
-      <hr />
+            <div>
+              <input
+                placeholder="メニュー名"
+                value={menuName}
+                onChange={(e) => setMenuName(e.target.value)}
+              />
+            </div>
+
+            <br />
+
+            <div>
+              <input
+                type="number"
+                placeholder="価格"
+                value={menuPrice}
+                onChange={(e) => setMenuPrice(e.target.value)}
+              />
+            </div>
+
+            <br />
+
+            <label>
+              <input
+                type="checkbox"
+                checked={isDrink}
+                onChange={(e) => setIsDrink(e.target.checked)}
+              />
+              ドリンク
+            </label>
+
+            <br />
+            <br />
+
+            <button
+              onClick={async () => {
+                if (editingMenuId) {
+                  await updateMenu();
+                } else {
+                  await createMenu();
+                }
+
+                setIsOpen(false);
+              }}
+            >
+              {editingMenuId ? "更新" : "追加"}
+            </button>
+
+            <button
+              onClick={() => {
+                setIsOpen(false);
+                resetForm();
+              }}
+              style={{ marginLeft: "10px" }}
+            >
+              キャンセル
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* 一覧 */}
       <table
@@ -177,6 +268,7 @@ function AdminMenu() {
           <tr>
             <th>メニュー名</th>
             <th>価格</th>
+            <th>ドリンク</th>
             <th>操作</th>
           </tr>
         </thead>
@@ -188,12 +280,16 @@ function AdminMenu() {
 
               <td>{menu.price}円</td>
 
+              <td>{menu.is_drink ? "⚪︎" : "-"}</td>
+
               <td>
                 <button
                   onClick={() => {
                     setEditingMenuId(menu.id);
                     setMenuName(menu.name);
                     setMenuPrice(menu.price);
+                    setIsDrink(menu.is_drink);
+                    setIsOpen(true);
                   }}
                 >
                   編集

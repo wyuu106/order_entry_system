@@ -42,6 +42,13 @@ function Admin() {
 
       <div
         style={menuStyle}
+        onClick={() => navigate("/admin/day_sales")}
+      >
+        売り上げ表
+      </div>
+
+      <div
+        style={menuStyle}
         onClick={() => navigate("/admin/categories")}
       >
         メニュー設定
