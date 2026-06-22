@@ -168,6 +168,8 @@ def get_day_orders(
         select(
             session_model.SeatSession.id.label("session_id"),
             seat_model.Seat.name.label("seat_name"),
+            session_model.SeatSession.start_at.label("start_at"),
+            session_model.SeatSession.end_at.label("end_at"),
             menu_model.Menu.id.label("menu_id"),
             menu_model.Menu.name.label("menu_name"),
             func.sum(order_model.Order.quantity).label("quantity"),
@@ -197,6 +199,8 @@ def get_day_orders(
         .group_by(
             session_model.SeatSession.id,
             seat_model.Seat.name,
+            session_model.SeatSession.start_at,
+            session_model.SeatSession.end_at,
             menu_model.Menu.id,
             menu_model.Menu.name,
         )
@@ -216,7 +220,10 @@ def get_day_orders(
             sessions[session_id] = {
                 "session_id": session_id,
                 "seat_name": row["seat_name"],
+                "start_at": row["start_at"],
+                "end_at": row["end_at"],
                 "orders": [],
+                "total_sales": 0
             }
 
         sessions[session_id]["orders"].append(
@@ -227,6 +234,8 @@ def get_day_orders(
                 "sales": row["sales"],
             }
         )
+
+        sessions[session_id]["total_sales"] += row["sales"] or 0
 
     return [
         order_schema.DayOrderResponse(**session)

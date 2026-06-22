@@ -41,4 +41,7 @@ class DayOrderResponse(BaseModel):
 
     session_id: int
     seat_name: str
+    start_at: datetime
+    end_at: datetime
     orders: list[DayOrderItem]
+    total_sales: int

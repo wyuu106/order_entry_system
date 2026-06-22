@@ -64,6 +64,15 @@ function DaySales() {
         >
           <h2>{session.seat_name}</h2>
 
+          <p>
+            {new Date(session.start_at).toLocaleTimeString()} ~{" "}
+            {new Date(session.end_at).toLocaleTimeString()}
+          </p>
+
+          <p>
+            合計売上: {session.total_sales}円
+          </p>
+
           <table>
             <thead>
               <tr>
