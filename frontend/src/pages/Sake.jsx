@@ -136,7 +136,7 @@ function Sake() {
 
   return (
     <div>
-      <h1>メニュー管理</h1>
+      <h1>日本酒情報</h1>
 
       <button onClick={() =>
         navigate(role === "admin" ? "/admin" : "/staff")

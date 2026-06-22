@@ -59,8 +59,10 @@ function DaySales() {
           key={session.session_id}
           style={{
             border: "1px solid black",
-            marginTop: "20px",
             padding: "10px",
+            marginBottom: "10px",
+            maxWidth: "400px",
+            margin: "0 auto 10px",
           }}
         >
           <h2>{session.seat_name}</h2>

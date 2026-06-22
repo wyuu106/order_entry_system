@@ -114,6 +114,8 @@ function AdminRequest() {
               border: "1px solid black",
               padding: "10px",
               marginBottom: "10px",
+              maxWidth: "400px",
+              margin: "0 auto 10px",
             }}
           >
             <p>ユーザー名: {request.name}</p>
