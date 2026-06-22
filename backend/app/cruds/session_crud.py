@@ -68,6 +68,15 @@ def end_session(session_id: int, db: Session) -> session_schema.SessionResponse:
 
     if not db_session:
         raise HTTPException(status_code=404, detail='該当するセッションが見つかりません')
+    
+    stmt = select(order_model.Order).where(
+        order_model.Order.session_id == session_id,
+        order_model.Order.price.is_(None)
+    )
+    noprice_order = db.execute(stmt).scalar_one_or_none()
+
+    if noprice_order:
+        raise HTTPException(status_code=400, detail='値段が未設定の商品があります')
 
     db_session.end_at = datetime.now(ZoneInfo("Asia/Tokyo"))
 
