@@ -37,7 +37,7 @@ function Admin() {
         style={menuStyle}
         onClick={() => navigate("/seats")}
       >
-        注文
+        席の状態確認
       </div>
 
       <div

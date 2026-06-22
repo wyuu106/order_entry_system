@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useOutletContext, } from "react-router-dom";
 import axios from "axios";
+import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
 import OrderCart from "../components/OrderCart";
 
@@ -25,7 +26,7 @@ function OrderHome() {
   const fetchSession = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:8000/seat_session/${seatId}`,
+        `${API_URL}/seat_session/${seatId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -52,7 +53,7 @@ function OrderHome() {
       console.log(seatId);
 
       const res = await axios.post(
-        "http://localhost:8000/seat_session",
+        `${API_URL}/seat_session`,
         {
           seat_id: Number(seatId),
         },
@@ -75,7 +76,7 @@ function OrderHome() {
   const fetchOrders = async (sessionId) => {
     try {
       const res = await axios.get(
-        `http://localhost:8000/orders/${sessionId}`,
+        `${API_URL}/orders/${sessionId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -103,7 +104,7 @@ function OrderHome() {
       for (const item of cart) {
 
         await axios.post(
-          "http://localhost:8000/order",
+          `${API_URL}/order`,
           {
             session_id: session.id,
             menu_id: item.menu_id,
@@ -132,7 +133,7 @@ function OrderHome() {
   const fetchTotal = async (sessionId) => {
     try {
       const res = await axios.get(
-        `http://localhost:8000/total/${sessionId}`,
+        `${API_URL}/total/${sessionId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -161,7 +162,7 @@ function OrderHome() {
 
     try {
       await axios.delete(
-        `http://localhost:8000/order?order_id=${orderId}`,
+        `${API_URL}/order?order_id=${orderId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -187,7 +188,7 @@ function OrderHome() {
     try {
       await axios.put(
         // クエリパラメータとしてpriceを送る
-        `http://localhost:8000/order/price/${orderId}?price=${newPrice}`,
+        `${API_URL}/order/price/${orderId}?price=${newPrice}`,
         {},
         {
           headers: {
@@ -209,7 +210,7 @@ function OrderHome() {
   const endSession = async () => {
     try {
       await axios.put(
-        `http://localhost:8000/seat_session/${session.id}`,
+        `${API_URL}/seat_session/${session.id}`,
         {},
         {
           headers: {

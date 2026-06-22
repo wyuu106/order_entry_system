@@ -35,11 +35,18 @@ function Staff() {
 
       <div
         style={menuStyle}
+        onClick={() => navigate("/seats")}
+      >
+        席の状態確認
+      </div>
+
+      <div
+        style={menuStyle}
         onClick={() => navigate("/sakes")}
       >
         日本酒情報
       </div>
-      
+
     </div>
   );
 }

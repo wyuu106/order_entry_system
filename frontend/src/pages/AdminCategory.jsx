@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
 
 function AdminCategory() {
@@ -18,7 +19,7 @@ function AdminCategory() {
   const getCategories = async () => {
     try{
       const res = await axios.get(
-        "http://localhost:8000/admin/categories",
+        `${API_URL}/admin/categories`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -26,7 +27,10 @@ function AdminCategory() {
         }
       );
 
-      setCategories(res.data);
+      // カテゴリーの表示を id 順にソート
+      setCategories(
+        res.data.sort((a, b) => a.id - b.id)
+      );
 
     } catch (error) {
       console.log(error);
@@ -43,7 +47,7 @@ function AdminCategory() {
   const createCategory = async () => {
     try{
       await axios.post(
-        "http://localhost:8000/admin/category",
+        `${API_URL}/admin/category`,
         {
           name: categoryName,
         },
@@ -67,7 +71,7 @@ function AdminCategory() {
   const updateCategory = async () => {
     try{
       await axios.put(
-        `http://localhost:8000/admin/category/${editingCategoryId}`,
+        `${API_URL}/admin/category/${editingCategoryId}`,
         {
           name: categoryName,
         },
@@ -100,7 +104,7 @@ function AdminCategory() {
 
     try{
       await axios.delete(
-          `http://localhost:8000/admin/category/${id}`,
+          `${API_URL}/admin/category/${id}`,
           {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -119,7 +123,7 @@ function AdminCategory() {
   const restoreCategory = async (id) => {
     try{
       await axios.put(
-          `http://localhost:8000/admin/category/restore/${id}`,
+          `${API_URL}/admin/category/restore/${id}`,
           {},
           {
         headers: {

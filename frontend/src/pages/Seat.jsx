@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
 
 function Seat() {
@@ -14,8 +15,8 @@ function Seat() {
   // 席一覧取得
   const getSeats = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:8000/seats",
+      const res = await axios.get(
+        `${API_URL}/seats`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -23,12 +24,10 @@ function Seat() {
         }
       );
 
-      // 席の表示を id 順に表示
+      // 席の表示を id 順にソート
       setSeats(
-        response.data.sort((a, b) => a.id - b.id)
+        res.data.sort((a, b) => a.id - b.id)
       );
-
-      setSeats(response.data);
     
     } catch (error) {
       console.log(error);
@@ -45,7 +44,7 @@ function Seat() {
   const updateSeatStatus = async (seatId, status) => {
     try {
       await axios.put(
-        `http://localhost:8000/seat/${seatId}`,
+        `${API_URL}/seat/${seatId}`,
         null,
         {
           params: {

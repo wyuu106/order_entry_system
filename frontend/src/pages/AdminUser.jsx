@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
 
 function AdminUser() {
@@ -14,7 +15,7 @@ function AdminUser() {
   // ユーザー一覧取得
   const fetchUsers = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/users");
+      const res = await axios.get(`${API_URL}/users`);
       setUsers(res.data);
     
     } catch (error) {
@@ -38,7 +39,7 @@ function AdminUser() {
     }
 
     try {
-      await axios.delete(`http://localhost:8000/user/${id}`, {
+      await axios.delete(`${API_URL}/user/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
 
 function Sake() {
@@ -25,7 +26,7 @@ function Sake() {
   const getSakes = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:8000/sakes`,
+        `${API_URL}/sakes`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -57,7 +58,7 @@ function Sake() {
   const createSake = async () => {
     try {
       await axios.post(
-        "http://localhost:8000/sake",
+        `${API_URL}/sake`,
         {
           name: sakeName,
           remark: remark,
@@ -83,7 +84,7 @@ function Sake() {
   const updateSake = async () => {
     try {
       await axios.put(
-        `http://localhost:8000/sake/${editingSakeId}`,
+        `${API_URL}/sake/${editingSakeId}`,
         {
           name: sakeName,
           remark: remark,
@@ -117,7 +118,7 @@ function Sake() {
 
     try {
       await axios.delete(
-        `http://localhost:8000/sake/${id}`,
+        `${API_URL}/sake/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

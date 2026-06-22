@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
 
 function Login() {
@@ -15,7 +16,7 @@ function Login() {
   // ユーザー一覧取得
   useEffect(() => {
     const fetchUsers = async () => {
-      const res = await axios.get("http://localhost:8000/users");
+      const res = await axios.get(`${API_URL}/users`);
       setUsers(res.data);
     };
     fetchUsers();
@@ -28,7 +29,7 @@ function Login() {
       formData.append("password", password);
 
       const res = await axios.post(
-        "http://localhost:8000/login",
+        `${API_URL}/login`,
         formData,
         {
           headers: {

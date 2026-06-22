@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useOutletContext, } from "react-router-dom";
 import axios from "axios";
+import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
 import OrderCart from "../components/OrderCart";
 
@@ -26,7 +27,7 @@ function OrderMenu() {
   const getMenus = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:8000/${categoryId}/menus`,
+        `${API_URL}/${categoryId}/menus`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -34,7 +35,10 @@ function OrderMenu() {
         }
       );
 
-      setMenus(res.data);
+      // メニューの表示を id 順にソート
+      setMenus(
+        res.data.sort((a, b) => a.id - b.id)
+      );
 
     } catch (error) {
       console.log(error);
@@ -98,7 +102,7 @@ function OrderMenu() {
       for (const item of cart) {
 
         await axios.post(
-          "http://localhost:8000/order",
+          `${API_URL}/order`,
           {
             session_id: sessionId,
             menu_id: item.menu_id,

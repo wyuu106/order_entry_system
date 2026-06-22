@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
 
 function DaySales() {
@@ -16,7 +17,7 @@ function DaySales() {
   const getDayOrders = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/day_orders",
+        `${API_URL}/day_orders`,
         {
           params: {
             target_date: targetDate,

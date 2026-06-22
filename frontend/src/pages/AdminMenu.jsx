@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
 
 function AdminMenu() {
@@ -30,7 +31,7 @@ function AdminMenu() {
   const getMenus = async (categoryId) => {
     try {
       const res = await axios.get(
-        `http://localhost:8000/admin/${categoryId}/menus`,
+        `${API_URL}/admin/${categoryId}/menus`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -38,7 +39,10 @@ function AdminMenu() {
         }
       );
 
-      setMenus(res.data);
+      // メニューの表示を id 順にソート
+      setMenus(
+        res.data.sort((a, b) => a.id - b.id)
+      );
 
     } catch (error) {
       console.log(error);
@@ -69,12 +73,12 @@ function AdminMenu() {
   const createMenu = async () => {
     try {
       await axios.post(
-        "http://localhost:8000/admin/menu",
+        `${API_URL}/admin/menu`,
         {
           name: menuName,
           price: menuPrice === "" ? null : Number(menuPrice), // nullでも可
+          is_drink: isDrink,
           category_id: Number(selectedCategory),
-          is_drink: isDrink
         },
         {
           headers: {
@@ -97,11 +101,12 @@ function AdminMenu() {
   const updateMenu = async () => {
     try {
       await axios.put(
-        `http://localhost:8000/admin/menu/${editingMenuId}`,
+        `${API_URL}/admin/menu/${editingMenuId}`,
         {
           name: menuName,
           price: menuPrice === "" ? null : Number(menuPrice),
-          category_id: Number(selectedCategory)
+          is_drink: isDrink,
+          category_id: Number(selectedCategory),
         },
         {
           headers: {
@@ -132,7 +137,7 @@ function AdminMenu() {
 
     try {
       await axios.delete(
-        `http://localhost:8000/admin/menu/${id}`,
+        `${API_URL}/admin/menu/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -152,7 +157,7 @@ function AdminMenu() {
   const restoreMenu = async (id) => {
     try {
       await axios.put(
-        `http://localhost:8000/admin/menu/restore/${id}`,
+        `${API_URL}/admin/menu/restore/${id}`,
         {},
         {
           headers: {

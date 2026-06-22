@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
 
 function AdminSeat() {
@@ -18,10 +19,10 @@ function AdminSeat() {
   const getSeats = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/seats",
+        `${API_URL}/seats`,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -48,7 +49,7 @@ function AdminSeat() {
   const createSeat = async () => {
     try {
       await axios.post(
-        "http://localhost:8000/seat",
+        `${API_URL}/seat`,
         {
           name: name,
         },
@@ -81,7 +82,7 @@ function AdminSeat() {
 
     try {
       await axios.delete(
-        `http://localhost:8000/seat/${id}`,
+        `${API_URL}/seat/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

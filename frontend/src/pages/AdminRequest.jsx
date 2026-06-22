@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
 
 function AdminRequest() {
@@ -16,7 +17,7 @@ function AdminRequest() {
   const getRequests = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/requests",
+        `${API_URL}/requests`,
         {
           headers: {
           Authorization: `Bearer ${token}`,
@@ -49,7 +50,7 @@ function AdminRequest() {
 
     try{
       await axios.post(
-        `http://localhost:8000/register/approve/${id}`,
+        `${API_URL}/register/approve/${id}`,
         null,
         {
           headers: {
@@ -78,7 +79,7 @@ function AdminRequest() {
 
     try{
       await axios.put(
-        `http://localhost:8000/register/reject/${id}`,
+        `${API_URL}/register/reject/${id}`,
         null,
         {
           headers: {
