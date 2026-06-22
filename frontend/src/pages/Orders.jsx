@@ -18,13 +18,13 @@ function Orders() {
   const wsRef = useRef(null);
   const prevQueueLength = useRef(0);
 
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
+
   // 席ごとの注文一覧取得
   const getSeatOrders = async () => {
 
     try {
-
-      const token = localStorage.getItem("token");
-
       const response = await axios.get(
         "http://localhost:8000/seat_orders",
         {
@@ -165,7 +165,9 @@ function Orders() {
 
       <h1>オーダー一覧</h1>
 
-      <button onClick={() => navigate("/admin")}>
+      <button onClick={() => 
+        navigate(role === "admin" ? "/admin" : "/staff")
+      }>
         戻る
       </button>
 

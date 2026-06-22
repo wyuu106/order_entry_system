@@ -32,6 +32,14 @@ function Staff() {
       >
         注文
       </div>
+
+      <div
+        style={menuStyle}
+        onClick={() => navigate("/sakes")}
+      >
+        日本酒情報
+      </div>
+      
     </div>
   );
 }

@@ -56,6 +56,13 @@ function Admin() {
 
       <div
         style={menuStyle}
+        onClick={() => navigate("/sakes")}
+      >
+        日本酒情報
+      </div>
+
+      <div
+        style={menuStyle}
         onClick={() => navigate("/admin/seats")}
       >
         席の設定

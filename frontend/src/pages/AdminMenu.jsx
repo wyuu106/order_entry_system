@@ -19,6 +19,8 @@ function AdminMenu() {
   const [isOpen, setIsOpen] = useState(false);
 
   const [editingMenuId, setEditingMenuId] = useState(null);
+
+  const token = localStorage.getItem("token");
   
   /* lacation.search で送られてきたクエリパラメータを取得
   params = ?categoryId=${category.id} */
@@ -28,10 +30,10 @@ function AdminMenu() {
   const getMenus = async (categoryId) => {
     try {
       const res = await axios.get(
-        `http://localhost:8000/${categoryId}/menus`,
+        `http://localhost:8000/admin/${categoryId}/menus`,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -67,7 +69,7 @@ function AdminMenu() {
   const createMenu = async () => {
     try {
       await axios.post(
-        "http://localhost:8000/menu",
+        "http://localhost:8000/admin/menu",
         {
           name: menuName,
           price: menuPrice === "" ? null : Number(menuPrice), // nullでも可
@@ -76,7 +78,7 @@ function AdminMenu() {
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -95,7 +97,7 @@ function AdminMenu() {
   const updateMenu = async () => {
     try {
       await axios.put(
-        `http://localhost:8000/menu/${editingMenuId}`,
+        `http://localhost:8000/admin/menu/${editingMenuId}`,
         {
           name: menuName,
           price: menuPrice === "" ? null : Number(menuPrice),
@@ -103,7 +105,7 @@ function AdminMenu() {
         },
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -130,10 +132,31 @@ function AdminMenu() {
 
     try {
       await axios.delete(
-        `http://localhost:8000/menu/${id}`,
+        `http://localhost:8000/admin/menu/${id}`,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      getMenus(selectedCategory);
+    
+    } catch (error) {
+      console.log(error);
+      alert(getErrorMessage(error));
+    }
+  };
+
+  // メニュー復元
+  const restoreMenu = async (id) => {
+    try {
+      await axios.put(
+        `http://localhost:8000/admin/menu/restore/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -295,11 +318,21 @@ function AdminMenu() {
                   編集
                 </button>
 
-                <button
-                  onClick={() => deleteMenu(menu.id)}
-                >
-                  削除
-                </button>
+                {/* 表示 or 非表示 */}
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={menu.is_active}
+                    onChange={() => {
+                      if (menu.is_active) {
+                        deleteMenu(menu.id);
+                      } else {
+                        restoreMenu(menu.id);
+                      }
+                    }}
+                  />
+                  表示
+                </label>
               </td>
             </tr>
           ))}

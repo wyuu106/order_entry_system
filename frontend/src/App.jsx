@@ -17,6 +17,7 @@ import OrderHome from "./pages/OrderHome"
 import OrderCategory from "./pages/OrderCategory"
 import OrderMenu from "./pages/OrderMenu"
 import DaySales from "./pages/DaySales"
+import Sake from "./pages/Sake"
 
 import OrderCart from "./components/OrderCart"
 
@@ -101,6 +102,12 @@ function App() {
         <Route
           path="/admin/day_sales"
           element={<DaySales />}
+        />
+
+        {/* 日本酒 */}
+        <Route
+          path="/sakes"
+          element={<Sake />}
         />
 
       </Routes>

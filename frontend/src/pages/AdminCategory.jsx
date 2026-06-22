@@ -7,26 +7,27 @@ import { getErrorMessage } from "../utils/error_util";
 
 function AdminCategory() {
   const navigate = useNavigate();
-  
-  const token = localStorage.getItem("token");
 
   const [categories, setCategories] = useState([]);
   const [categoryName, setCategoryName] = useState("");
   const [editingCategoryId, setEditingCategoryId] = useState(null);
 
+  const token = localStorage.getItem("token");
+
   // カテゴリ一覧
   const getCategories = async () => {
     try{
       const res = await axios.get(
-        "http://localhost:8000/categories",
+        "http://localhost:8000/admin/categories",
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
       setCategories(res.data);
+
     } catch (error) {
       console.log(error);
       alert(getErrorMessage(error));
@@ -42,7 +43,7 @@ function AdminCategory() {
   const createCategory = async () => {
     try{
       await axios.post(
-        "http://localhost:8000/category",
+        "http://localhost:8000/admin/category",
         {
           name: categoryName,
         },
@@ -66,7 +67,7 @@ function AdminCategory() {
   const updateCategory = async () => {
     try{
       await axios.put(
-        `http://localhost:8000/category/${editingCategoryId}`,
+        `http://localhost:8000/admin/category/${editingCategoryId}`,
         {
           name: categoryName,
         },
@@ -99,7 +100,27 @@ function AdminCategory() {
 
     try{
       await axios.delete(
-          `http://localhost:8000/category/${id}`,
+          `http://localhost:8000/admin/category/${id}`,
+          {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      getCategories();
+
+    } catch (error) {
+      console.log(error);
+      alert(getErrorMessage(error));
+    }
+  };
+
+  // カテゴリ復元
+  const restoreCategory = async (id) => {
+    try{
+      await axios.put(
+          `http://localhost:8000/admin/category/restore/${id}`,
+          {},
           {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -180,12 +201,21 @@ function AdminCategory() {
                   編集
                 </button>
                 
-                {/* 削除 */}
-                <button
-                  onClick={() => deleteCategory(category.id)}
-                >
-                  削除
-                </button>
+                {/* 表示 or 非表示 */}
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={category.is_active}
+                    onChange={() => {
+                      if (category.is_active) {
+                        deleteCategory(category.id);
+                      } else {
+                        restoreCategory(category.id);
+                      }
+                    }}
+                  />
+                  表示
+                </label>
               </td>
             </tr>
           ))}
