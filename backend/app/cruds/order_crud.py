@@ -13,13 +13,22 @@ def create_order(
         db: Session
 ) -> order_schema.OrderCreateResponse:
     
-    price = db.execute(select(menu_model.Menu.price).where(
+    menu_info = db.execute(select(
+        menu_model.Menu.name,
+        menu_model.Menu.price
+    ).where(
         menu_model.Menu.id == order.menu_id
-    )).scalar_one_or_none()
+    )).one_or_none()
+
+    if not menu_info:
+        raise HTTPException(status_code=404, detail='該当するメニューが見つかりません')
+    
+    menu_name, price = menu_info
     
     db_order = order_model.Order(
         session_id = order.session_id,
         menu_id = order.menu_id,
+        menu_name = menu_name,
         price = price,
         quantity = order.quantity,
         remark = order.remark,
@@ -170,39 +179,30 @@ def get_day_orders(
             seat_model.Seat.name.label("seat_name"),
             session_model.SeatSession.start_at.label("start_at"),
             session_model.SeatSession.end_at.label("end_at"),
-            menu_model.Menu.id.label("menu_id"),
-            menu_model.Menu.name.label("menu_name"),
+            order_model.Order.menu_id.label("menu_id"),
+            order_model.Order.menu_name.label("menu_name"),
             func.sum(order_model.Order.quantity).label("quantity"),
-            func.sum(
-                order_model.Order.price * order_model.Order.quantity
-            ).label("sales"),
+            func.sum(order_model.Order.price * order_model.Order.quantity).label("sales")
         )
         .join(
             session_model.SeatSession,
-            order_model.Order.session_id
-            == session_model.SeatSession.id,
+            order_model.Order.session_id == session_model.SeatSession.id
         )
         .join(
             seat_model.Seat,
-            session_model.SeatSession.seat_id
-            == seat_model.Seat.id,
-        )
-        .join(
-            menu_model.Menu,
-            order_model.Order.menu_id
-            == menu_model.Menu.id,
+            session_model.SeatSession.seat_id == seat_model.Seat.id
         )
         .where(
             session_model.SeatSession.start_at >= start,
-            session_model.SeatSession.start_at < end,
+            session_model.SeatSession.start_at < end
         )
         .group_by(
             session_model.SeatSession.id,
             seat_model.Seat.name,
             session_model.SeatSession.start_at,
             session_model.SeatSession.end_at,
-            menu_model.Menu.id,
-            menu_model.Menu.name,
+            order_model.Order.menu_id,
+            order_model.Order.menu_name
         )
         .order_by(
             session_model.SeatSession.id

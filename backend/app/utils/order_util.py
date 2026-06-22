@@ -14,18 +14,15 @@ def get_seat_name(seat_id: int, db: Session) -> str:
     
     return seat_name
 
-def get_menu_info(menu_id, db) -> str:
-    menu_info = db.execute(select(
-        menu_model.Menu.name,
-        menu_model.Menu.is_drink
-    ).where(
+def get_menu_isdrink(menu_id, db) -> bool:
+    menu_isdrink = db.execute(select(menu_model.Menu.is_drink).where(
         menu_model.Menu.id == menu_id
-    )).one_or_none()
+    )).scalar_one_or_none()
 
-    if not menu_info:
+    if menu_isdrink is None:
         raise HTTPException(status_code=404, detail='該当するメニューが見つかりません')
     
-    return menu_info
+    return menu_isdrink
 
 def get_user_name(user_id: int, db: Session) -> str:
     user_name = db.execute(select(user_model.User.name).where(
@@ -44,7 +41,7 @@ def create_order_response(
     db: Session
 ) -> order_schema.OrderCreateResponse:
     
-    menu_name, is_drink = get_menu_info(order.menu_id, db)
+    is_drink = get_menu_isdrink(order.menu_id, db)
 
     user_name = get_user_name(order.user_id, db)
 
@@ -52,7 +49,7 @@ def create_order_response(
         id = order.id,
         seat_id = seat_id,
         seat_name = seat_name,
-        menu_name = menu_name,
+        menu_name = order.menu_name,
         price = order.price,
         quantity = order.quantity,
         remark = order.remark,

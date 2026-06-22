@@ -9,6 +9,7 @@ class Order(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     session_id: Mapped[int] = mapped_column(Integer, ForeignKey('seat_sessions.id'))
     menu_id: Mapped[int] = mapped_column(Integer, ForeignKey('menus.id'))
+    menu_name: Mapped[str] = mapped_column(String)
     price: Mapped[int] = mapped_column(Integer, nullable=True)
     quantity: Mapped[int] = mapped_column(Integer, default=1)
     remark: Mapped[str] = mapped_column(String, nullable=True)
