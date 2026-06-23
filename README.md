@@ -14,6 +14,7 @@
 - Database: PostgreSQL
 - Authentication: JWT
 - ORM: SQLAlchemy
+- websocket
 
 ---
 
@@ -52,21 +53,30 @@
 ## スクリーンショット
 
 - ログイン画面
-- 登録申請画面
+
+登録されているユーザーから、ログインするユーザーを選択し、パスワードを入力することでログインできます。
 
 <p>
-  <img src="images/login.png" width="20%">
-  <img src="images/register.png" width="30%">
+  <img src="images/login1.png" width="40%">
+  <img src="images/login2.png" width="40%">
 </p>
 
-- 管理者画面
-- 席ごとの注文管理画面
-- 注文一覧画面
+- ユーザー登録申請
+
+ユーザー名とパスワードを設定して、ユーザー登録申請を行うことができます。  
+この時点では、管理者に登録申請が送信されるだけで、実際に登録はされません。
 
 <p>
-  <img src="images/admin.png" width="30%">
-  <img src="images/order.png" width="30%">
+  <img src="images/register.png" width="50%">
 </p>
+
+- 管理者画面・スタッフ画面
+
+基本的な機能は「注文」「席の状態確認」「日本酒情報の閲覧」です。  
+管理者は、これらの機能に加えて「売り上げ表閲覧」「メニュー設定」「席の設定」「スタッフ設定」「ユーザー登録申請の処理」  
+といった機能があります。
+
 <p>
-  <img src="images/orders.png" width="100%">
+  <img src="images/admin.png" width="40%">
+  <img src="images/staff.png" width="40%">
 </p>
