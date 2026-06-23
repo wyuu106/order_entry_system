@@ -56,7 +56,7 @@
 
 ---
 
-## スクリーンショット
+## 詳細
 
 - ログイン画面
 
@@ -73,7 +73,7 @@
 この時点では、管理者に登録申請が送信されるだけで、実際に登録はされません。
 
 <p>
-  <img src="images/register.png" width="50%">
+  <img src="images/register.png" width="40%">
 </p>
 
 - 管理者画面・スタッフ画面
@@ -85,10 +85,10 @@
 <table>
   <tr>
     <td valign="top">
-      <img src="images/admin.png" width="100%">
+      <img src="images/admin.png" width="80%">
     </td>
     <td valign="top">
-      <img src="images/staff.png" width="100%">
+      <img src="images/staff.png" width="80%">
     </td>
   </tr>
 </table>
@@ -109,15 +109,17 @@
 管理者機能として、「金額変更」「注文の取り消し」「会計（セッション終了）」ができます。
 
 <p>
-  <img src="images/order2.png" width="70%">
-  <img src="images/order3.png" width="45%">
-  <img src="images/order4.png" width="45%">
+  <img src="images/order1.png" width="40%">
+</p>
+<p>
+  <img src="images/order_category.png" width="60%">
+  <img src="images/order_menu.png" width="60%">
 </p>
 
 なお、金額が設定されていない注文がある場合、合計金額の取得や会計はできないようになっています。
 
 <p>
-  <img src="images/order1.png" width="70%">
+  <img src="images/order2.png" width="40%">
 </p>
 
 - 席の状態確認
@@ -150,12 +152,6 @@
   <img src="images/sake.png" width="40%">
 </p>
 
-- 席の設定・管理（管理者機能）
-
-<p>
-  <img src="images/adminseat.png" width="40%">
-</p>
-
 - スタッフ管理（管理者機能）
 
 <p>
@@ -167,5 +163,5 @@
 管理者がユーザー登録申請を許可した場合飲み、そのユーザーが登録されます。
 
 <p>
-  <img src="images/user2.png" width="40%">
+  <img src="images/request.png" width="40%">
 </p>
