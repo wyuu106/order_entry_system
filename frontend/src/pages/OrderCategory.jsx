@@ -1,7 +1,11 @@
 // オーダーのカテゴリ選択画面
 
 import { useEffect, useState } from "react";
-import { useNavigate, useParams, useOutletContext, } from "react-router-dom";
+import {
+  useNavigate,
+  useParams,
+  useOutletContext,
+} from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
@@ -9,53 +13,74 @@ import OrderCart from "../components/OrderCart";
 
 function OrderCategory() {
   const navigate = useNavigate();
+
   const { seatId, sessionId } = useParams();
-  
+
   const token = localStorage.getItem("token");
 
   const [categories, setCategories] = useState([]);
 
-  const { cart, setCart } = useOutletContext(); // cart を Outlet で定義
+  const [showCart, setShowCart] = useState(false);
 
-  // カテゴリ一覧
+  const [isMobile, setIsMobile] = useState(
+    window.innerWidth <= 768
+  );
+
+  const { cart, setCart } = useOutletContext();
+
+  // カテゴリー一覧取得
   const getCategories = async () => {
-    try{
+    try {
       const res = await axios.get(
         `${API_URL}/categories`,
         {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      // カテゴリーの表示を id 順にソート
       setCategories(
         res.data.sort((a, b) => a.id - b.id)
       );
-    
+
     } catch (error) {
       console.log(error);
       alert(getErrorMessage(error));
     }
   };
 
-  // 画面が最初に表示された時にgetCategoriesを実行
   useEffect(() => {
     getCategories();
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    window.addEventListener(
+      "resize",
+      handleResize
+    );
+
+    return () => {
+      window.removeEventListener(
+        "resize",
+        handleResize
+      );
+    };
   }, []);
 
   // 注文送信
   const createOrders = async () => {
     try {
-
       if (cart.length === 0) {
         alert("商品を選択してください");
         return;
       }
 
       for (const item of cart) {
-
         await axios.post(
           `${API_URL}/order`,
           {
@@ -74,9 +99,9 @@ function OrderCategory() {
 
       alert("注文完了");
 
-      setCart([]); // cartの中身を空にする
+      setCart([]);
 
-      navigate(`/orders/${seatId}`);  // 注文完了 -> 戻る
+      navigate(`/orders/${seatId}`);
 
     } catch (error) {
       console.log(error);
@@ -84,67 +109,188 @@ function OrderCategory() {
     }
   };
 
-  return(
-    <div>
+  return (
+    <div
+      style={{
+        padding: "20px",
+        paddingBottom: isMobile
+          ? "90px"
+          : "20px",
+      }}
+    >
       <h1>カテゴリー選択</h1>
 
-      <button onClick={() => navigate(`/orders/${seatId}`)}>
+      <button
+        onClick={() =>
+          navigate(`/orders/${seatId}`)
+        }
+        style={{
+          marginBottom: "20px",
+        }}
+      >
         戻る
       </button>
 
       <div
         style={{
           display: "flex",
-          gap: "20px",
+          gap: "30px",
+          justifyContent: "center",
+          alignItems: "flex-start",
+          maxWidth: "1200px",
+          margin: "0 auto",
         }}
       >
+        {/* カテゴリー一覧 */}
+        <div
+          style={{
+            flex: 1,
+            maxWidth: "700px",
+          }}
+        >
+          <h2>カテゴリー</h2>
 
-        {/* 左側 カテゴリー一覧）*/}
-        <div style={{ flex: 1 }}>
-          <table
-            border="1"
-            cellPadding="8"
+          <div
             style={{
-              margin: "0 auto",
-              borderCollapse: "collapse",
-              textAlign: "center",
+              display: "grid",
+              gridTemplateColumns:
+                isMobile
+                  ? "1fr"
+                  : "repeat(auto-fill, minmax(220px, 1fr))",
+              gap: "16px",
             }}
           >
-            <thead>
-              <tr>
-                <th>カテゴリ名</th>
-                <th>操作</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {categories.map((category) => (
-                <tr key={category.id}>
-                  <td>{category.name}</td>
-
-                  <td>
-                    <button
-                      onClick={() =>
-                        navigate(
-                          `/orders/${seatId}/${sessionId}/menus/${category.id}`
-                        )
-                      }
-                    >
-                      メニューを見る
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+            {categories.map((category) => (
+              <div
+                key={category.id}
+                onClick={() =>
+                  navigate(
+                    `/orders/${seatId}/${sessionId}/menus/${category.id}`
+                  )
+                }
+                style={{
+                  minHeight: "110px",
+                  border: "1px solid #ddd",
+                  borderRadius: "12px",
+                  padding: "20px",
+                  background: "white",
+                  cursor: "pointer",
+                  boxShadow:
+                    "0 2px 8px rgba(0,0,0,0.1)",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  fontSize: "20px",
+                  fontWeight: "bold",
+                }}
+              >
+                {category.name}
+              </div>
+            ))}
+          </div>
         </div>
-        
-        {/* 右側（カート表示）*/}
-        <OrderCart cart={cart} createOrders={createOrders}/>
+
+        {/* PC用カート */}
+        {!isMobile && (
+          <div
+            style={{
+              width: "350px",
+              position: "sticky",
+              top: "20px",
+            }}
+          >
+            <OrderCart
+              cart={cart}
+              createOrders={createOrders}
+            />
+          </div>
+        )}
       </div>
+
+      {/* スマホ用カートボタン */}
+      {isMobile && (
+        <button
+          onClick={() =>
+            setShowCart(true)
+          }
+          style={{
+            position: "fixed",
+            bottom: "20px",
+            left: "50%",
+            transform:
+              "translateX(-50%)",
+            width: "90%",
+            height: "55px",
+            border: "none",
+            borderRadius: "12px",
+            background: "#333",
+            color: "white",
+            fontSize: "18px",
+            zIndex: 1000,
+          }}
+        >
+          🛒 カートを見る（{cart.length}）
+        </button>
+      )}
+
+      {/* スマホ用カートモーダル */}
+      {showCart && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background:
+              "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent:
+              "center",
+            alignItems: "center",
+            zIndex: 1001,
+          }}
+        >
+          <div
+            style={{
+              width: "90%",
+              maxWidth: "400px",
+              background: "white",
+              borderRadius: "12px",
+              padding: "20px",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent:
+                  "space-between",
+                alignItems: "center",
+                marginBottom: "15px",
+              }}
+            >
+              <h2 style={{ margin: 0 }}>
+                カート
+              </h2>
+
+              <button
+                onClick={() =>
+                  setShowCart(false)
+                }
+              >
+                ×
+              </button>
+            </div>
+
+            <OrderCart
+              cart={cart}
+              createOrders={() => {
+                createOrders();
+                setShowCart(false);
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
-
 }
 
 export default OrderCategory;

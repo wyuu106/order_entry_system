@@ -30,7 +30,7 @@ function Admin() {
         style={menuStyle}
         onClick={() => navigate("/orders")}
       >
-        注文一覧
+        注文
       </div>
 
       <div

@@ -4,41 +4,103 @@ function OrderCart({
   cart,
   createOrders = null,
 }) {
+  const totalPrice = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+
   return (
     <div
       style={{
-        width: "300px",
-        borderLeft: "2px solid black",
-        paddingLeft: "20px",
+        width: "100%",
+        maxWidth: "350px",
+        background: "white",
+        border: "1px solid #ddd",
+        borderRadius: "12px",
+        padding: "20px",
+        boxSizing: "border-box",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
       }}
     >
-      <h2>選択中</h2>
+      <h2 style={{ marginTop: 0 }}>
+        カート
+      </h2>
 
       {cart.length === 0 ? (
-        <p>未選択</p>
+        <p>商品が選択されていません</p>
       ) : (
-        cart.map((item) => (
-          <div
-            key={item.id}
+        <>
+          {cart.map((item, index) => (
+            <div
+              key={`${item.menu_id}-${index}`}
+              style={{
+                borderBottom: "1px solid #ddd",
+                paddingBottom: "10px",
+                marginBottom: "10px",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
+              >
+                <strong>{item.name}</strong>
+
+                <span>
+                  {item.quantity}個
+                </span>
+              </div>
+
+              <p style={{ margin: "5px 0" }}>
+                ¥{item.price * item.quantity}
+              </p>
+
+              {item.remark && (
+                <p
+                  style={{
+                    fontSize: "14px",
+                    color: "#666",
+                    margin: 0,
+                  }}
+                >
+                  備考: {item.remark}
+                </p>
+              )}
+            </div>
+          ))}
+
+          <h3
             style={{
-              borderBottom: "1px solid gray",
-              marginBottom: "10px",
+              textAlign: "right",
             }}
           >
-            <p>{item.name}</p>
-
-            <p>{item.quantity}個</p>
-
-            {item.remark && (
-              <p>備考: {item.remark}</p>
-            )}
-          </div>
-        ))
+            合計 ¥{totalPrice}
+          </h3>
+        </>
       )}
 
-      {/* createOrders != null の時に表示 */}
       {createOrders && (
-        <button onClick={createOrders}>
+        <button
+          onClick={createOrders}
+          disabled={cart.length === 0}
+          style={{
+            width: "100%",
+            height: "45px",
+            border: "none",
+            borderRadius: "8px",
+            background:
+              cart.length === 0
+                ? "#ccc"
+                : "#333",
+            color: "white",
+            fontSize: "16px",
+            cursor:
+              cart.length === 0
+                ? "default"
+                : "pointer",
+          }}
+        >
           注文する
         </button>
       )}
