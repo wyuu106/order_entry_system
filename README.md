@@ -82,10 +82,16 @@
 管理者は、これらの機能に加えて「売り上げ表閲覧」「メニュー設定」「席の設定」「スタッフ設定」「ユーザー登録申請の処理」  
 といった機能があります。
 
-<p>
-  <img src="images/admin.png" width="40%">
-  <img src="images/staff.png" width="40%">
-</p>
+<table>
+  <tr>
+    <td valign="top">
+      <img src="images/admin.png" width="100%">
+    </td>
+    <td valign="top">
+      <img src="images/staff.png" width="100%">
+    </td>
+  </tr>
+</table>
 
 - 注文一覧
 
@@ -141,13 +147,13 @@
 - 日本酒情報
 
 <p>
-  <img src="images/sake.png" width="50%">
+  <img src="images/sake.png" width="40%">
 </p>
 
 - 席の設定・管理（管理者機能）
 
 <p>
-  <img src="images/adminseat.png" width="50%">
+  <img src="images/adminseat.png" width="40%">
 </p>
 
 - スタッフ管理（管理者機能）
