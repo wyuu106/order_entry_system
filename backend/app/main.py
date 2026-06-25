@@ -21,16 +21,18 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+# .envを読み込む
+load_dotenv()
+
+origins = os.getenv("ALLOW_ORIGINS", "").split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# .envを読み込む
-load_dotenv()
 
 # 初期化（admin作成）API
 @app.post('/init', response_model=str)
