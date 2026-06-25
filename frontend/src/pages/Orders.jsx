@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../utils/api_util";
+import { WS_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
 
 function Orders() {
@@ -55,7 +56,7 @@ function Orders() {
     const token = localStorage.getItem("token");
 
     const ws = new WebSocket(
-      `ws://localhost:8000/ws/orders?token=${token}`
+      `${WS_URL}/ws/orders?token=${token}`
     );
 
     wsRef.current = ws;
