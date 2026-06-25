@@ -35,7 +35,7 @@ function Orders() {
         }
       );
 
-      // カテゴリーの表示を id 順にソート
+      // 席の表示を id 順にソート
       setSeatOrders(
         res.data.sort((a, b) => a.id - b.id)
       );
@@ -64,23 +64,26 @@ function Orders() {
       const data = JSON.parse(event.data);
 
       if (data.type === "new_order") {
-        const order = data.order;
+        const orderGroup = data.order;
 
         // 一覧更新
         setSeatOrders((prev) =>
           prev.map((seat) => {
-            if (seat.seat_id === order.seat_id) {
+            if (seat.seat_id === orderGroup.seat_id) {
               return {
                 ...seat,
-                orders: [...seat.orders, order],
+                orders: [
+                  ...seat.orders,
+                  ...orderGroup.orders,
+                ],
               };
             }
             return seat;
           })
         );
 
-        // キューに追加
-        setQueue((prev) => [...prev, order]);
+        // キュー追加
+        setQueue((prev) => [...prev, orderGroup]);
       }
     };
 
@@ -114,11 +117,6 @@ function Orders() {
       showNext();
     }
   }, [current, queue]);
-
-  // 席の表示順を id 順にソート
-  const sortedSeats = [...seatOrders].sort(
-    (a, b) => Number(a.seat_id) - Number(b.seat_id)
-  );
 
   // 提供状況変更
   const updateOrderStatus = async (order) => {
@@ -184,7 +182,7 @@ function Orders() {
         }}
       >
 
-        {sortedSeats.map((seat) => (
+        {seatOrders.map((seat) => (
           <div
             key={seat.seat_id}
             style={{
@@ -252,7 +250,8 @@ function Orders() {
       </div>
       
       {/* 追加注文のポップアップ */}
-      {current && (
+      {current && 
+       current.orders.some((order) => !order.is_drink) &&(
         <div
           style={{
             position: "fixed",
@@ -262,26 +261,37 @@ function Orders() {
             color: "white",
             padding: "15px",
             borderRadius: "10px",
-            width: "260px",
+            width: "300px",
           }}
         >
-          <h4>新規注文</h4>
+          <h4>
+            新規注文（{current.seat_name}）
+          </h4>
 
-          <div>
-            {current.menu_name} × {current.quantity}
-          </div>
+          {current.orders.map((order) => (
+            <div
+              key={order.id}
+              style={{
+                borderBottom: "1px solid gray",
+                padding: "5px 0",
+              }}
+            >
+              <div>
+                {order.menu_name} × {order.quantity}
+              </div>
 
-          {current.remark && (
-            <div style={{ fontSize: "0.9em" }}>
-              備考: {current.remark}
+              {order.remark && (
+                <div style={{ fontSize: "0.9em" }}>
+                  備考: {order.remark}
+                </div>
+              )}
             </div>
-          )}
+          ))}
 
           <button
             style={{ marginTop: "10px" }}
             onClick={() => {
               setCurrent(null);
-              showNext();
             }}
           >
             次へ

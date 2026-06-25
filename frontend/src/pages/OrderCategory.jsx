@@ -80,29 +80,28 @@ function OrderCategory() {
         return;
       }
 
-      for (const item of cart) {
-        await axios.post(
-          `${API_URL}/order`,
-          {
-            session_id: sessionId,
+      await axios.post(
+        `${API_URL}/order`,
+        {
+          session_id: sessionId,
+          orders: cart.map((item) => ({
             menu_id: item.menu_id,
             quantity: item.quantity,
             remark: item.remark,
+          })),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-      }
+        }
+      );
 
       alert("注文完了");
 
       setCart([]);
 
       navigate(`/orders/${seatId}`);
-
     } catch (error) {
       console.log(error);
       alert(getErrorMessage(error));

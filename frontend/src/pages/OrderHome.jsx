@@ -168,6 +168,14 @@ function OrderHome() {
 
   // セッション終了
   const endSession = async () => {
+    const ok = window.confirm(
+      "本当にセッションを終了しますか？"
+    )
+
+    if (!ok) {
+      return
+    }
+
     try {
       await axios.put(
         `${API_URL}/seat_session/${session.id}`,
