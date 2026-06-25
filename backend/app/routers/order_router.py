@@ -25,7 +25,7 @@ async def create_order(
     return res
 
 # セッションごとのオーダー一覧
-@router.get('/orders/{session_id}', response_model=list[order_schema.OrderCreateResponse])
+@router.get('/orders/{session_id}', response_model=list[order_schema.OrderItemResponse])
 def get_session_orders(
     session_id: int,
     db: Session = Depends(get_db),

@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from app.models import session_model, seat_model
 
 def get_seat_name(seat_id: int, db: Session):
-    seat_name = db.execute(select(seat_model.Seat).where(
+    seat_name = db.execute(select(seat_model.Seat.name).where(
         seat_model.Seat.id == seat_id
     )).scalar_one_or_none()
 

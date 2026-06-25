@@ -15,22 +15,23 @@ def disconnect(websocket: WebSocket):
 async def broadcast_new_order(order):
     print("broadcast")
     print(order)
-    print(len(active_connections))
+
+    payload = order.model_dump()
+
+    # ドリンク除外
+    payload["orders"] = [
+        o for o in payload["orders"]
+        if not o.get("is_drink", False)
+    ]
 
     for conn in active_connections:
         try:
             await conn.send_json({
                 "type": "new_order",
-                "order": {
-                    "id": order.id,
-                    "seat_id": order.seat_id,
-                    "seat_name": order.seat_name,
-                    "menu_name": order.menu_name,
-                    "quantity": order.quantity,
-                    "remark": order.remark,
-                }
+                "order": payload
             })
-            print('sent')
-        except:
-            # 切れてるやつは無視（安全対策）
-            pass
+            print("sent")
+
+        except Exception as e:
+            print("ws error:", e)
+            active_connections.remove(conn)

@@ -69,7 +69,7 @@ def create_order(
     return res
 
 # セッションごとのオーダー一覧
-def get_session_orders(session_id: int, db: Session) -> order_schema.OrderCreateResponse:
+def get_session_orders(session_id: int, db: Session) -> list[order_schema.OrderItemResponse]:
     stmt = (
         select(
             order_model.Order,
@@ -91,14 +91,14 @@ def get_session_orders(session_id: int, db: Session) -> order_schema.OrderCreate
      
     rows = db.execute(stmt).all()
 
-    orders = []
+    res = []
 
     for db_order, is_drink, user_name in rows:
-        orders.append(
+        res.append(
             create_order_item_response(db_order, user_name, is_drink)
         )
 
-    return create_order_response(session_id, orders, db)
+    return res
 
 # 席ごとのオーダー一覧（ドリンクは除外）
 def get_seat_orders(db: Session) -> list[order_schema.OrderCreateResponse]:
@@ -115,17 +115,25 @@ def get_seat_orders(db: Session) -> list[order_schema.OrderCreateResponse]:
         )
         db_session = db.execute(stmt2).scalar_one_or_none()
 
+        orders = []
+
         # セッションがある場合、セッションごとのオーダー取得
         if db_session:
-            session_order = get_session_orders(db_session.id, db)
+            session_orders = get_session_orders(db_session.id, db)
 
             # ドリンクを除外
-            session_order.orders = [
-                order for order in session_order.orders
+            orders = [
+                order for order in session_orders
                 if not order.is_drink
             ]
 
-            res.append()
+        res.append(
+            order_schema.OrderCreateResponse(
+                seat_id = seat.id,
+                seat_name = seat.name,
+                orders = orders
+            )
+        )
 
     return res
 
@@ -189,6 +197,13 @@ def get_day_orders(
 
     start = datetime.combine(target_date, time(0, 0))
     end = datetime.combine(target_date + timedelta(days=1), time(0, 0))
+
+    exist_session = db.execute(select(session_model.SeatSession).where(
+        session_model.SeatSession.end_at.is_(None)
+    )).scalar_one_or_none()
+
+    if exist_session:
+        raise HTTPException(status_code=400, detail='終了していないセッションがあります')
 
     stmt = (
         select(
