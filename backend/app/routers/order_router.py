@@ -6,7 +6,7 @@ from app.db import get_db
 from app.utils.auth import get_current_user
 from app.models import user_model
 from app.schemas import order_schema
-from app.cruds import session_crud, order_crud
+from app.cruds import order_crud
 from app.utils.websocket import broadcast_new_order
 
 router = APIRouter()
@@ -14,15 +14,15 @@ router = APIRouter()
 # オーダー作成
 @router.post('/order', response_model=order_schema.OrderCreateResponse)
 async def create_order(
-    order: order_schema.OrderCreate,
+    orders: order_schema.OrderCreate,
     current_user: user_model.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    order = order_crud.create_order(order, current_user, db)
+    res = order_crud.create_order(orders, current_user, db)
 
-    await broadcast_new_order(order)
+    await broadcast_new_order(res)
 
-    return order
+    return res
 
 # セッションごとのオーダー一覧
 @router.get('/orders/{session_id}', response_model=list[order_schema.OrderCreateResponse])
@@ -34,7 +34,7 @@ def get_session_orders(
     return order_crud.get_session_orders(session_id, db)
 
 # 席ごとのオーダー一覧
-@router.get('/seat_orders/', response_model=list[order_schema.SeatOrderResponse])
+@router.get('/seat_orders/', response_model=list[order_schema.OrderCreateResponse])
 def get_seat_orders(
     db: Session = Depends(get_db),
     current_user: user_model.User = Depends(get_current_user)

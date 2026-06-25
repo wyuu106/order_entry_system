@@ -1,6 +1,7 @@
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import Integer, String, DateTime, ForeignKey
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from app.db import Base
 
 class Order(Base):
@@ -13,5 +14,5 @@ class Order(Base):
     price: Mapped[int] = mapped_column(Integer, nullable=True)
     quantity: Mapped[int] = mapped_column(Integer, default=1)
     remark: Mapped[str] = mapped_column(String, nullable=True)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))
     status: Mapped[str] = mapped_column(String, default='waiting')
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))

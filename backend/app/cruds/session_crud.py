@@ -3,7 +3,7 @@ from sqlalchemy import select
 from fastapi import HTTPException
 from datetime import datetime
 from zoneinfo import ZoneInfo
-from app.utils.order_util import get_seat_name
+from app.utils.get_info_util import get_seat_name
 from app.models import session_model, order_model
 from app.schemas import session_schema
 from app.cruds import seat_crud
@@ -18,6 +18,7 @@ def create_session(
         session_model.SeatSession.end_at.is_(None)
     )
     exist_session = db.execute(stmt).scalar_one_or_none()
+
     if exist_session:
         raise HTTPException(status_code=400, detail='この席は使用中です')
     
@@ -60,20 +61,20 @@ def get_session(seat_id: int, db: Session) -> session_schema.SessionCreateRespon
 
 # セッション終了
 def end_session(session_id: int, db: Session) -> session_schema.SessionResponse:
-    stmt = select(session_model.SeatSession).where(
+    stmt1 = select(session_model.SeatSession).where(
         session_model.SeatSession.id == session_id,
         session_model.SeatSession.end_at.is_(None)
     )
-    db_session = db.execute(stmt).scalar_one_or_none()
+    db_session = db.execute(stmt1).scalar_one_or_none()
 
     if not db_session:
         raise HTTPException(status_code=404, detail='該当するセッションが見つかりません')
     
-    stmt = select(order_model.Order).where(
+    stmt2 = select(order_model.Order).where(
         order_model.Order.session_id == session_id,
         order_model.Order.price.is_(None)
     )
-    noprice_order = db.execute(stmt).scalar_one_or_none()
+    noprice_order = db.execute(stmt2).scalar_one_or_none()
 
     if noprice_order:
         raise HTTPException(status_code=400, detail='値段が未設定の商品があります')

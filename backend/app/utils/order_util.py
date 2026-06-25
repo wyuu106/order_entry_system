@@ -2,58 +2,70 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select
 from fastapi import HTTPException
 from app.schemas import order_schema
-from app.models import order_model, seat_model, menu_model, user_model
+from app.models import order_model, session_model, seat_model, menu_model, user_model
 
-def get_seat_name(seat_id: int, db: Session) -> str:
-    seat_name = db.execute(select(seat_model.Seat.name).where(
-        seat_model.Seat.id == seat_id
-    )).scalar_one_or_none()
+def get_menu_info(menu_id: int, db: Session):
+    menu_info = db.execute(
+        select(
+            menu_model.Menu.name,
+            menu_model.Menu.price
+        ).where(
+            menu_model.Menu.id == menu_id
+        )).one_or_none()
 
-    if not seat_name:
-        raise HTTPException(status_code=404, detail='該当する席が見つかりません')
-    
-    return seat_name
-
-def get_menu_isdrink(menu_id, db) -> bool:
-    menu_isdrink = db.execute(select(menu_model.Menu.is_drink).where(
-        menu_model.Menu.id == menu_id
-    )).scalar_one_or_none()
-
-    if menu_isdrink is None:
+    if not menu_info:
         raise HTTPException(status_code=404, detail='該当するメニューが見つかりません')
     
-    return menu_isdrink
+    return menu_info
 
-def get_user_name(user_id: int, db: Session) -> str:
-    user_name = db.execute(select(user_model.User.name).where(
-            user_model.User.id == user_id
-        )).scalar_one_or_none()
-    
-    if not user_name:
-        raise HTTPException(status_code=404, detail='該当するユーザーが見つかりません')
-    
-    return user_name
+def get_seat_info(session_id: int, db: Session):
+    seat_info = db.execute(
+        select(
+            seat_model.Seat.id,
+            seat_model.Seat.name
+        )
+        .join(
+            session_model.SeatSession,
+            session_model.SeatSession.seat_id == seat_model.Seat.id
+        )
+        .where(
+            session_model.SeatSession.id == session_id,
+            session_model.SeatSession.end_at.is_(None)
+        )
+    ).one_or_none()
+
+    if not seat_info:
+        raise HTTPException(status_code=404, detail="該当するセッションが見つかりません")
+
+    return seat_info
+
+def create_order_item_response(
+    db_order: order_model.Order,
+    user_name: str,
+    is_drink: bool
+) -> order_schema.OrderItemResponse:
+
+    return order_schema.OrderItemResponse(
+        id = db_order.id,
+        menu_name = db_order.menu_name,
+        price = db_order.price,
+        quantity = db_order.quantity,
+        remark = db_order.remark,
+        status = db_order.status,
+        user_name = user_name,
+        is_drink = is_drink,
+    )
 
 def create_order_response(
-    order: order_model.Order,
-    seat_id: int,
-    seat_name: str,
-    db: Session
+        session_id: int,
+        orders: order_schema.OrderItemResponse,
+        db: Session
 ) -> order_schema.OrderCreateResponse:
     
-    is_drink = get_menu_isdrink(order.menu_id, db)
-
-    user_name = get_user_name(order.user_id, db)
+    seat_id, seat_name = get_seat_info(session_id, db)
 
     return order_schema.OrderCreateResponse(
-        id = order.id,
         seat_id = seat_id,
         seat_name = seat_name,
-        menu_name = order.menu_name,
-        price = order.price,
-        quantity = order.quantity,
-        remark = order.remark,
-        user_name = user_name,
-        status = order.status,
-        is_drink = is_drink
+        orders = orders
     )

@@ -1,38 +1,40 @@
 from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 
-class OrderCreate(BaseModel):
-    session_id: int
+class OrderItem(BaseModel):
     menu_id: int
     quantity: int = 1
     remark: str | None = None
 
-class OrderCreateResponse(BaseModel):
+class OrderCreate(BaseModel):
+    session_id: int
+    orders: list[OrderItem]
+
+class OrderItemResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
-    seat_id: int
-    seat_name: str
     menu_name: str
     price: int | None
     quantity: int
     remark: str | None
-    user_name: str
     status: str
+    user_name: str
     is_drink: bool
 
-class SeatOrderResponse(BaseModel):
+class OrderCreateResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     seat_id: int
     seat_name: str
-    orders: list[OrderCreateResponse]
+    orders: list[OrderItemResponse]
 
 class DayOrderItem(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     menu_id: int
     menu_name: str
+    remark: str | None
     quantity: int
     sales: int
 
