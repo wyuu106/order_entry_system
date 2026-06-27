@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from app.schemas import order_schema
 from app.models import order_model
 from app.utils.get_info_util import get_seat_info
+    
 
 def create_order_item_response(
     db_order: order_model.Order,

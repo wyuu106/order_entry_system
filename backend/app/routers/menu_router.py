@@ -53,9 +53,9 @@ def update_category(
     
     return menu_crud.update_category(category_id, new_category, db)
 
-# カテゴリ削除
-@router.delete('/admin/category/{category_id}')
-def delete_category(
+# カテゴリ非表示
+@router.put('/admin/category/{category_id}/inactive')
+def inactive_category(
     category_id: int,
     db: Session = Depends(get_db),
     current_user: user_model.User = Depends(get_current_user)
@@ -63,14 +63,14 @@ def delete_category(
     if not current_user.role == 'admin':
         raise HTTPException(status_code=403, detail="権限がありません")
     
-    return menu_crud.delete_category(category_id, db)
+    return menu_crud.inactive_category(category_id, db)
 
 # カテゴリ復元
 @router.put(
-        '/admin/category/restore/{category_id}',
+        '/admin/category/{category_id}/active',
         response_model=menu_schema.CategoryCreateResponse
 )
-def restore_category(
+def active_category(
     category_id: int,
     db: Session = Depends(get_db),
     current_user: user_model.User = Depends(get_current_user)
@@ -78,7 +78,7 @@ def restore_category(
     if not current_user.role == 'admin':
         raise HTTPException(status_code=403, detail="権限がありません")
     
-    return menu_crud.restore_category(category_id, db)
+    return menu_crud.active_category(category_id, db)
 
 # メニュー作成
 @router.post('/admin/menu', response_model=menu_schema.MenuCreate)
@@ -92,26 +92,25 @@ def create_menu(
 
     return menu_crud.create_menu(menu, db)
 
-# メニュー一覧（管理者用）
-@router.get('/admin/{category_id}/menus', response_model=list[menu_schema.MenuCreateResponse])
-def get_menus(
-    category_id: int,
+# メニュー一覧（非表示）
+@router.get('/admin/inactive/menus', response_model=list[menu_schema.InactiveMenuResponse])
+def get_inactive_menus(
     db: Session = Depends(get_db),
     current_user: user_model.User = Depends(get_current_user)
 ):
     if not current_user.role == 'admin':
         raise HTTPException(status_code=403, detail="権限がありません")
     
-    return menu_crud.get_all_menus(category_id, db)
+    return menu_crud.get_inactive_menus(db)
 
-# メニュー一覧（スタッフ用）
-@router.get('/{category_id}/menus', response_model=list[menu_schema.MenuCreateResponse])
-def get_menus(
+# メニュー一覧（販売中）
+@router.get('/{category_id}/active/menus', response_model=list[menu_schema.MenuCreateResponse])
+def get_active_menus(
     category_id: int,
     db: Session = Depends(get_db),
     current_user: user_model.User = Depends(get_current_user)
 ):
-    return menu_crud.get_menus(category_id, db)
+    return menu_crud.get_active_menus(category_id, db)
 
 # メニュー更新
 @router.put('/admin/menu/{menu_id}', response_model=menu_schema.MenuCreateResponse)
@@ -126,9 +125,9 @@ def update_menu(
     
     return menu_crud.update_menu(menu_id, new_menu, db)
 
-# メニュー削除
-@router.delete('/admin/menu/{menu_id}')
-def delete_menu(
+# メニュー非表示
+@router.put('/admin/menu/{menu_id}/inactive')
+def inactive_menu(
     menu_id: int,
     db: Session = Depends(get_db),
     current_user: user_model.User = Depends(get_current_user)
@@ -136,11 +135,11 @@ def delete_menu(
     if not current_user.role == 'admin':
         raise HTTPException(status_code=403, detail="権限がありません")
     
-    return menu_crud.delete_menu(menu_id, db)
+    return menu_crud.inactive_menu(menu_id, db)
 
 # メニュー復元
-@router.put('/admin/menu/restore/{menu_id}', response_model=menu_schema.MenuCreateResponse)
-def restore_menu(
+@router.put('/admin/menu/{menu_id}/active', response_model=menu_schema.MenuCreateResponse)
+def active_menu(
     menu_id: int,
     db: Session = Depends(get_db),
     current_user: user_model.User = Depends(get_current_user)
@@ -148,7 +147,7 @@ def restore_menu(
     if not current_user.role == 'admin':
         raise HTTPException(status_code=403, detail="権限がありません")
     
-    return menu_crud.restore_menu(menu_id, db)
+    return menu_crud.active_menu(menu_id, db)
 
 # 日本酒情報作成
 @router.post('/sake', response_model=menu_schema.SakeCreateResponse)

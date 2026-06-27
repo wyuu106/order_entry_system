@@ -27,7 +27,7 @@ def create_category(
 def get_all_categories(db: Session) -> list[menu_schema.CategoryCreateResponse]:
     return db.execute(select(menu_model.Category)).scalars().all()
 
-# カテゴリ一覧（スタッフ用
+# カテゴリ一覧（スタッフ用）
 def get_categories(db: Session) -> list[menu_schema.CategoryCreateResponse]:
     return db.execute(select(menu_model.Category).where(
         menu_model.Category.is_active == True
@@ -55,7 +55,7 @@ def update_category(
     return db_category
 
 # カテゴリ削除
-def delete_category(category_id: int, db: Session):
+def inactive_category(category_id: int, db: Session):
     stmt = select(menu_model.Category).where(menu_model.Category.id == category_id)
     db_category = db.execute(stmt).scalar_one_or_none()
 
@@ -69,7 +69,7 @@ def delete_category(category_id: int, db: Session):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 # カテゴリ復元
-def restore_category(category_id: int, db: Session) -> menu_schema.CategoryCreateResponse:
+def active_category(category_id: int, db: Session) -> menu_schema.CategoryCreateResponse:
     stmt = select(menu_model.Category).where(menu_model.Category.id == category_id)
     db_category = db.execute(stmt).scalar_one_or_none()
 
@@ -110,14 +110,37 @@ def create_menu(menu: menu_schema.MenuCreate, db: Session) -> menu_schema.MenuCr
 
     return db_menu
 
-# メニュー一覧（管理者用）
-def get_all_menus(category_id: int, db: Session) -> list[menu_schema.MenuCreateResponse]:
-    return db.execute(select(menu_model.Menu).where(
-        menu_model.Menu.category_id == category_id
-    )).scalars().all()
+# メニュー一覧（非表示）
+def get_inactive_menus(db: Session) -> list[menu_schema.InactiveMenuResponse]:
+    stmt = (
+        select(
+            menu_model.Menu,
+            menu_model.Category.name.label("category_name"),
+        )
+        .join(
+            menu_model.Category,
+            menu_model.Menu.category_id == menu_model.Category.id,
+        )
+        .where(menu_model.Menu.is_active == False)
+    )
+    rows = db.execute(stmt).all()
 
-# メニュー一覧（スタッフ用）
-def get_menus(category_id: int, db: Session) -> list[menu_schema.MenuCreateResponse]:
+    res = [
+        menu_schema.InactiveMenuResponse(
+            id = menu.id,
+            name = menu.name,
+            price = menu.price,
+            is_active = menu.is_active,
+            category_id = menu.category_id,
+            category_name = category_name
+        )
+        for menu, category_name in rows
+    ]
+
+    return res
+
+# メニュー一覧（販売中）
+def get_active_menus(category_id: int, db: Session) -> list[menu_schema.MenuCreateResponse]:
     return db.execute(select(menu_model.Menu).where(
         menu_model.Menu.category_id == category_id,
         menu_model.Menu.is_active == True
@@ -144,8 +167,8 @@ def update_menu(
 
     return db_menu
 
-# メニュー削除
-def delete_menu(menu_id: int, db: Session):
+# メニュー非表示
+def inactive_menu(menu_id: int, db: Session):
     stmt = select(menu_model.Menu).where(menu_model.Menu.id == menu_id)
     db_menu = db.execute(stmt).scalar_one_or_none()
 
@@ -155,11 +178,12 @@ def delete_menu(menu_id: int, db: Session):
     db_menu.is_active = False
 
     db.commit()
+    db.refresh(db_menu)
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 # メニュー復元
-def restore_menu(menu_id: int, db: Session) -> menu_schema.MenuCreateResponse:
+def active_menu(menu_id: int, db: Session) -> menu_schema.MenuCreateResponse:
     stmt = select(menu_model.Menu).where(menu_model.Menu.id == menu_id)
     db_menu = db.execute(stmt).scalar_one_or_none()
 
@@ -169,6 +193,7 @@ def restore_menu(menu_id: int, db: Session) -> menu_schema.MenuCreateResponse:
     db_menu.is_active = True
     
     db.commit()
+    db.refresh(db_menu)
 
     return db_menu
 

@@ -24,6 +24,14 @@ class MenuCreateResponse(BaseModel):
     is_active: bool
     category_id: int
 
+class InactiveMenuResponse(BaseModel):
+    id: int
+    name: str
+    price: int | None
+    is_active: bool
+    category_id: int
+    category_name: str
+
 
 class SakeCreate(BaseModel):
     name: str
