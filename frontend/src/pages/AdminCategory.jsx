@@ -93,7 +93,7 @@ function AdminCategory() {
   };
 
   // カテゴリ削除
-  const deleteCategory = async (id) => {
+  const inactiveCategory = async (id) => {
     const ok = window.confirm(
       "本当にカテゴリーを削除しますか？"
     )
@@ -103,8 +103,8 @@ function AdminCategory() {
     }
 
     try{
-      await axios.delete(
-          `${API_URL}/admin/category/${id}`,
+      await axios.put(
+          `${API_URL}/category/${id}/inactive`,
           {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -120,10 +120,10 @@ function AdminCategory() {
   };
 
   // カテゴリ復元
-  const restoreCategory = async (id) => {
+  const activeCategory = async (id) => {
     try{
       await axios.put(
-          `${API_URL}/admin/category/restore/${id}`,
+          `${API_URL}/admin/category/${id}/active`,
           {},
           {
         headers: {
@@ -183,18 +183,20 @@ function AdminCategory() {
         <tbody>
           {categories.map((category) => (
             <tr key={category.id}>
-              <td>{category.name}</td>
+              <td
+                style={{
+                  cursor: "pointer",
+                  color: "blue",
+                  textDecoration: "underline",
+                }}
+                onClick={() =>
+                  navigate(`/admin/menus?categoryId=${category.id}`)
+                }
+              >
+                {category.name}
+              </td>
 
               <td>
-                {/* メニュー画面へ遷移 */}
-                <button
-                  onClick={() =>
-                    navigate(`/admin/menus?categoryId=${category.id}`)
-                  }
-                >
-                  メニューを見る
-                </button>
-
                 {/* 編集 */}
                 <button
                   onClick={() => {
@@ -212,9 +214,9 @@ function AdminCategory() {
                     checked={category.is_active}
                     onChange={() => {
                       if (category.is_active) {
-                        deleteCategory(category.id);
+                        inactiveCategory(category.id);
                       } else {
-                        restoreCategory(category.id);
+                        activeCategory(category.id);
                       }
                     }}
                   />
@@ -223,6 +225,23 @@ function AdminCategory() {
               </td>
             </tr>
           ))}
+
+          {/* 非表示メニュー */}
+          <tr>
+            <td
+              colSpan={2}
+              style={{
+                cursor: "pointer",
+                color: "blue",
+                textDecoration: "underline",
+              }}
+              onClick={() =>
+                navigate("/admin/inactive/menus")
+              }
+            >
+              非表示メニュー
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>

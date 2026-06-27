@@ -7,6 +7,7 @@ import Admin from "./pages/Admin";
 import Orders from "./pages/Orders"
 import AdminCategory from "./pages/AdminCategory"
 import AdminMenu from "./pages/AdminMenu"
+import AdminInactiveMenu from "./pages/AdminInactiveMenu"
 import AdminSeat from "./pages/AdminSeat";
 import AdminUser from "./pages/AdminUser"
 import AdminRequest from "./pages/AdminRequest"
@@ -43,22 +44,28 @@ function App() {
           element={<Admin />}
         />
 
-        {/* 管理者画面 */}
+        {/* 注文一覧画面 */}
         <Route
           path="/orders"
           element={<Orders />}
         />
 
-        {/* メニュー管理 */}
+        {/* カテゴリー管理 */}
         <Route
           path="/admin/categories"
           element={<AdminCategory />}
         />
 
-        {/* 席情報管理 */}
+        {/* メニュー管理 */}
         <Route
           path="/admin/menus"
           element={<AdminMenu />}
+        />
+
+        {/* 非表示メニュー管理 */}
+        <Route
+          path="/admin/inactive/menus"
+          element={<AdminInactiveMenu />}
         />
 
         {/* 席情報管理 */}

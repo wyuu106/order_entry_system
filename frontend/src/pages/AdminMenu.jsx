@@ -31,7 +31,7 @@ function AdminMenu() {
   const getMenus = async (categoryId) => {
     try {
       const res = await axios.get(
-        `${API_URL}/admin/${categoryId}/menus`,
+        `${API_URL}/${categoryId}/active/menus`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -52,14 +52,13 @@ function AdminMenu() {
   
   // 画面表示時にgetMenusを実行
   useEffect(() => {
-    // params.get("categoryId")でクエリパラメータの中身取得
-    const categoryId = params.get("categoryId");
+  const categoryId = params.get("categoryId");
 
-    if (categoryId) {
-      setSelectedCategory(categoryId);
-      getMenus(categoryId);
-    }
-  }, []);
+  if (categoryId) {
+    setSelectedCategory(categoryId);
+    getMenus(categoryId);
+  }
+}, [location.search]);
 
   // 状態リセット用関数
   const resetForm = () => {
@@ -125,10 +124,10 @@ function AdminMenu() {
     }
   };
 
-  // メニュー削除
-  const deleteMenu = async (id) => {
+  // メニュー非表示
+  const inactiveMenu = async (id) => {
     const ok = window.confirm(
-      "本当にメニューを削除しますか？"
+      "本当にメニューを非表示にしますか？"
     )
 
     if (!ok) {
@@ -136,28 +135,8 @@ function AdminMenu() {
     }
 
     try {
-      await axios.delete(
-        `${API_URL}/admin/menu/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      getMenus(selectedCategory);
-    
-    } catch (error) {
-      console.log(error);
-      alert(getErrorMessage(error));
-    }
-  };
-
-  // メニュー復元
-  const restoreMenu = async (id) => {
-    try {
       await axios.put(
-        `${API_URL}/admin/menu/restore/${id}`,
+        `${API_URL}/admin/menu/${id}/inactive`,
         {},
         {
           headers: {
@@ -166,7 +145,7 @@ function AdminMenu() {
         }
       );
 
-      getMenus(selectedCategory);
+      await getMenus(selectedCategory);
     
     } catch (error) {
       console.log(error);
@@ -262,8 +241,6 @@ function AdminMenu() {
                 } else {
                   await createMenu();
                 }
-
-                setIsOpen(false);
               }}
             >
               {editingMenuId ? "更新" : "追加"}
@@ -306,7 +283,12 @@ function AdminMenu() {
             <tr key={menu.id}>
               <td>{menu.name}</td>
 
-              <td>{menu.price}円</td>
+              <td>
+                {menu.price === null
+                  ? "未設定"
+                  : `${menu.price}円`
+                }
+              </td>
 
               <td>{menu.is_drink ? "⚪︎" : "-"}</td>
 
@@ -323,21 +305,12 @@ function AdminMenu() {
                   編集
                 </button>
 
-                {/* 表示 or 非表示 */}
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={menu.is_active}
-                    onChange={() => {
-                      if (menu.is_active) {
-                        deleteMenu(menu.id);
-                      } else {
-                        restoreMenu(menu.id);
-                      }
-                    }}
-                  />
-                  表示
-                </label>
+                {/* 非表示 */}
+                <button
+                  onClick={() => inactiveMenu(menu.id)}
+                >
+                  非表示
+                </button>
               </td>
             </tr>
           ))}

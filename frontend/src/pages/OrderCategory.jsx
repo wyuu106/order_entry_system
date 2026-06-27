@@ -26,7 +26,12 @@ function OrderCategory() {
     window.innerWidth <= 768
   );
 
-  const { cart, setCart } = useOutletContext();
+  const {
+    cart,
+    setCart,
+    increaseQuantity,
+    decreaseQuantity,
+  } = useOutletContext();
 
   // カテゴリー一覧取得
   const getCategories = async () => {
@@ -200,6 +205,8 @@ function OrderCategory() {
           >
             <OrderCart
               cart={cart}
+              increaseQuantity={increaseQuantity}
+              decreaseQuantity={decreaseQuantity}
               createOrders={createOrders}
             />
           </div>
@@ -228,7 +235,7 @@ function OrderCategory() {
             zIndex: 1000,
           }}
         >
-          🛒 カートを見る（{cart.length}）
+          カートを見る（{cart.length}）
         </button>
       )}
 
@@ -280,6 +287,8 @@ function OrderCategory() {
 
             <OrderCart
               cart={cart}
+              increaseQuantity={increaseQuantity}
+              decreaseQuantity={decreaseQuantity}
               createOrders={() => {
                 createOrders();
                 setShowCart(false);

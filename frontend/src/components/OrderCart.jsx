@@ -2,13 +2,10 @@
 
 function OrderCart({
   cart,
+  increaseQuantity,
+  decreaseQuantity,
   createOrders = null,
 }) {
-  const totalPrice = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
-
   return (
     <div
       style={{
@@ -47,14 +44,42 @@ function OrderCart({
               >
                 <strong>{item.name}</strong>
 
-                <span>
-                  {item.quantity}個
-                </span>
-              </div>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                  }}
+                >
+                  <button
+                    onClick={() => decreaseQuantity(index)}
+                    style={{
+                      width: "28px",
+                      height: "28px",
+                      border: "none",
+                      borderRadius: "50%",
+                      cursor: "pointer",
+                    }}
+                  >
+                    −
+                  </button>
 
-              <p style={{ margin: "5px 0" }}>
-                ¥{item.price * item.quantity}
-              </p>
+                  <span>{item.quantity}個</span>
+
+                  <button
+                    onClick={() => increaseQuantity(index)}
+                    style={{
+                      width: "28px",
+                      height: "28px",
+                      border: "none",
+                      borderRadius: "50%",
+                      cursor: "pointer",
+                    }}
+                  >
+                    ＋
+                  </button>
+                </div>
+              </div>
 
               {item.remark && (
                 <p
@@ -69,14 +94,6 @@ function OrderCart({
               )}
             </div>
           ))}
-
-          <h3
-            style={{
-              textAlign: "right",
-            }}
-          >
-            合計 ¥{totalPrice}
-          </h3>
         </>
       )}
 

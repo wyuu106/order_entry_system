@@ -29,7 +29,12 @@ function OrderMenu() {
     window.innerWidth <= 768
   );
 
-  const { cart, setCart } = useOutletContext();
+  const {
+    cart,
+    setCart,
+    increaseQuantity,
+    decreaseQuantity,
+  } = useOutletContext();
 
   const token = localStorage.getItem("token");
 
@@ -37,7 +42,7 @@ function OrderMenu() {
   const getMenus = async () => {
     try {
       const res = await axios.get(
-        `${API_URL}/${categoryId}/menus`,
+        `${API_URL}/${categoryId}/active/menus`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -270,6 +275,8 @@ function OrderMenu() {
           >
             <OrderCart
               cart={cart}
+              increaseQuantity={increaseQuantity}
+              decreaseQuantity={decreaseQuantity}
               createOrders={createOrders}
             />
           </div>
@@ -354,6 +361,8 @@ function OrderMenu() {
 
             <OrderCart
               cart={cart}
+              increaseQuantity={increaseQuantity}
+              decreaseQuantity={decreaseQuantity}
               createOrders={() => {
                 createOrders();
                 setShowCart(false);
