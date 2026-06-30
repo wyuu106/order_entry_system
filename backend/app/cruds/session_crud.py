@@ -74,7 +74,7 @@ def end_session(session_id: int, db: Session) -> session_schema.SessionResponse:
         order_model.Order.session_id == session_id,
         order_model.Order.price.is_(None)
     )
-    noprice_order = db.execute(stmt2).scalar_one_or_none()
+    noprice_order = db.execute(stmt2).scalars().first()
 
     if noprice_order:
         raise HTTPException(status_code=400, detail='値段が未設定の商品があります')
