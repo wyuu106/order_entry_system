@@ -86,6 +86,8 @@ def end_session(session_id: int, db: Session) -> session_schema.SessionResponse:
 
     seat_name = get_seat_name(db_session.seat_id, db)
 
+    seat_crud.update_seat_status(db_session.seat_id, 'empty', db)
+
     return session_schema.SessionResponse(
         seat_name = seat_name,
         message = '終了'
