@@ -18,7 +18,7 @@ function Orders() {
   const [current, setCurrent] = useState(null);
 
   const wsRef = useRef(null);
-  const prevQueueLength = useRef(0);
+  const currentRef = useRef(null);
 
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
@@ -83,23 +83,20 @@ function Orders() {
           })
         );
 
-        // キュー追加
-        setQueue((prev) => [...prev, orderGroup]);
+        // キュー追加（最初の1件だけ通知音）
+        setQueue((prev) => {
+          if (prev.length === 0 && currentRef.current === null) {
+            const audio = new Audio("/notification.mp3");
+            audio.play().catch(() => {});
+          }
+
+          return [...prev, orderGroup];
+        });
       }
     };
 
     return () => ws.close();
   }, []);
-
-  // 最初の１回だけ通知音
-  useEffect(() => {
-  if (prevQueueLength.current === 0 && queue.length > 0) {
-    const audio = new Audio("/notification.mp3");
-    audio.play();
-  }
-
-    prevQueueLength.current = queue.length;
-  }, [queue]);
 
   // キュー制御（次を表示）
   const showNext = () => {
@@ -118,6 +115,10 @@ function Orders() {
       showNext();
     }
   }, [current, queue]);
+
+  useEffect(() => {
+    currentRef.current = current;
+  }, [current]);
 
   // 提供状況変更
   const updateOrderStatus = async (order) => {
@@ -179,7 +180,8 @@ function Orders() {
           display: "flex",
           gap: "40px",
           alignItems: "flex-start",
-          marginTop: "20px"
+          marginTop: "20px",
+          height: "calc(100vh - 120px)"
         }}
       >
 
@@ -187,65 +189,90 @@ function Orders() {
           <div
             key={seat.seat_id}
             style={{
-              minWidth: "150px"
+              minWidth: "150px",
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              border: "1px solid #ddd",
+              borderRadius: "8px",
+              background: "white",
             }}
           >
 
             <h2
-              style={{ cursor: "pointer", color: "blue" }}
+              style={{
+                cursor: "pointer",
+                color: "blue",
+                margin: 0,
+                padding: "10px",
+                borderBottom: "1px solid #ddd",
+                background: "white",
+                flexShrink: 0,
+              }}
               onClick={() => navigate(`/orders/${seat.seat_id}`)}
             >
               {seat.seat_name}
             </h2>
 
-            {seat.orders.length === 0 ? (
+            <div
+              style={{
+                flex: 1,
+                overflowY: "auto",
+                padding: "10px",
+                display: "flex",
+                flexDirection: "column",
+                gap: "10px",
+              }}
+            >
+              {seat.orders.length === 0 ? (
 
-              <p>注文なし</p>
+                <p>注文なし</p>
 
-            ) : (
+              ) : (
 
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "10px"
-                }}
-              >
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "10px"
+                  }}
+                >
 
-                {seat.orders.map((order) => (
+                  {seat.orders.map((order) => (
 
-                  <div
-                    key={order.id}
-                    style={{
-                      borderBottom: "1px solid gray",
-                      paddingBottom: "5px",
-                      cursor: "pointer",
-                      textDecoration: // CSS（ピンクの線）
-                        order.status === "served"
-                          ? "line-through"
-                          : "none",
-                      textDecorationColor: "deeppink",
-                      textDecorationThickness: "3px",
-                    }}
-                    onClick={() => updateOrderStatus(order)}
-                  >
+                    <div
+                      key={order.id}
+                      style={{
+                        borderBottom: "1px solid gray",
+                        paddingBottom: "5px",
+                        cursor: "pointer",
+                        textDecoration: // CSS（ピンクの線）
+                          order.status === "served"
+                            ? "line-through"
+                            : "none",
+                        textDecorationColor: "deeppink",
+                        textDecorationThickness: "3px",
+                      }}
+                      onClick={() => updateOrderStatus(order)}
+                    >
 
-                    {order.menu_name} × {order.quantity}
+                      {order.menu_name} × {order.quantity}
 
-                    {order.remark != null && (
-                      <div
-                        style={{
-                          fontSize: "0.9em",
-                          marginLeft: "10px"
-                        }}
-                      >
-                        備考: {order.remark}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+                      {order.remark != null && (
+                        <div
+                          style={{
+                            fontSize: "0.9em",
+                            marginLeft: "10px"
+                          }}
+                        >
+                          備考: {order.remark}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         ))}
       </div>
