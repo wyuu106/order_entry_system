@@ -19,6 +19,7 @@ def create_order_item_response(
         status = db_order.status,
         user_name = user_name,
         is_drink = is_drink,
+        created_at = db_order.created_at
     )
 
 def create_order_response(

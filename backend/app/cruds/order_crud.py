@@ -87,6 +87,10 @@ def get_session_orders(session_id: int, db: Session) -> list[order_schema.OrderI
         .where(
             order_model.Order.session_id == session_id
         )
+        .order_by(
+            order_model.Order.created_at,
+            order_model.Order.id
+        )
     )
      
     rows = db.execute(stmt).all()

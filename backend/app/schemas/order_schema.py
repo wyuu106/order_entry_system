@@ -21,6 +21,7 @@ class OrderItemResponse(BaseModel):
     status: str
     user_name: str
     is_drink: bool
+    created_at: datetime
 
 class OrderCreateResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)

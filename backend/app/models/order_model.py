@@ -16,3 +16,7 @@ class Order(Base):
     remark: Mapped[str] = mapped_column(String, nullable=True)
     status: Mapped[str] = mapped_column(String, default='waiting')
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(ZoneInfo("Asia/Tokyo"))
+    )
