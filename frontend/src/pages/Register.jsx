@@ -5,11 +5,13 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
+import "../styles/button.css"
+import "../styles/form.css"
 
 function Register() {
   const navigate = useNavigate();
 
-  const [name, setName] = useState("");
+  const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
 
   const handleRegister = async () => {
@@ -37,34 +39,35 @@ function Register() {
   };
 
   return (
-    <div>
-      <h1>ユーザー登録申請</h1>
+    <div className="form-container">
+      <div className="form-card">
 
-      <div>
         <input
           type="text"
           placeholder="ユーザー名"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={userName}
+          onChange={(e) => setUserName(e.target.value)}
         />
-      </div>
 
-      <div>
         <input
           type="password"
           placeholder="パスワード"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-      </div>
 
-      <div>
-        <button onClick={handleRegister}>
+        <button
+          className="button-base button-primary"
+          onClick={handleRegister}
+        >
           申請する
         </button>
 
-        <button onClick={() => navigate("/")}>
-        ログイン画面へ
+        <button
+          className="button-base"
+          onClick={() => navigate("/")}
+        >
+          ログイン画面へ戻る
         </button>
       </div>
     </div>

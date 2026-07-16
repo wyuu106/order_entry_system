@@ -10,6 +10,7 @@ import axios from "axios";
 import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
 import OrderCart from "../components/OrderCart";
+import "../styles/button.css"
 
 function OrderMenu() {
   const navigate = useNavigate();
@@ -173,14 +174,8 @@ function OrderMenu() {
       <h1>メニュー選択</h1>
 
       <button
-        onClick={() =>
-          navigate(
-            `/orders/${seatId}/${sessionId}/categories`
-          )
-        }
-        style={{
-          marginBottom: "20px",
-        }}
+        className="button-base"
+        onClick={() => navigate(`/orders/${seatId}/${sessionId}/categories`)}
       >
         戻る
       </button>

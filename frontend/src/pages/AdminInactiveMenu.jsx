@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
+import "../styles/button.css"
 
 function AdminInactiveMenu() {
   const navigate = useNavigate();
@@ -66,7 +67,10 @@ function AdminInactiveMenu() {
     <div>
       <h1>非表示メニュー管理</h1>
 
-      <button onClick={() => navigate("/admin/categories")}>
+      <button
+        className="button-base"
+        onClick={() => navigate("/admin/categories")}
+      >
         戻る
       </button>
 
@@ -115,6 +119,7 @@ function AdminInactiveMenu() {
                 <td>
                   {/* 表示  */}
                   <button
+                    className="button-base button-primary"
                     onClick={() => activeMenu(menu.id)}
                   >
                     表示

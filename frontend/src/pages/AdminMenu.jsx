@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
+import "../styles/button.css"
 
 function AdminMenu() {
   const location = useLocation();
@@ -157,13 +158,17 @@ function AdminMenu() {
     <div>
       <h1>メニュー管理</h1>
 
-      <button onClick={() => navigate("/admin/categories")}>
+      <button
+        className="button-base"
+        onClick={() => navigate("/admin/categories")}
+      >
         戻る
       </button>
 
       <br />
 
       <button
+        className="button-base button-primary"
         onClick={() => {
           resetForm();
           setIsOpen(true);
@@ -235,6 +240,7 @@ function AdminMenu() {
             <br />
 
             <button
+              className="button-base button-primary"
               onClick={async () => {
                 if (editingMenuId) {
                   await updateMenu();
@@ -247,6 +253,7 @@ function AdminMenu() {
             </button>
 
             <button
+              className="button-base"
               onClick={() => {
                 setIsOpen(false);
                 resetForm();
@@ -294,6 +301,7 @@ function AdminMenu() {
 
               <td>
                 <button
+                  className="button-base"
                   onClick={() => {
                     setEditingMenuId(menu.id);
                     setMenuName(menu.name);
@@ -307,6 +315,7 @@ function AdminMenu() {
 
                 {/* 非表示 */}
                 <button
+                  className="button-base button-danger"
                   onClick={() => inactiveMenu(menu.id)}
                 >
                   非表示

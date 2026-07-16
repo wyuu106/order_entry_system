@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
+import "../styles/button.css"
 
 function AdminUser() {
   const navigate = useNavigate();
@@ -57,7 +58,10 @@ function AdminUser() {
     <div>
       <h1>ユーザー管理</h1>
 
-      <button onClick={() => navigate("/admin")}>
+      <button
+        className="button-base"
+        onClick={() => navigate("/admin")}
+      >
         戻る
       </button>
 
@@ -91,6 +95,7 @@ function AdminUser() {
               </td>
               <td>
                 <button
+                  className="button-base button-danger"
                   onClick={() => deleteUser(user.id)}
                 >
                   削除

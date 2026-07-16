@@ -6,6 +6,7 @@ import axios from "axios";
 import { API_URL } from "../utils/api_util";
 import { WS_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
+import "../styles/button.css"
 
 function Orders() {
 
@@ -169,9 +170,12 @@ function Orders() {
 
       <h1>オーダー一覧</h1>
 
-      <button onClick={() => 
-        navigate(role === "admin" ? "/admin" : "/staff")
-      }>
+      <button 
+        className="button-base"
+        onClick={() => 
+          navigate(role === "admin" ? "/admin" : "/staff")
+        }
+      >
         戻る
       </button>
 

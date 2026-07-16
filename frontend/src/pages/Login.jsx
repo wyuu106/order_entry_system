@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
+import "../styles/button.css"
+import "../styles/form.css"
 
 function Login() {
   const navigate = useNavigate();
@@ -51,47 +53,57 @@ function Login() {
   };
 
   return (
-    <div>
-      <h1>ログイン</h1>
+    <div className="form-container">
+      <div className="form-card">
+        <h2>ログイン</h2>
 
-      {/* ユーザー選択 */}
-      <select
-        value={selectedUsername}
-        onChange={(e) => {
-          setSelectedUsername(e.target.value);
-          setPassword(""); // ユーザー変えたらリセット
-        }}
-      >
-        <option value="">ユーザーを選択</option>
-        {users.map((u) => (
-          <option key={u.id} value={u.name}>
-            {u.name}
-          </option>
-        ))}
-      </select>
+        {/* ユーザー選択 */}
+        <select
+          value={selectedUsername}
+          onChange={(e) => {
+            setSelectedUsername(e.target.value);
+            setPassword(""); // ユーザー変えたらリセット
+          }}
+        >
+          <option value="">ユーザーを選択</option>
+          {users.map((u) => (
+            <option key={u.id} value={u.name}>
+              {u.name}
+            </option>
+          ))}
+        </select>
 
-      <br />
+        <br />
 
-      {/* ユーザー選択でパスワード表示 */}
-      {selectedUsername && (
-        <>
-          <input
-            type="password"
-            placeholder="パスワード"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+        {/* ユーザー選択でパスワード表示 */}
+        {selectedUsername && (
+          <>
+            <input
+              type="password"
+              placeholder="パスワード"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
 
-          <button onClick={handleLogin}>ログイン</button>
-        </>
-      )}
+            <button
+              className="button-base button-primary"
+              onClick={handleLogin}
+            >
+              ログイン
+            </button>
+          </>
+        )}
 
-      <br />
-      <br />
+        <br />
+        <br />
 
-      <button onClick={() => navigate("/register")}>
-        ユーザー登録申請へ
-      </button>
+        <button
+          className="button-base"
+          onClick={() => navigate("/register")}
+        >
+          ユーザー登録申請へ
+        </button>
+      </div>
     </div>
   );
 }

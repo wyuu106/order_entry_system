@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
+import "../styles/button.css"
 
 function AdminSeat() {
   const navigate = useNavigate();
@@ -102,12 +103,16 @@ function AdminSeat() {
     <div>
       <h1>席管理</h1>
 
-      <button onClick={() => navigate("/admin")}>
+      <button
+        className="button-base"
+        onClick={() => navigate("/admin")}
+      >
         戻る
       </button>
 
       {!showCreate && (
         <button
+          className="button-base button-primary"
           onClick={() => setShowCreate(true)}
         >
           席を追加
@@ -134,11 +139,14 @@ function AdminSeat() {
           <br />
           <br />
 
-          <button onClick={createSeat}>
+          <button
+            className="button-base button-primary"
+            onClick={createSeat}>
             登録
           </button>
 
           <button
+            className="button-base"
             onClick={() => {
               setShowCreate(false);
               setName("");
@@ -177,6 +185,7 @@ function AdminSeat() {
               <td>{seat.status}</td>
               <td>
                 <button
+                  className="button-base button-danger"
                   onClick={() => deleteSeat(seat.id)}
                 >
                   削除

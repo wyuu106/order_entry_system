@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
+import "../styles/button.css"
 
 function Sake() {
   const location = useLocation();
@@ -138,15 +139,19 @@ function Sake() {
     <div>
       <h1>日本酒情報</h1>
 
-      <button onClick={() =>
-        navigate(role === "admin" ? "/admin" : "/staff")
-      }>
+      <button
+        className="button-base"
+        onClick={() =>
+          navigate(role === "admin" ? "/admin" : "/staff")
+        }
+      >
         戻る
       </button>
 
       <br />
 
       <button
+        className="button-base button-primary"
         onClick={() => {
           resetForm();
           setIsOpen(true);
@@ -206,6 +211,7 @@ function Sake() {
             <br />
 
             <button
+              className="button-base button-primary"
               onClick={async () => {
                 if (editingSakeId) {
                   await updateSake();
@@ -220,6 +226,7 @@ function Sake() {
             </button>
 
             <button
+              className="button-base"
               onClick={() => {
                 setIsOpen(false);
                 resetForm();
@@ -259,6 +266,7 @@ function Sake() {
 
               <td>
                 <button
+                  className="button-base"
                   onClick={() => {
                     setEditingSakeId(sake.id);
                     setSakeName(sake.name);
@@ -270,6 +278,7 @@ function Sake() {
                 </button>
 
                 <button
+                  className="button-base button-danger"
                   onClick={() => deleteSake(sake.id)}
                 >
                   削除

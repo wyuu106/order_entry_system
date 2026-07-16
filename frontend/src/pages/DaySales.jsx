@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
+import "../styles/button.css"
 
 function DaySales() {
   const navigate = useNavigate();
@@ -38,7 +39,10 @@ function DaySales() {
     <div>
       <h1>日別売上</h1>
 
-      <button onClick={() => navigate("/admin")}>
+      <button
+        className="button-base"
+        onClick={() => navigate("/admin")}
+      >
         戻る
       </button>
 
@@ -50,7 +54,10 @@ function DaySales() {
         onChange={(e) => setTargetDate(e.target.value)}
       />
 
-      <button onClick={getDayOrders}>
+      <button
+        className="button-base"
+        onClick={getDayOrders}
+      >
         売上表示
       </button>
 

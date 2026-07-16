@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
+import "../styles/button.css"
 
 function AdminRequest() {
   const navigate = useNavigate();
@@ -100,7 +101,10 @@ function AdminRequest() {
     <div>
       <h1>ユーザー登録申請一覧</h1>
 
-      <button onClick={() => navigate("/admin")}>
+      <button
+        className="button-base"
+        onClick={() => navigate("/admin")}
+      >
         戻る
       </button>
 
@@ -121,12 +125,14 @@ function AdminRequest() {
             <p>ユーザー名: {request.name}</p>
 
             <button
+              className="button-base button-primary"
               onClick={() => approveRequest(request.id)}
             >
               許可
             </button>
 
             <button
+              className="button-base button-danger"
               onClick={() => rejectRequest(request.id)}
               style={{ marginLeft: "10px" }}
             >

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
+import "../styles/button.css";
 
 function AdminCategory() {
   const navigate = useNavigate();
@@ -104,7 +105,8 @@ function AdminCategory() {
 
     try{
       await axios.put(
-          `${API_URL}/category/${id}/inactive`,
+          `${API_URL}/admin/category/${id}/inactive`,
+          {},
           {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -143,7 +145,10 @@ function AdminCategory() {
     <div>
       <h1>カテゴリ管理</h1>
 
-      <button onClick={() => navigate("/admin")}>
+      <button
+        className="button-base"
+        onClick={() => navigate("/admin")}
+      >
         戻る
       </button>
 
@@ -157,7 +162,10 @@ function AdminCategory() {
       />
 
       {/* ボタン（追加・更新） */}
-      <button onClick={editingCategoryId ? updateCategory : createCategory}>
+      <button
+        className="button-base button-primary"
+        onClick={editingCategoryId ? updateCategory : createCategory}
+      >
         {editingCategoryId ? "更新" : "追加"}
       </button>
 
@@ -199,6 +207,7 @@ function AdminCategory() {
               <td>
                 {/* 編集 */}
                 <button
+                  className="button-base"
                   onClick={() => {
                     setEditingCategoryId(category.id);
                     setCategoryName(category.name);

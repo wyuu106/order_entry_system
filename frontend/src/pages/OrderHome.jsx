@@ -5,6 +5,7 @@ import { useNavigate, useParams, } from "react-router-dom";
 import axios from "axios";
 import { API_URL } from "../utils/api_util";
 import { getErrorMessage } from "../utils/error_util";
+import "../styles/button.css"
 
 function OrderHome() {
   const navigate = useNavigate();
@@ -209,7 +210,10 @@ function OrderHome() {
     <div>
       <h1>注文画面</h1>
 
-      <button onClick={() => navigate("/orders")}>
+      <button
+        className="button-base"
+        onClick={() => navigate("/orders")}
+      >
         戻る
       </button>
 
@@ -225,20 +229,29 @@ function OrderHome() {
           <p>席名 : {session?.seat_name}</p>
 
           {!session ? (
-            <button onClick={createSession}>
+            <button
+              className="button-base button-primary"
+              onClick={createSession}
+            >
               注文開始
             </button>
           ) : (
             <div>
               <h3>セッション情報</h3>
 
-              <button onClick={endSession}>
+              <button
+                className="button-base button-danger"
+                onClick={endSession}
+              >
                 セッション終了
               </button>
 
               <hr />
 
-              <button onClick={() => navigate(`/orders/${seatId}/${session.id}/categories`)}>
+              <button 
+                className="button-base"
+                onClick={() => navigate(`/orders/${seatId}/${session.id}/categories`)}
+              >
                 追加
               </button>
 
@@ -286,12 +299,14 @@ function OrderHome() {
 
                         <td>
                           <button
+                            className="button-base button-danger"
                             onClick={() => deleteOrder(order.id)}
                           >
                             取り消し
                           </button>
 
                           <button
+                            className="button-base"
                             onClick={() => updatePrice(order.id)}
                           >
                             金額変更
