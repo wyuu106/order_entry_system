@@ -202,13 +202,6 @@ def get_day_orders(
     start = datetime.combine(target_date, time(0, 0))
     end = datetime.combine(target_date + timedelta(days=1), time(0, 0))
 
-    exist_session = db.execute(select(session_model.SeatSession).where(
-        session_model.SeatSession.end_at.is_(None)
-    )).scalar_one_or_none()
-
-    if exist_session:
-        raise HTTPException(status_code=400, detail='終了していないセッションがあります')
-
     stmt = (
         select(
             session_model.SeatSession.id.label("session_id"),
