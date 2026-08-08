@@ -74,9 +74,9 @@ def get_current_user(
             algorithms=[ALGORITHM]
         )
 
-        user_id = payload.get("sub")
+        user_id = int(payload.get("sub"))
 
-    except JWTError:
+    except (JWTError, TypeError, ValueError):
         raise HTTPException(
             status_code=401,
             detail="認証に失敗しました"

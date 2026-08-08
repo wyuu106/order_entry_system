@@ -9,23 +9,26 @@ from app.schemas import user_schema
 # ユーザー登録申請
 def create_request(user: user_schema.UserCreate, db: Session) -> user_schema.RequestResponse:
     exist_user = db.execute(select(user_model.User).where(
-        user_model.User.name == user.name
+        user_model.User.login_id == user.login_id
     )).scalar_one_or_none()
     if exist_user:
-        raise HTTPException(status_code=400, detail='このユーザー名は既に使われています')
+        raise HTTPException(status_code=400, detail='このIDは既に使われています')
     
     exist_request = db.execute(select(user_model.UserRequest).where(
-        user_model.UserRequest.name == user.name,
+        user_model.UserRequest.login_id == user.login_id,
         user_model.UserRequest.status == 'pending'
     )).scalar_one_or_none()
     if exist_request:
-        raise HTTPException(status_code=400, detail='このユーザー名は申請中です')
+        raise HTTPException(status_code=400, detail='このIDは申請中です')
     
-    if not (user.name.strip() and user.password.strip()):
-        raise HTTPException(status_code=400, detail="名前かパスワードが不正です")
+    login_id = user.login_id.strip()
+    name = user.name.strip()
+    if not (login_id and name and user.password.strip()):
+        raise HTTPException(status_code=400, detail="ID、名前、パスワードを入力してください")
 
     db_request = user_model.UserRequest(
-        name = user.name,
+        login_id = login_id,
+        name = name,
         hashed_password = hash_password(user.password)
     )
 
@@ -52,15 +55,16 @@ def approve_request(request_id: int, db: Session) -> user_schema.UserCreateRespo
         raise HTTPException(status_code=400, detail='既に処理済みの申請です')
 
     exist_user = db.execute(select(user_model.User).where(
-        user_model.User.name == db_request.name
+        user_model.User.login_id == db_request.login_id
     )).scalar_one_or_none()
 
     if exist_user:
-        raise HTTPException(status_code=400, detail='このユーザー名は既に使われています')
+        raise HTTPException(status_code=400, detail='このIDは既に使われています')
     
     db_request.status = 'approved'
 
     db_user = user_model.User(
+        login_id = db_request.login_id,
         name = db_request.name,
         hashed_password = db_request.hashed_password
     )
@@ -93,8 +97,9 @@ def get_users(db: Session) -> list[user_schema.UserCreateResponse]:
     return db.execute(select(user_model.User)).scalars().all()
 
 # ログイン
-def login(form_data: OAuth2PasswordRequestForm, db: Session) -> dict[str, str, str]:
-    stmt = select(user_model.User).where(user_model.User.name == form_data.username)
+def login(form_data: OAuth2PasswordRequestForm, db: Session) -> dict[str, str]:
+    login_id = form_data.username.strip()
+    stmt = select(user_model.User).where(user_model.User.login_id == login_id)
     db_user = db.execute(stmt).scalar_one_or_none()
 
     if db_user is None or not verify_password(form_data.password, db_user.hashed_password):

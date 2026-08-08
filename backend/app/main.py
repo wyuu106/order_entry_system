@@ -42,19 +42,21 @@ def init(db: Session = Depends(get_db)) -> str:
     if exist_admin:
         raise HTTPException(status_code=400, detail='作成済みです')
     
+    admin_id = os.getenv("ADMIN_ID")
     name = os.getenv("ADMIN_NAME")
     password = os.getenv("PASSWORD")
     admin = User(
+        login_id = admin_id,
         name = name,
         hashed_password = hash_password(password),
-        role = 'admin'
+        role = "admin"
     )
 
     db.add(admin)
     db.commit()
     db.refresh(admin)
 
-    return '管理者作成'
+    return "管理者作成"
 
 app.include_router(user_router.router)
 app.include_router(menu_router.router)
