@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { API_URL } from "../utils/api_util";
-import { getErrorMessage } from "../utils/error_util";
-import "../styles/button.css"
+import { API_URL } from "../../utils/api_util";
+import { getErrorMessage } from "../../utils/error_util";
 
 function AdminUser() {
   const navigate = useNavigate();
@@ -16,7 +15,11 @@ function AdminUser() {
   // ユーザー一覧取得
   const fetchUsers = async () => {
     try {
-      const res = await axios.get(`${API_URL}/users`);
+      const res = await axios.get(`${API_URL}/users`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setUsers(res.data);
     
     } catch (error) {
@@ -76,7 +79,8 @@ function AdminUser() {
       >
         <thead>
           <tr>
-            <th>ユーザー名</th>
+            <th>ID</th>
+            <th>名前</th>
             <th>ロール</th>
             <th>操作</th>
           </tr>
@@ -85,6 +89,7 @@ function AdminUser() {
         <tbody>
           {users.map((user) => (
             <tr key={user.id}>
+              <td>{user.login_id}</td>
               <td>{user.name}</td>
               <td>
                 {user.role === "admin"

@@ -1,14 +1,12 @@
 // 日本酒に関する画面
 
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { API_URL } from "../utils/api_util";
-import { getErrorMessage } from "../utils/error_util";
-import "../styles/button.css"
+import { API_URL } from "../../utils/api_util";
+import { getErrorMessage } from "../../utils/error_util";
 
 function Sake() {
-  const location = useLocation();
   const navigate = useNavigate();
 
   const [sakes, setSakes] = useState([]);

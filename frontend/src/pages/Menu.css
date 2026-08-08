@@ -1,0 +1,31 @@
+.menu-page { align-content: start; }
+.menu-page-header { margin: 10px 0 28px; }
+.menu-page-header p { margin: 0 0 5px; color: var(--brand); font-size: 0.75rem; font-weight: 800; letter-spacing: 0.15em; }
+.menu-page-header h1 { margin-bottom: 5px; }
+.menu-page-header span { color: var(--muted); }
+.menu-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+
+.menu-card {
+  min-height: 126px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 7px;
+  padding: 22px;
+  text-align: left;
+  background: var(--surface);
+  border-color: var(--line);
+  box-shadow: var(--app-shadow);
+}
+
+.menu-card strong { font-size: 1.15rem; }
+.menu-card span { color: var(--muted); font-size: 0.86rem; font-weight: 500; }
+.menu-card-primary { color: #fff; background: var(--brand); border-color: var(--brand); }
+.menu-card-primary span { color: #d5eee8; }
+.menu-card-primary:hover { background: var(--brand-dark); }
+
+@media (max-width: 700px) {
+  .menu-grid { grid-template-columns: 1fr; gap: 10px; }
+  .menu-card { min-height: 94px; padding: 17px 18px; }
+}

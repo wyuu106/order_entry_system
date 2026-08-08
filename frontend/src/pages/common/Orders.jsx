@@ -3,10 +3,9 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { API_URL } from "../utils/api_util";
-import { WS_URL } from "../utils/api_util";
-import { getErrorMessage } from "../utils/error_util";
-import "../styles/button.css"
+import { API_URL, WS_URL } from "../../utils/api_util";
+import { getErrorMessage } from "../../utils/error_util";
+import "./Orders.css";
 
 function Orders() {
 
@@ -166,136 +165,81 @@ function Orders() {
   };
 
   return (
-    <div>
+    <main className="orders-page">
+      <header className="orders-header">
+        <div>
+          <h1>オーダー一覧</h1>
+          <p className="orders-guide">
+            注文をタップすると、提供済み・未提供を切り替えられます
+          </p>
+        </div>
 
-      <h1>オーダー一覧</h1>
+        <button
+          className="button-base orders-back"
+          onClick={() =>
+            navigate(role === "admin" ? "/admin" : "/staff")
+          }
+        >
+          ← メニューへ戻る
+        </button>
+      </header>
 
-      <button 
-        className="button-base"
-        onClick={() => 
-          navigate(role === "admin" ? "/admin" : "/staff")
-        }
-      >
-        戻る
-      </button>
+      <section className="orders-board" aria-label="席ごとの注文一覧">
+        {seatOrders.length === 0 && (
+          <p className="orders-empty-board">表示できる席がありません</p>
+        )}
 
-      <div
-        style={{
-          display: "flex",
-          gap: "40px",
-          alignItems: "flex-start",
-          marginTop: "20px",
-          height: "calc(100vh - 120px)"
-        }}
-      >
+        {seatOrders.map((seat) => {
+          const waitingCount = seat.orders.filter(
+            (order) => order.status === "waiting"
+          ).length;
 
-        {seatOrders.map((seat) => (
-          <div
-            key={seat.seat_id}
-            style={{
-              minWidth: "150px",
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              border: "1px solid #ddd",
-              borderRadius: "8px",
-              background: "white",
-            }}
-          >
+          return (
+            <article className="seat-lane" key={seat.seat_id}>
+              <button
+                className="seat-lane-header"
+                onClick={() => navigate(`/orders/${seat.seat_id}`)}
+              >
+                <span>{seat.seat_name}</span>
+                <span className="waiting-count">
+                  未提供 {waitingCount}
+                </span>
+              </button>
 
-            <h2
-              style={{
-                cursor: "pointer",
-                color: "blue",
-                margin: 0,
-                padding: "10px",
-                borderBottom: "1px solid #ddd",
-                background: "white",
-                flexShrink: 0,
-              }}
-              onClick={() => navigate(`/orders/${seat.seat_id}`)}
-            >
-              {seat.seat_name}
-            </h2>
-
-            <div
-              style={{
-                flex: 1,
-                overflowY: "auto",
-                padding: "10px",
-                display: "flex",
-                flexDirection: "column",
-                gap: "10px",
-              }}
-            >
-              {seat.orders.length === 0 ? (
-
-                <p>注文なし</p>
-
-              ) : (
-
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "10px"
-                  }}
-                >
-
-                  {seat.orders.map((order) => (
-
-                    <div
+              <div className="seat-orders">
+                {seat.orders.length === 0 ? (
+                  <p className="seat-empty">注文なし</p>
+                ) : (
+                  seat.orders.map((order) => (
+                    <button
+                      className={`order-ticket ${
+                        order.status === "served" ? "is-served" : ""
+                      }`}
                       key={order.id}
-                      style={{
-                        borderBottom: "1px solid gray",
-                        paddingBottom: "5px",
-                        cursor: "pointer",
-                        textDecoration: // CSS（ピンクの線）
-                          order.status === "served"
-                            ? "line-through"
-                            : "none",
-                        textDecorationColor: "deeppink",
-                        textDecorationThickness: "3px",
-                      }}
                       onClick={() => updateOrderStatus(order)}
                     >
+                      <span className="order-menu-name">
+                        {order.menu_name}
+                      </span>
 
-                      {order.menu_name} × {order.quantity}
-
-                      {order.remark != null && (
-                        <div
-                          style={{
-                            fontSize: "0.9em",
-                            marginLeft: "10px"
-                          }}
-                        >
-                          備考: {order.remark}
-                        </div>
+                      {order.remark?.trim() && (
+                        <span className="order-remark">
+                          （備考：{order.remark}）
+                        </span>
                       )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
+                    </button>
+                  ))
+                )}
+              </div>
+            </article>
+          );
+        })}
+      </section>
       
       {/* 追加注文のポップアップ */}
       {current && 
        current.orders.some((order) => !order.is_drink) &&(
-        <div
-          style={{
-            position: "fixed",
-            bottom: "20px",
-            right: "20px",
-            background: "black",
-            color: "white",
-            padding: "15px",
-            borderRadius: "10px",
-            width: "300px",
-          }}
-        >
+        <aside className="new-order-popup" role="alert">
           <h4>
             新規注文（{current.seat_name}）
           </h4>
@@ -321,16 +265,16 @@ function Orders() {
           ))}
 
           <button
-            style={{ marginTop: "10px" }}
+            className="button-base"
             onClick={() => {
               setCurrent(null);
             }}
           >
             次へ
           </button>
-        </div>
+        </aside>
       )}
-    </div>
+    </main>
   );
 }
 

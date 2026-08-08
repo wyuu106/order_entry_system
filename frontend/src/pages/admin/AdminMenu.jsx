@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { API_URL } from "../utils/api_util";
-import { getErrorMessage } from "../utils/error_util";
-import "../styles/button.css"
+import { API_URL } from "../../utils/api_util";
+import { getErrorMessage } from "../../utils/error_util";
 
 function AdminMenu() {
   const location = useLocation();

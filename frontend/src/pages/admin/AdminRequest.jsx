@@ -3,9 +3,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { API_URL } from "../utils/api_util";
-import { getErrorMessage } from "../utils/error_util";
-import "../styles/button.css"
+import { API_URL } from "../../utils/api_util";
+import { getErrorMessage } from "../../utils/error_util";
 
 function AdminRequest() {
   const navigate = useNavigate();
@@ -122,7 +121,8 @@ function AdminRequest() {
               margin: "0 auto 10px",
             }}
           >
-            <p>ユーザー名: {request.name}</p>
+            <p>ID: {request.login_id}</p>
+            <p>名前: {request.name}</p>
 
             <button
               className="button-base button-primary"

@@ -1,26 +1,26 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // 各ページのファイルをimport
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Admin from "./pages/Admin";
-import Orders from "./pages/Orders"
-import AdminCategory from "./pages/AdminCategory"
-import AdminMenu from "./pages/AdminMenu"
-import AdminInactiveMenu from "./pages/AdminInactiveMenu"
-import AdminSeat from "./pages/AdminSeat";
-import AdminUser from "./pages/AdminUser"
-import AdminRequest from "./pages/AdminRequest"
-import Staff from "./pages/Staff"
-import Seat from "./pages/Seat"
-import Order from "./pages/Order"
-import OrderHome from "./pages/OrderHome"
-import OrderCategory from "./pages/OrderCategory"
-import OrderMenu from "./pages/OrderMenu"
-import DaySales from "./pages/DaySales"
-import Sake from "./pages/Sake"
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import Admin from "./pages/admin/Admin";
+import AdminCategory from "./pages/admin/AdminCategory";
+import AdminInactiveMenu from "./pages/admin/AdminInactiveMenu";
+import AdminMenu from "./pages/admin/AdminMenu";
+import AdminRequest from "./pages/admin/AdminRequest";
+import AdminSeat from "./pages/admin/AdminSeat";
+import AdminUser from "./pages/admin/AdminUser";
+import DaySales from "./pages/admin/DaySales";
+import Staff from "./pages/staff/Staff";
+import Order from "./pages/common/Order";
+import OrderCategory from "./pages/common/OrderCategory";
+import OrderHome from "./pages/common/OrderHome";
+import OrderMenu from "./pages/common/OrderMenu";
+import Orders from "./pages/common/Orders";
+import Sake from "./pages/common/Sake";
+import Seat from "./pages/common/Seat";
 
-import OrderCart from "./components/OrderCart"
+import "./pages/shared.css";
 
 function App() {
   return (
@@ -28,7 +28,7 @@ function App() {
       <Routes>
         {/* ログイン */}
         <Route
-          path="/" // URL
+          path="/login" // URL
           element={<Login />} // page関数
         />
 
