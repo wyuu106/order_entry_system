@@ -169,9 +169,6 @@ function Orders() {
       <header className="orders-header">
         <div>
           <h1>オーダー一覧</h1>
-          <p className="orders-guide">
-            注文をタップすると、提供済み・未提供を切り替えられます
-          </p>
         </div>
       </header>
 

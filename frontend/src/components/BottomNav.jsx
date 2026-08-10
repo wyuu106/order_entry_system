@@ -1,4 +1,5 @@
-import { NavLink } from "react-router-dom";
+import { useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 
 import "./BottomNav.css";
 
@@ -26,8 +27,11 @@ function NavIcon({ name }) {
 }
 
 function BottomNav() {
+  const location = useLocation();
   const role = localStorage.getItem("role");
   const morePath = role === "admin" ? "/admin" : "/staff";
+  const isOrdersPage = location.pathname === "/orders";
+  const [isCollapsed, setIsCollapsed] = useState(isOrdersPage);
 
   const items = [
     { label: "オーダー", to: "/orders", icon: "orders" },
@@ -37,8 +41,35 @@ function BottomNav() {
   ];
 
   return (
-    <nav className="bottom-nav" aria-label="メインメニュー">
-      <div className="bottom-nav-inner">
+    <nav
+      className={`bottom-nav${isOrdersPage && isCollapsed ? " is-collapsed" : ""}`}
+      aria-label="メインメニュー"
+    >
+      {isOrdersPage && isCollapsed && (
+        <button
+          type="button"
+          className="bottom-nav-opener"
+          aria-label="メニューを展開"
+          aria-expanded="false"
+          onClick={() => setIsCollapsed(false)}
+        >
+          <NavIcon name="orders" />
+          <span>オーダー</span>
+          <b aria-hidden="true">›</b>
+        </button>
+      )}
+
+      <div className={`bottom-nav-inner${isOrdersPage ? " has-collapse-button" : ""}`}>
+        {isOrdersPage && (
+          <button
+            type="button"
+            className="bottom-nav-collapse"
+            aria-label="メニューを折り畳む"
+            onClick={() => setIsCollapsed(true)}
+          >
+            <span aria-hidden="true">≪</span>
+          </button>
+        )}
         {items.map((item) => (
           <NavLink
             key={item.label}

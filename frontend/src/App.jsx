@@ -123,7 +123,9 @@ function AppContent() {
         />
 
       </Routes>
-      {!isAuthPage && <BottomNav />}
+      {!isAuthPage && (
+        <BottomNav key={location.pathname === "/orders" ? "orders" : "default"} />
+      )}
     </>
   );
 }

@@ -20,6 +20,11 @@
   margin: 0 auto;
 }
 
+.bottom-nav-collapse,
+.bottom-nav-opener {
+  display: none;
+}
+
 .bottom-nav-item {
   min-width: 0;
   display: flex;
@@ -62,4 +67,85 @@
 #root:has(.bottom-nav) > main,
 #root:has(.bottom-nav) > div:not(.auth-page) {
   padding-bottom: calc(112px + env(safe-area-inset-bottom));
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+  .bottom-nav-inner.has-collapse-button {
+    grid-template-columns: 0.72fr repeat(4, 1fr);
+  }
+
+  .bottom-nav-collapse {
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 1.2rem;
+    box-shadow: none;
+  }
+
+  .bottom-nav-collapse:hover {
+    background: var(--surface-soft);
+    box-shadow: none;
+    transform: none;
+  }
+
+  .bottom-nav.is-collapsed {
+    right: auto;
+    bottom: calc(10px + env(safe-area-inset-bottom));
+    left: 10px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .bottom-nav.is-collapsed .bottom-nav-inner {
+    display: none;
+  }
+
+  .bottom-nav.is-collapsed .bottom-nav-opener {
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 12px;
+    border: 1px solid rgba(219, 226, 234, 0.95);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.96);
+    color: var(--brand);
+    box-shadow: 0 8px 24px rgba(23, 32, 51, 0.16);
+    font-size: 0.72rem;
+    font-weight: 800;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+
+  .bottom-nav-opener svg {
+    width: 25px;
+    height: 25px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.1;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .bottom-nav-opener b {
+    margin-left: 2px;
+    font-size: 1.35rem;
+    line-height: 1;
+  }
+
+  #root:has(.bottom-nav.is-collapsed) > main,
+  #root:has(.bottom-nav.is-collapsed) > div:not(.auth-page) {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+  }
 }
