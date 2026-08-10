@@ -1,0 +1,65 @@
+.bottom-nav {
+  position: fixed;
+  z-index: 1000;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 0 12px env(safe-area-inset-bottom);
+  border-top: 1px solid rgba(219, 226, 234, 0.95);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 -8px 28px rgba(23, 32, 51, 0.08);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.bottom-nav-inner {
+  width: min(100%, 600px);
+  height: 68px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin: 0 auto;
+}
+
+.bottom-nav-item {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: color 120ms ease;
+}
+
+.bottom-nav-item svg {
+  width: 25px;
+  height: 25px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.bottom-nav-item:hover,
+.bottom-nav-item.is-active {
+  color: var(--brand);
+}
+
+.bottom-nav-item.is-active svg {
+  stroke-width: 2.25;
+}
+
+.bottom-nav-item:focus-visible {
+  border-radius: 10px;
+  outline: 3px solid rgba(23, 107, 91, 0.2);
+  outline-offset: -4px;
+}
+
+#root:has(.bottom-nav) > main,
+#root:has(.bottom-nav) > div:not(.auth-page) {
+  padding-bottom: calc(112px + env(safe-area-inset-bottom));
+}

@@ -68,19 +68,6 @@ function Seat() {
     <div>
       <h1>席一覧</h1>
 
-      <button
-        className="button-base"
-        onClick={() => 
-          navigate(
-            role === "admin"
-              ? "/admin"
-              : "/staff"
-          ) 
-        }
-      >
-        戻る
-      </button>
-
       <table
         border="1"
         cellPadding="8"

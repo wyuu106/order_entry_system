@@ -226,7 +226,7 @@ function AdminMenu() {
 
             <br />
 
-            <label>
+            <label className="checkbox-label">
               <input
                 type="checkbox"
                 checked={isDrink}

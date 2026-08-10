@@ -24,8 +24,16 @@
 .menu-card-primary { color: #fff; background: var(--brand); border-color: var(--brand); }
 .menu-card-primary span { color: #d5eee8; }
 .menu-card-primary:hover { background: var(--brand-dark); }
+.menu-card-logout { color: var(--danger); background: var(--danger-soft); border-color: #f4c5ca; }
+.menu-card-logout span { color: #a93a45; }
+.menu-card-logout:hover { background: #ffe3e6; }
 
-@media (max-width: 700px) {
-  .menu-grid { grid-template-columns: 1fr; gap: 10px; }
-  .menu-card { min-height: 94px; padding: 17px 18px; }
+@media (max-width: 768px) {
+  .menu-page .menu-grid {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .menu-page .menu-card { width: 100%; min-height: 94px; padding: 17px 18px; }
 }

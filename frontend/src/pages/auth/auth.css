@@ -27,9 +27,9 @@
   letter-spacing: -0.02em;
 }
 .auth-brand img {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
+  width: 76px;
+  height: 76px;
+  border-radius: 18px;
   object-fit: cover;
 }
 .auth-container {

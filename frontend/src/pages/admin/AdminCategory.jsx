@@ -216,7 +216,7 @@ function AdminCategory() {
                 </button>
                 
                 {/* 表示 or 非表示 */}
-                <label>
+                <label className="checkbox-label category-active-toggle">
                   <input
                     type="checkbox"
                     checked={category.is_active}

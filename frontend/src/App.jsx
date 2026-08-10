@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Navigate, Routes, Route, useLocation } from "react-router-dom";
 
 // 各ページのファイルをimport
 import Login from "./pages/auth/Login";
@@ -19,13 +19,18 @@ import OrderMenu from "./pages/common/OrderMenu";
 import Orders from "./pages/common/Orders";
 import Sake from "./pages/common/Sake";
 import Seat from "./pages/common/Seat";
+import BottomNav from "./components/BottomNav";
 
 import "./pages/shared.css";
 
-function App() {
+function AppContent() {
+  const location = useLocation();
+  const isAuthPage = ["/", "/login", "/register"].includes(location.pathname);
+
   return (
-    <BrowserRouter>
+    <>
       <Routes>
+        <Route path="/" element={<Navigate to="/login" replace />} />
         {/* ログイン */}
         <Route
           path="/login" // URL
@@ -118,6 +123,15 @@ function App() {
         />
 
       </Routes>
+      {!isAuthPage && <BottomNav />}
+    </>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
     </BrowserRouter>
   );
 }

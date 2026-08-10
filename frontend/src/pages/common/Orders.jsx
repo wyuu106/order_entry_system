@@ -173,15 +173,6 @@ function Orders() {
             注文をタップすると、提供済み・未提供を切り替えられます
           </p>
         </div>
-
-        <button
-          className="button-base orders-back"
-          onClick={() =>
-            navigate(role === "admin" ? "/admin" : "/staff")
-          }
-        >
-          ← メニューへ戻る
-        </button>
       </header>
 
       <section className="orders-board" aria-label="席ごとの注文一覧">

@@ -45,7 +45,7 @@ function Login() {
 
       localStorage.setItem("token", response.data.access_token);
       localStorage.setItem("role", response.data.role);
-      navigate(response.data.role === "admin" ? "/admin" : "/staff");
+      navigate("/orders");
     } catch (error) {
       setErrorMessage(getErrorMessage(error));
     } finally {

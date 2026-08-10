@@ -1,6 +1,7 @@
 // 管理者画面
 
 import { useNavigate } from "react-router-dom";
+import LogoutButton from "../../components/LogoutButton";
 import "../Menu.css";
 
 function Admin() {
@@ -9,27 +10,11 @@ function Admin() {
   return (
     <main className="menu-page">
       <header className="menu-page-header">
-        <h1>管理者メニュー</h1>
+        <h1>その他</h1>
         <span>確認・設定したい項目を選んでください</span>
       </header>
 
       <nav className="menu-grid">
-
-      <button
-        className="menu-card menu-card-primary"
-        onClick={() => navigate("/orders")}
-      >
-        <strong>オーダー一覧</strong>
-        <span>注文の確認・提供状況の更新</span>
-      </button>
-
-      <button
-        className="menu-card"
-        onClick={() => navigate("/seats")}
-      >
-        <strong>席の状態確認</strong>
-        <span>空席・使用中の切り替え</span>
-      </button>
 
       <button
         className="menu-card"
@@ -45,14 +30,6 @@ function Admin() {
       >
         <strong>メニュー設定</strong>
         <span>カテゴリー・商品を編集</span>
-      </button>
-
-      <button
-        className="menu-card"
-        onClick={() => navigate("/sakes")}
-      >
-        <strong>日本酒情報</strong>
-        <span>銘柄と説明を管理</span>
       </button>
 
       <button
@@ -78,6 +55,7 @@ function Admin() {
         <strong>登録申請一覧</strong>
         <span>新規アカウント申請を確認</span>
       </button>
+      <LogoutButton />
       </nav>
     </main>
   );
