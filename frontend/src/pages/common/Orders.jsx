@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URL, WS_URL } from "../../utils/api_util";
 import { getErrorMessage } from "../../utils/error_util";
+import PushNotificationSetting from "../../components/PushNotificationSetting";
 import "./Orders.css";
 
 function Orders() {
@@ -21,7 +22,6 @@ function Orders() {
   const currentRef = useRef(null);
 
   const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
 
   // 席ごとの注文一覧取得
   const getSeatOrders = async () => {
@@ -53,49 +53,64 @@ function Orders() {
 
   // WebSocket
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    let reconnectTimer;
+    let isUnmounted = false;
 
-    const ws = new WebSocket(
-      `${WS_URL}/ws/orders?token=${token}`
-    );
+    const connectWebSocket = () => {
+      const token = localStorage.getItem("token");
+      const ws = new WebSocket(
+        `${WS_URL}/ws/orders?token=${encodeURIComponent(token ?? "")}`
+      );
 
-    wsRef.current = ws;
+      wsRef.current = ws;
 
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
 
-      if (data.type === "new_order") {
-        const orderGroup = data.order;
+        if (data.type === "new_order") {
+          const orderGroup = data.order;
 
-        // 一覧更新
-        setSeatOrders((prev) =>
-          prev.map((seat) => {
-            if (seat.seat_id === orderGroup.seat_id) {
-              return {
-                ...seat,
-                orders: [
-                  ...seat.orders,
-                  ...orderGroup.orders,
-                ],
-              };
-            }
-            return seat;
-          })
-        );
+          // 一覧更新
+          setSeatOrders((prev) =>
+            prev.map((seat) => {
+              if (seat.seat_id === orderGroup.seat_id) {
+                return {
+                  ...seat,
+                  orders: [
+                    ...seat.orders,
+                    ...orderGroup.orders,
+                  ],
+                };
+              }
+              return seat;
+            })
+          );
 
-        // キュー追加（最初の1件だけ通知音）
-        setQueue((prev) => {
-          if (prev.length === 0 && currentRef.current === null) {
-            const audio = new Audio("/notification.mp3");
-            audio.play().catch(() => {});
-          }
+          // 画面内の新規注文ポップアップへ追加（通知音はOS通知に任せる）
+          setQueue((prev) => {
+            return [...prev, orderGroup];
+          });
+        }
+      };
 
-          return [...prev, orderGroup];
-        });
-      }
+      ws.onclose = () => {
+        if (!isUnmounted) {
+          reconnectTimer = window.setTimeout(connectWebSocket, 2000);
+        }
+      };
+
+      ws.onerror = () => {
+        ws.close();
+      };
     };
 
-    return () => ws.close();
+    connectWebSocket();
+
+    return () => {
+      isUnmounted = true;
+      window.clearTimeout(reconnectTimer);
+      wsRef.current?.close();
+    };
   }, []);
 
   // キュー制御（次を表示）
@@ -170,6 +185,7 @@ function Orders() {
         <div>
           <h1>オーダー一覧</h1>
         </div>
+        <PushNotificationSetting />
       </header>
 
       <section className="orders-board" aria-label="席ごとの注文一覧">

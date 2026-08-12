@@ -8,6 +8,7 @@ from app.models import user_model
 from app.schemas import order_schema
 from app.cruds import order_crud
 from app.utils.websocket import broadcast_new_order
+from app.utils.push_notification import send_new_order_notifications
 
 router = APIRouter()
 
@@ -21,6 +22,7 @@ async def create_order(
     res = order_crud.create_order(orders, current_user, db)
 
     await broadcast_new_order(res)
+    await send_new_order_notifications(db, res)
 
     return res
 

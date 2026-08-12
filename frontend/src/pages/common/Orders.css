@@ -19,6 +19,40 @@
 .orders-guide { margin: 0; color: var(--muted); font-size: 0.9rem; }
 .orders-back { flex: 0 0 auto; }
 
+.push-status {
+  padding: 8px 11px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 750;
+}
+
+.push-status.is-enabled { color: var(--brand-dark); background: var(--brand-soft); }
+.push-status.is-warning { color: #8a6100; background: #fff5d6; }
+
+.push-setting {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border: 1px solid #cfe1dc;
+  border-radius: 12px;
+  background: var(--brand-soft);
+  color: var(--brand-dark);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.push-setting button {
+  min-height: 36px;
+  padding: 6px 10px;
+  color: #fff;
+  background: var(--brand);
+  border-color: var(--brand);
+  font-size: 0.75rem;
+}
+
+.push-setting-error { color: var(--danger); }
+
 .orders-board {
   min-height: 0;
   display: grid;
@@ -116,7 +150,7 @@
 .new-order-popup {
   position: fixed;
   right: 20px;
-  bottom: 20px;
+  bottom: calc(88px + env(safe-area-inset-bottom));
   z-index: 20;
   width: min(360px, calc(100vw - 24px));
   max-height: calc(100svh - 40px);
@@ -135,12 +169,16 @@
 @media (max-width: 700px) {
   .orders-page { height: auto; min-height: 100svh; overflow: visible; }
   .orders-header { align-items: stretch; flex-direction: column; }
+  .push-setting { align-items: stretch; flex-direction: column; }
   .orders-back { align-self: flex-start; order: -1; }
   .orders-guide { font-size: 0.82rem; }
   .orders-board { display: flex; flex-direction: column; overflow: visible; }
   .seat-lane { min-height: 150px; overflow: visible; }
   .seat-orders { max-height: none; overflow: visible; }
-  .new-order-popup { right: 12px; bottom: 12px; }
+  .new-order-popup {
+    right: 12px;
+    bottom: calc(82px + env(safe-area-inset-bottom));
+  }
 }
 
 @media (min-width: 701px) and (orientation: landscape) {

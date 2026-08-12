@@ -16,7 +16,8 @@ async def broadcast_new_order(order):
     print("broadcast")
     print(order)
 
-    payload = order.model_dump()
+    # datetime などを WebSocket で送信できる JSON 形式へ変換する
+    payload = order.model_dump(mode="json")
 
     # ドリンク除外
     payload["orders"] = [
@@ -24,7 +25,9 @@ async def broadcast_new_order(order):
         if not o.get("is_drink", False)
     ]
 
-    for conn in active_connections:
+    disconnected_connections = []
+
+    for conn in active_connections.copy():
         try:
             await conn.send_json({
                 "type": "new_order",
@@ -34,4 +37,7 @@ async def broadcast_new_order(order):
 
         except Exception as e:
             print("ws error:", e)
-            active_connections.remove(conn)
+            disconnected_connections.append(conn)
+
+    for conn in disconnected_connections:
+        disconnect(conn)

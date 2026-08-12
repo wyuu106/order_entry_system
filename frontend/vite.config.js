@@ -9,6 +9,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: 'auto',
+      devOptions: { enabled: true },
       includeAssets: ['logo.png', 'apple-touch-icon.png', 'notification.mp3'],
       manifest: {
         name: 'ゆめりオーダーシステム',
@@ -42,6 +43,7 @@ export default defineConfig({
         ],
       },
       workbox: {
+        importScripts: ['/push-sw.js'],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,

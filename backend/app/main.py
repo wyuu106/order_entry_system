@@ -11,9 +11,11 @@ from app.routers import(
     menu_router,
     seat_router,
     session_router,
-    order_router
+    order_router,
+    push_router,
 )
 from app.ws import order_ws
+from app.models import push_subscription_model  # noqa: F401
 from app.db import get_db, Base, engine
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -63,4 +65,5 @@ app.include_router(menu_router.router)
 app.include_router(seat_router.router)
 app.include_router(session_router.router)
 app.include_router(order_router.router)
+app.include_router(push_router.router)
 app.include_router(order_ws.router)

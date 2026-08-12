@@ -54,8 +54,7 @@ function BottomNav() {
           onClick={() => setIsCollapsed(false)}
         >
           <NavIcon name="orders" />
-          <span>オーダー</span>
-          <b aria-hidden="true">›</b>
+          <b aria-hidden="true">≫</b>
         </button>
       )}
 
