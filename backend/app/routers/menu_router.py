@@ -41,7 +41,7 @@ def get_categories(
     return menu_crud.get_categories(db)
 
 # カテゴリ更新
-@router.put('admin//category/{category_id}', response_model=menu_schema.CategoryCreateResponse)
+@router.put('/admin/category/{category_id}', response_model=menu_schema.CategoryCreateResponse)
 def update_category(
     category_id: int,
     new_category: menu_schema.CategoryCreate,

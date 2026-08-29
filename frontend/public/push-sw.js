@@ -1,5 +1,5 @@
 self.addEventListener("push", (event) => {
-  let data = {};
+  let data;
 
   try {
     data = event.data?.json() ?? {};
@@ -7,7 +7,7 @@ self.addEventListener("push", (event) => {
     data = { body: event.data?.text() ?? "新しい注文があります" };
   }
 
-  event.waitUntil(
+  event.waitUntil(Promise.all([
     self.registration.showNotification(data.title ?? "新規注文", {
       body: data.body ?? "新しい注文があります",
       icon: "/pwa-192x192.png",
@@ -15,8 +15,11 @@ self.addEventListener("push", (event) => {
       tag: data.tag ?? "new-order",
       renotify: true,
       data: { url: data.url ?? "/orders" },
-    })
-  );
+    }),
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clients) => {
+      clients.forEach((client) => client.postMessage({ type: "new_order" }));
+    }),
+  ]));
 });
 
 self.addEventListener("notificationclick", (event) => {

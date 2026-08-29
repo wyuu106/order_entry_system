@@ -1,6 +1,6 @@
 // 注文一覧画面
 
-import { useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { API_URL, WS_URL } from "../../utils/api_util";
@@ -24,7 +24,7 @@ function Orders() {
   const token = localStorage.getItem("token");
 
   // 席ごとの注文一覧取得
-  const getSeatOrders = async () => {
+  const getSeatOrders = useCallback(async (showError = true) => {
 
     try {
       const res = await axios.get(
@@ -43,13 +43,13 @@ function Orders() {
 
     } catch (error) {
       console.log(error);
-      alert(getErrorMessage(error));
+      if (showError) alert(getErrorMessage(error));
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     getSeatOrders();
-  }, []);
+  }, [getSeatOrders]);
 
   // WebSocket
   useEffect(() => {
@@ -65,26 +65,19 @@ function Orders() {
       wsRef.current = ws;
 
       ws.onmessage = (event) => {
-        const data = JSON.parse(event.data);
+        let data;
+        try {
+          data = JSON.parse(event.data);
+        } catch (error) {
+          console.error("WebSocketメッセージの解析に失敗しました", error);
+          return;
+        }
 
         if (data.type === "new_order") {
           const orderGroup = data.order;
 
-          // 一覧更新
-          setSeatOrders((prev) =>
-            prev.map((seat) => {
-              if (seat.seat_id === orderGroup.seat_id) {
-                return {
-                  ...seat,
-                  orders: [
-                    ...seat.orders,
-                    ...orderGroup.orders,
-                  ],
-                };
-              }
-              return seat;
-            })
-          );
+          // サーバーの最新状態を取得し直し、画面を確実に同期する
+          getSeatOrders(false);
 
           // 画面内の新規注文ポップアップへ追加（通知音はOS通知に任せる）
           setQueue((prev) => {
@@ -111,7 +104,28 @@ function Orders() {
       window.clearTimeout(reconnectTimer);
       wsRef.current?.close();
     };
-  }, []);
+  }, [getSeatOrders]);
+
+  // バックグラウンドから戻った時やPush通知の受信時も取りこぼしを補完する
+  useEffect(() => {
+    const refreshOrders = () => getSeatOrders(false);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") refreshOrders();
+    };
+    const handleServiceWorkerMessage = (event) => {
+      if (event.data?.type === "new_order") refreshOrders();
+    };
+
+    window.addEventListener("focus", refreshOrders);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    navigator.serviceWorker?.addEventListener("message", handleServiceWorkerMessage);
+
+    return () => {
+      window.removeEventListener("focus", refreshOrders);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      navigator.serviceWorker?.removeEventListener("message", handleServiceWorkerMessage);
+    };
+  }, [getSeatOrders]);
 
   // キュー制御（次を表示）
   const showNext = () => {
