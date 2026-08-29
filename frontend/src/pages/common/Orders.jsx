@@ -54,6 +54,7 @@ function Orders() {
   // WebSocket
   useEffect(() => {
     let reconnectTimer;
+    let heartbeatTimer;
     let isUnmounted = false;
 
     const connectWebSocket = () => {
@@ -63,6 +64,13 @@ function Orders() {
       );
 
       wsRef.current = ws;
+
+      ws.onopen = () => {
+        window.clearInterval(heartbeatTimer);
+        heartbeatTimer = window.setInterval(() => {
+          if (ws.readyState === WebSocket.OPEN) ws.send("ping");
+        }, 25000);
+      };
 
       ws.onmessage = (event) => {
         let data;
@@ -87,6 +95,7 @@ function Orders() {
       };
 
       ws.onclose = () => {
+        window.clearInterval(heartbeatTimer);
         if (!isUnmounted) {
           reconnectTimer = window.setTimeout(connectWebSocket, 2000);
         }
@@ -102,8 +111,18 @@ function Orders() {
     return () => {
       isUnmounted = true;
       window.clearTimeout(reconnectTimer);
+      window.clearInterval(heartbeatTimer);
       wsRef.current?.close();
     };
+  }, [getSeatOrders]);
+
+  // モバイルのスリープや通信切替でWebSocket通知を逃した場合の同期フォールバック
+  useEffect(() => {
+    const syncTimer = window.setInterval(() => {
+      if (document.visibilityState === "visible") getSeatOrders(false);
+    }, 3000);
+
+    return () => window.clearInterval(syncTimer);
   }, [getSeatOrders]);
 
   // バックグラウンドから戻った時やPush通知の受信時も取りこぼしを補完する

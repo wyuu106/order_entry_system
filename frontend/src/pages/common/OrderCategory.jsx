@@ -217,7 +217,7 @@ function OrderCategory() {
           }
           style={{
             position: "fixed",
-            bottom: "20px",
+            bottom: "calc(88px + env(safe-area-inset-bottom))",
             left: "50%",
             transform:
               "translateX(-50%)",
@@ -228,7 +228,7 @@ function OrderCategory() {
             background: "#333",
             color: "white",
             fontSize: "18px",
-            zIndex: 1000,
+            zIndex: 1100,
           }}
         >
           カートを見る（{cart.length}）
@@ -247,7 +247,7 @@ function OrderCategory() {
             justifyContent:
               "center",
             alignItems: "center",
-            zIndex: 1001,
+            zIndex: 1200,
           }}
         >
           <div
@@ -257,6 +257,8 @@ function OrderCategory() {
               background: "white",
               borderRadius: "12px",
               padding: "20px",
+              maxHeight: "calc(100svh - 32px)",
+              overflowY: "auto",
             }}
           >
             <div
