@@ -36,7 +36,7 @@ def get_session_orders(
     return order_crud.get_session_orders(session_id, db)
 
 # 席ごとのオーダー一覧
-@router.get('/seat_orders/', response_model=list[order_schema.OrderCreateResponse])
+@router.get('/seat_orders', response_model=list[order_schema.OrderCreateResponse])
 def get_seat_orders(
     db: Session = Depends(get_db),
     current_user: user_model.User = Depends(get_current_user)
