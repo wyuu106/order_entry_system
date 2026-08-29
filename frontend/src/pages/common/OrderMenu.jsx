@@ -166,7 +166,7 @@ function OrderMenu() {
       style={{
         padding: "20px",
         paddingBottom: isMobile
-          ? "90px"
+          ? "calc(180px + env(safe-area-inset-bottom))"
           : "20px",
       }}
     >
@@ -297,7 +297,9 @@ function OrderMenu() {
             color: "white",
             fontSize: "18px",
             zIndex: 1100,
+            pointerEvents: selectedMenu ? "none" : "auto",
           }}
+          disabled={Boolean(selectedMenu)}
         >
           カートを見る（{cart.length}）
         </button>
@@ -380,7 +382,7 @@ function OrderMenu() {
             justifyContent:
               "center",
             alignItems: "center",
-            zIndex: 1002,
+            zIndex: 1300,
           }}
         >
           <div

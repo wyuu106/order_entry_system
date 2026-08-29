@@ -118,7 +118,7 @@ function OrderCategory() {
       style={{
         padding: "20px",
         paddingBottom: isMobile
-          ? "90px"
+          ? "calc(180px + env(safe-area-inset-bottom))"
           : "20px",
       }}
     >
