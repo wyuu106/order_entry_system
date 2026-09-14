@@ -188,3 +188,27 @@
   .orders-header h1 { font-size: 1.8rem; }
   .orders-board { grid-auto-columns: minmax(210px, 1fr); }
 }
+
+/* タブレット横向きでは、席を1画面に6列表示する */
+@media (min-width: 768px) and (max-width: 1366px) and (orientation: landscape) {
+  .orders-board {
+    grid-auto-columns: calc((100% - 70px) / 6);
+  }
+
+  .seat-lane-header {
+    gap: 5px;
+    padding-right: 8px;
+    padding-left: 8px;
+    font-size: 0.95rem;
+  }
+
+  .waiting-count {
+    padding: 4px 6px;
+    font-size: 0.66rem;
+  }
+
+  .seat-orders {
+    padding-right: 8px;
+    padding-left: 8px;
+  }
+}
