@@ -7,7 +7,6 @@ function Staff() {
   return (
     <main className="menu-page">
       <header className="menu-page-header">
-        <p>STAFF CONSOLE</p>
         <h1>その他</h1>
         <span>アカウントに関する操作</span>
       </header>
