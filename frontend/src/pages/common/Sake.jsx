@@ -229,6 +229,7 @@ function Sake() {
       )}
 
       {/* 一覧 */}
+      <div className="table-scroll">
       <table
         border="1"
         cellPadding="8"
@@ -277,6 +278,7 @@ function Sake() {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

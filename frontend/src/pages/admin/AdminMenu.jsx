@@ -266,6 +266,7 @@ function AdminMenu() {
       )}
 
       {/* 一覧 */}
+      <div className="table-scroll">
       <table
         border="1"
         cellPadding="8"
@@ -324,6 +325,7 @@ function AdminMenu() {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

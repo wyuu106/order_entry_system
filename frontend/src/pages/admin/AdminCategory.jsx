@@ -171,6 +171,7 @@ function AdminCategory() {
       <hr />
 
       {/* 一覧 */}
+      <div className="table-scroll">
       <table
         border="1"
         cellPadding="8"
@@ -252,6 +253,7 @@ function AdminCategory() {
           </tr>
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

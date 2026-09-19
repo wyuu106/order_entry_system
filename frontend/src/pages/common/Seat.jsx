@@ -68,6 +68,7 @@ function Seat() {
     <div>
       <h1>席一覧</h1>
 
+      <div className="table-scroll">
       <table
         border="1"
         cellPadding="8"
@@ -125,6 +126,7 @@ function Seat() {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

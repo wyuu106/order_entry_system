@@ -19,31 +19,6 @@ function OrderHome() {
 
   const token = localStorage.getItem("token");
 
-  // セッション取得
-  const fetchSession = async () => {
-    try {
-      const res = await axios.get(
-        `${API_URL}/seat_session/${seatId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      setSession(res.data);
-
-      if (res.data) {
-        fetchOrders(res.data.id);
-        fetchTotal(res.data.id);
-      }
-
-    } catch (error) {
-      console.log(error);
-      alert(getErrorMessage(error));
-    }
-  };
-
   // セッション作成
   const createSession = async () => {
     try {
@@ -202,8 +177,53 @@ function OrderHome() {
   };
 
   useEffect(() => {
-    fetchSession();
-  }, []);
+    let isCancelled = false;
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    axios
+      .get(`${API_URL}/seat_session/${seatId}`, { headers })
+      .then(async (sessionResponse) => {
+        if (isCancelled) return;
+
+        const currentSession = sessionResponse.data;
+        setSession(currentSession);
+
+        if (!currentSession) return;
+
+        const [ordersResult, totalResult] = await Promise.allSettled([
+          axios.get(`${API_URL}/orders/${currentSession.id}`, { headers }),
+          axios.get(`${API_URL}/total/${currentSession.id}`, { headers }),
+        ]);
+
+        if (isCancelled) return;
+
+        if (ordersResult.status === "fulfilled") {
+          setOrders(ordersResult.value.data);
+        } else {
+          console.log(ordersResult.reason);
+          alert(getErrorMessage(ordersResult.reason));
+        }
+
+        if (totalResult.status === "fulfilled") {
+          setTotal(totalResult.value.data);
+          setErrorMessage(null);
+        } else {
+          console.log(totalResult.reason);
+          setErrorMessage(getErrorMessage(totalResult.reason));
+        }
+      })
+      .catch((error) => {
+        if (isCancelled) return;
+        console.log(error);
+        alert(getErrorMessage(error));
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [seatId, token]);
 
   return (
     <div>
@@ -265,6 +285,7 @@ function OrderHome() {
               {orders.length === 0 ? (
                 <p>オーダーなし</p>
               ) : (
+                <div className="table-scroll">
                 <table
                   border="1"
                   cellPadding="8"
@@ -317,6 +338,7 @@ function OrderHome() {
                     ))}
                   </tbody>
                 </table>
+                </div>
               )}
           </div>
           )}

@@ -76,6 +76,7 @@ function AdminInactiveMenu() {
       <br />
 
       {/* 一覧 */}
+      <div className="table-scroll">
       <table
         border="1"
         cellPadding="8"
@@ -129,6 +130,7 @@ function AdminInactiveMenu() {
           )}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

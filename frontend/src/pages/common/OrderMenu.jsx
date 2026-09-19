@@ -38,31 +38,29 @@ function OrderMenu() {
 
   const token = localStorage.getItem("token");
 
-  // メニュー一覧取得
-  const getMenus = async () => {
-    try {
-      const res = await axios.get(
-        `${API_URL}/${categoryId}/active/menus`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      setMenus(
-        res.data.sort((a, b) => a.id - b.id)
-      );
-
-    } catch (error) {
-      console.log(error);
-      alert(getErrorMessage(error));
-    }
-  };
-
   useEffect(() => {
-    getMenus();
-  }, [categoryId]);
+    let isCancelled = false;
+
+    axios
+      .get(`${API_URL}/${categoryId}/active/menus`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        if (isCancelled) return;
+        setMenus(response.data.sort((a, b) => a.id - b.id));
+      })
+      .catch((error) => {
+        if (isCancelled) return;
+        console.log(error);
+        alert(getErrorMessage(error));
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [categoryId, token]);
 
   // 画面幅監視
   useEffect(() => {

@@ -82,6 +82,7 @@ function DaySales() {
             合計売上: {session.total_sales}円
           </p>
 
+          <div className="table-scroll">
           <table>
             <thead>
               <tr>
@@ -101,6 +102,7 @@ function DaySales() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       ))}
     </div>

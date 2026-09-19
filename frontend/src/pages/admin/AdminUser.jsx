@@ -68,6 +68,7 @@ function AdminUser() {
         戻る
       </button>
 
+      <div className="table-scroll">
       <table
         border="1"
         cellPadding="8"
@@ -110,6 +111,7 @@ function AdminUser() {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

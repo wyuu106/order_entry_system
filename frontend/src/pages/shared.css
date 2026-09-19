@@ -76,6 +76,10 @@ table {
   box-shadow: var(--app-shadow);
 }
 
+.table-scroll {
+  width: 100%;
+}
+
 th, td { padding: 13px 15px !important; border: 0 !important; border-bottom: 1px solid var(--line) !important; text-align: left; vertical-align: middle; }
 th { color: #344054; background: #edf2f7; font-size: 0.88rem; white-space: nowrap; }
 tbody tr:last-child td { border-bottom: 0 !important; }
@@ -84,6 +88,13 @@ tbody tr:hover { background: #fbfdfd; }
 @media (max-width: 700px) {
   #root > div:not(.auth-page), #root > main { padding: 18px 12px 32px; }
   h1 { margin-bottom: 16px; }
-  table { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .table-scroll table {
+    width: max-content;
+    min-width: 100%;
+  }
   th, td { padding: 11px 12px !important; }
 }

@@ -160,6 +160,7 @@ function AdminSeat() {
 
       <h2>席一覧</h2>
 
+      <div className="table-scroll">
       <table
         border="1"
         cellPadding="8"
@@ -194,6 +195,7 @@ function AdminSeat() {
           ))}
         </tbody>
       </table>
+      </div>
     </div>
   );
 }
