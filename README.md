@@ -163,9 +163,6 @@ FastAPIのAPIドキュメントは `http://localhost:8000/docs` から確認で�
 
 ## 画面・機能紹介
 
-以下は、READMEに掲載するスクリーンショットの構成案である。
-画像は `images/` ディレクトリへ配置し、各項目にあるコメント内の `<img>` タグを有効化して追加する。
-
 ### 1. ログイン・ユーザー登録申請
 
 IDとパスワードによるログイン画面と、ユーザー登録申請画面を掲載する。
@@ -173,22 +170,27 @@ IDとパスワードによるログイン画面と、ユーザー登録申請画
 
 <p align="center">
   <img src="images/login.png" alt="ログイン画面" width="45%">
-  <img src="images/register.png" alt="ユーザー登録申請画面" width="45%">
+  &nbsp;
+  <img src="images/register.png" alt="ユーザー登録申請画面" width="35%">
 </p>
 
 ### 2. 管理者・スタッフのメニュー画面
 
 管理者とスタッフで表示される機能が異なることを比較できるよう、2画面を並べて掲載する。
 
-<table>
+<table align="center">
+  <thead>
   <tr>
     <th>管理者画面</th>
     <th>スタッフ画面</th>
   </tr>
+  </thead>
+  <tbody>
   <tr>
-    <td><img src="images/admin-home.png" alt="管理者メニュー画面" width="100%"></td>
-    <td><img src="images/staff-home.png" alt="スタッフメニュー画面" width="100%"></td>
+    <td align="center" valign="top"><img src="images/admin-home.png" alt="管理者メニュー画面" width="320"></td>
+    <td align="center" valign="top"><img src="images/staff-home.png" alt="スタッフメニュー画面" width="320"></td>
   </tr>
+  </tbody>
 </table>
 
 ### 3. キッチン向け注文一覧
@@ -196,8 +198,10 @@ IDとパスワードによるログイン画面と、ユーザー登録申請画
 席ごとの注文、未提供件数、提供済み表示が分かる画面を掲載する。
 
 <p align="center">
-  <img src="images/orders-board.png" alt="席ごとの注文一覧" width="70%">
-  <img src="images/order-notification.png" alt="新規注文のPush通知" width="25%">
+  <img src="images/orders-board.png" alt="席ごとの注文一覧" width="90%">
+</p>
+<p align="center">
+  <img src="images/order-notification.png" alt="新規注文のPush通知" width="45%">
 </p>
 
 ### 4. 注文の流れ
@@ -206,65 +210,51 @@ IDとパスワードによるログイン画面と、ユーザー登録申請画
 数量や備考の入力、合計金額、注文の取り消し、会計機能もこの項目で紹介する。
 
 <p align="center">
-  <img src="images/order-home.png" alt="席ごとの注文画面" width="45%">
-  <img src="images/order-category.png" alt="カテゴリー選択画面" width="45%">
-</p>
-<p align="center">
-  <img src="images/order-menu.png" alt="メニュー・数量・備考の選択画面" width="45%">
-  <img src="images/order-cart.png" alt="注文カート画面" width="45%">
+  <img src="images/order-home.png" alt="席ごとの注文画面" width="23%">
+  <img src="images/order-category.png" alt="カテゴリー選択画面" width="23%">
+  <img src="images/order-menu.png" alt="メニュー・数量・備考の選択画面" width="23%">
+  <img src="images/order-cart.png" alt="注文カート画面" width="23%">
 </p>
 
-### 5. モバイル・タブレット表示
-
-スマートフォンの注文カートと、PC画面で複数席を一覧表示した画面を掲載する。
-
-<!-- スクリーンショット枠：レスポンシブUI
-<p align="center">
-  <img src="images/mobile-order-cart.png" alt="スマートフォンの注文カート" width="30%">
-  <img src="images/tablet-orders-board.png" alt="タブレット横画面の注文一覧" width="60%">
-</p>
--->
-
-### 6. 席の状態管理
+### 5. 席の状態管理
 
 「セット完了」「空席（セットまだ）」「使用中」を一覧で確認・更新できる画面を掲載する。
 
 <p align="center">
-  <img src="images/seats.png" alt="席の状態管理画面" width="70%">
+  <img src="images/seats.png" alt="席の状態管理画面" width="32%">
 </p>
 
-### 7. カテゴリー・メニュー管理（管理者機能）
+### 6. カテゴリー・メニュー管理（管理者機能）
 
 カテゴリーとメニューの作成・編集画面を掲載する。
 表示・非表示の切り替えや、非表示メニューの復元機能が分かる状態が望ましい。
 
 <p align="center">
-  <img src="images/category-management.png" alt="カテゴリー管理画面" width="45%">
-  <img src="images/menu-management.png" alt="メニュー管理画面" width="45%">
+  <img src="images/category-management.png" alt="カテゴリー管理画面" width="32%">
+  &nbsp;
+  <img src="images/menu-management.png" alt="メニュー管理画面" width="32%">
 </p>
 
-### 8. 売上確認（管理者機能）
+### 7. 売上確認（管理者機能）
 
 指定した日付の注文内容と総売上を確認できる画面を掲載する。
 
 <p align="center">
-  <img src="images/day-sales.png" alt="日別売上画面" width="70%">
+  <img src="images/day-sales.png" alt="日別売上画面" width="32%">
 </p>
 
-### 9. 日本酒情報
+### 8. 日本酒情報
 
 スタッフ向けの閲覧画面を掲載する。管理者用の編集操作も紹介したい場合は、2画面を並べる。
 
 <p align="center">
-  <img src="images/sake-list.png" alt="日本酒情報の閲覧画面" width="45%">
-  <img src="images/sake-management.png" alt="日本酒情報の管理画面" width="45%">
+  <img src="images/sake-list.png" alt="日本酒情報の閲覧画面" width="32%">
 </p>
 
-### 10. ユーザー・登録申請管理（管理者機能）
+### 9. ユーザー・登録申請管理（管理者機能）
 
 登録済みユーザーの管理画面と、登録申請の許可・却下画面を並べて掲載する。
 
 <p align="center">
-  <img src="images/user-management.png" alt="ユーザー管理画面" width="45%">
-  <img src="images/registration-requests.png" alt="登録申請管理画面" width="45%">
+  <img src="images/registration-requests.png" alt="登録申請管理画面" width="32%">
 </p>
