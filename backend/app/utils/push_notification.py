@@ -6,6 +6,7 @@ from pywebpush import WebPushException, webpush
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.models import user_model
 from app.models.push_subscription_model import PushSubscription
 
 
@@ -20,7 +21,11 @@ async def send_new_order_notifications(db: Session, order_group) -> None:
         print("Web Push skipped: VAPID settings are missing")
         return
 
-    subscriptions = db.execute(select(PushSubscription)).scalars().all()
+    subscriptions = db.execute(
+        select(PushSubscription)
+        .join(user_model.User, PushSubscription.user_id == user_model.User.id)
+        .where(user_model.User.role == "admin")
+    ).scalars().all()
     if not subscriptions:
         return
 

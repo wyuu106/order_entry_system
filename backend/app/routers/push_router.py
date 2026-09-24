@@ -17,10 +17,16 @@ from app.utils.auth import get_current_user
 router = APIRouter(prefix="/push", tags=["push"])
 
 
+def require_admin(current_user: user_model.User) -> None:
+    if current_user.role != "admin":
+        raise HTTPException(status_code=403, detail="管理者のみ通知を設定できます")
+
+
 @router.get("/vapid-public-key")
 def get_vapid_public_key(
     current_user: user_model.User = Depends(get_current_user),
 ) -> dict[str, str]:
+    require_admin(current_user)
     public_key = os.getenv("VAPID_PUBLIC_KEY")
     if not public_key:
         raise HTTPException(status_code=503, detail="通知機能が設定されていません")
@@ -33,6 +39,7 @@ def save_subscription(
     current_user: user_model.User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    require_admin(current_user)
     subscription = db.execute(
         select(PushSubscription).where(PushSubscription.endpoint == data.endpoint)
     ).scalar_one_or_none()

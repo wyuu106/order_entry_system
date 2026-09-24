@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import {
+  disablePushNotifications,
   enablePushNotifications,
   getPushSubscription,
   isPushSupported,
@@ -8,6 +9,7 @@ import {
 
 
 function PushNotificationSetting() {
+  const isAdmin = localStorage.getItem("role") === "admin";
   const [status, setStatus] = useState("checking");
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -15,6 +17,11 @@ function PushNotificationSetting() {
     let active = true;
 
     const checkStatus = async () => {
+      if (!isAdmin) {
+        await disablePushNotifications();
+        return;
+      }
+
       if (!isPushSupported()) {
         if (active) setStatus("unsupported");
         return;
@@ -39,7 +46,7 @@ function PushNotificationSetting() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [isAdmin]);
 
   const handleEnable = async () => {
     setStatus("enabling");
@@ -53,6 +60,8 @@ function PushNotificationSetting() {
       setErrorMessage(error.message || "OS通知を設定できませんでした");
     }
   };
+
+  if (!isAdmin) return null;
 
   if (status === "checking" || status === "enabled") {
     return status === "enabled" ? (
