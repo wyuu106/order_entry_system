@@ -12,7 +12,7 @@ def disconnect(websocket: WebSocket):
     if websocket in active_connections:
         active_connections.remove(websocket)
 
-async def broadcast_new_order(order):
+async def broadcast_new_order(order, notification_id: int | None = None):
     print("broadcast")
     print(order)
 
@@ -24,6 +24,11 @@ async def broadcast_new_order(order):
         o for o in payload["orders"]
         if not o.get("is_drink", False)
     ]
+
+    if not payload["orders"]:
+        return
+
+    payload["notification_id"] = notification_id
 
     disconnected_connections = []
 

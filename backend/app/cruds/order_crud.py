@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import select, func
 from fastapi import Response, HTTPException, status
 from datetime import date, time, datetime, timedelta
+from zoneinfo import ZoneInfo
 from app.utils.create_response_util import(
     create_order_item_response,
     create_order_response
@@ -273,3 +274,83 @@ def get_day_orders(
         order_schema.DayOrderResponse(**session)
         for session in sessions.values()
     ]
+
+
+# 新規注文の通知履歴を作成
+def create_notification(
+    order_group: order_schema.OrderCreateResponse,
+    db: Session
+) -> int | None:
+    payload = order_group.model_dump(mode="json")
+    payload["orders"] = [
+        order for order in payload["orders"] if not order.get("is_drink", False)
+    ]
+
+    if not payload["orders"]:
+        return None
+
+    admin_ids = db.execute(
+        select(user_model.User.id).where(user_model.User.role == "admin")
+    ).scalars().all()
+
+    notification = order_model.OrderNotification(payload=payload)
+    db.add(notification)
+    db.flush()
+
+    db.add_all(
+        order_model.OrderNotificationReceipt(
+            notification_id=notification.id,
+            user_id=user_id,
+        )
+        for user_id in admin_ids
+    )
+    db.commit()
+    return notification.id
+
+
+# 管理者ごとの未確認注文通知を取得
+def get_unread_notifications(user_id: int, db: Session):
+    notifications = db.execute(
+        select(order_model.OrderNotification)
+        .join(
+            order_model.OrderNotificationReceipt,
+            order_model.OrderNotificationReceipt.notification_id
+            == order_model.OrderNotification.id,
+        )
+        .where(
+            order_model.OrderNotificationReceipt.user_id == user_id,
+            order_model.OrderNotificationReceipt.read_at.is_(None),
+        )
+        .order_by(
+            order_model.OrderNotification.created_at,
+            order_model.OrderNotification.id,
+        )
+    ).scalars().all()
+
+    return [
+        {
+            "id": notification.id,
+            "order": notification.payload,
+            "created_at": notification.created_at,
+        }
+        for notification in notifications
+    ]
+
+
+# 注文通知を確認済みに更新
+def mark_notification_read(notification_id: int, user_id: int, db: Session):
+    receipt = db.execute(
+        select(order_model.OrderNotificationReceipt).where(
+            order_model.OrderNotificationReceipt.notification_id == notification_id,
+            order_model.OrderNotificationReceipt.user_id == user_id,
+        )
+    ).scalar_one_or_none()
+
+    if receipt is None:
+        raise HTTPException(status_code=404, detail="通知履歴が見つかりません")
+
+    if receipt.read_at is None:
+        receipt.read_at = datetime.now(ZoneInfo("Asia/Tokyo"))
+        db.commit()
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)

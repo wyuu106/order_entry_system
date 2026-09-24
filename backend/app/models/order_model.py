@@ -1,5 +1,5 @@
-from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Integer, String, DateTime, ForeignKey
+from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import DateTime, ForeignKey, Integer, JSON, String, UniqueConstraint
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from app.db import Base
@@ -20,3 +20,32 @@ class Order(Base):
         DateTime(timezone=True),
         default=lambda: datetime.now(ZoneInfo("Asia/Tokyo"))
     )
+
+
+class OrderNotification(Base):
+    __tablename__ = "order_notifications"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    payload: Mapped[dict] = mapped_column(JSON)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        default=lambda: datetime.now(ZoneInfo("Asia/Tokyo")),
+    )
+
+
+class OrderNotificationReceipt(Base):
+    __tablename__ = "order_notification_receipts"
+    __table_args__ = (
+        UniqueConstraint("notification_id", "user_id", name="uq_notification_user"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    notification_id: Mapped[int] = mapped_column(
+        ForeignKey("order_notifications.id", ondelete="CASCADE"),
+        index=True,
+    )
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id", ondelete="CASCADE"),
+        index=True,
+    )
+    read_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)

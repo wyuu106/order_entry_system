@@ -48,3 +48,9 @@ class DayOrderResponse(BaseModel):
     end_at: datetime | None
     orders: list[DayOrderItem]
     total_sales: int
+
+
+class OrderNotificationResponse(BaseModel):
+    id: int
+    order: OrderCreateResponse
+    created_at: datetime

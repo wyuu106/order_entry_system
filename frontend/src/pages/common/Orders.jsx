@@ -8,33 +8,47 @@ import { getErrorMessage } from "../../utils/error_util";
 import PushNotificationSetting from "../../components/PushNotificationSetting";
 import "./Orders.css";
 
+const fetchUnreadNotifications = (token) =>
+  axios.get(`${API_URL}/notifications/unread`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+const fetchSeatOrders = (token) =>
+  axios.get(`${API_URL}/seat_orders`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
 function Orders() {
 
   const navigate = useNavigate();
 
   const [seatOrders, setSeatOrders] = useState([]);
 
-  // 通知キュー、現在表示中
+  // 未確認の新規注文キュー
   const [queue, setQueue] = useState([]);
-  const [current, setCurrent] = useState(null);
 
   const wsRef = useRef(null);
-  const currentRef = useRef(null);
+  const seenNotificationIdsRef = useRef(new Set());
 
   const token = localStorage.getItem("token");
+  const isAdmin = localStorage.getItem("role") === "admin";
+  const current = queue[0] ?? null;
+
+  const enqueueNotification = useCallback((orderGroup) => {
+    if (!orderGroup?.orders?.length) return;
+
+    const notificationId = orderGroup.notification_id;
+    if (notificationId && seenNotificationIdsRef.current.has(notificationId)) return;
+    if (notificationId) seenNotificationIdsRef.current.add(notificationId);
+
+    setQueue((prev) => [...prev, orderGroup]);
+  }, []);
 
   // 席ごとの注文一覧取得
   const getSeatOrders = useCallback(async (showError = true) => {
 
     try {
-      const res = await axios.get(
-        `${API_URL}/seat_orders`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
+      const res = await fetchSeatOrders(token);
 
       // 席の表示を id 順にソート
       setSeatOrders(
@@ -48,8 +62,48 @@ function Orders() {
   }, [token]);
 
   useEffect(() => {
-    getSeatOrders();
-  }, [getSeatOrders]);
+    let isCancelled = false;
+
+    fetchSeatOrders(token)
+      .then((response) => {
+        if (!isCancelled) {
+          setSeatOrders(response.data.sort((a, b) => a.id - b.id));
+        }
+      })
+      .catch((error) => {
+        if (isCancelled) return;
+        console.log(error);
+        alert(getErrorMessage(error));
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [token]);
+
+  // アプリを閉じていた間に届いた、管理者向けの未確認注文を復元する
+  useEffect(() => {
+    if (!isAdmin) return;
+
+    let isCancelled = false;
+    fetchUnreadNotifications(token)
+      .then((response) => {
+        if (isCancelled) return;
+        response.data.forEach((notification) => {
+          enqueueNotification({
+            ...notification.order,
+            notification_id: notification.id,
+          });
+        });
+      })
+      .catch((error) => {
+        if (!isCancelled) console.error("未確認注文の取得に失敗しました", error);
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [enqueueNotification, isAdmin, token]);
 
   // WebSocket
   useEffect(() => {
@@ -88,9 +142,7 @@ function Orders() {
           getSeatOrders(false);
 
           // 画面内の新規注文ポップアップへ追加（通知音はOS通知に任せる）
-          setQueue((prev) => {
-            return [...prev, orderGroup];
-          });
+          enqueueNotification(orderGroup);
         }
       };
 
@@ -114,7 +166,7 @@ function Orders() {
       window.clearInterval(heartbeatTimer);
       wsRef.current?.close();
     };
-  }, [getSeatOrders]);
+  }, [enqueueNotification, getSeatOrders]);
 
   // モバイルのスリープや通信切替でWebSocket通知を逃した場合の同期フォールバック
   useEffect(() => {
@@ -127,7 +179,26 @@ function Orders() {
 
   // バックグラウンドから戻った時やPush通知の受信時も取りこぼしを補完する
   useEffect(() => {
-    const refreshOrders = () => getSeatOrders(false);
+    const refreshUnreadNotifications = () => {
+      if (!isAdmin) return;
+
+      fetchUnreadNotifications(token)
+        .then((response) => {
+          response.data.forEach((notification) => {
+            enqueueNotification({
+              ...notification.order,
+              notification_id: notification.id,
+            });
+          });
+        })
+        .catch((error) => {
+          console.error("未確認注文の取得に失敗しました", error);
+        });
+    };
+    const refreshOrders = () => {
+      getSeatOrders(false);
+      refreshUnreadNotifications();
+    };
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") refreshOrders();
     };
@@ -144,29 +215,24 @@ function Orders() {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       navigator.serviceWorker?.removeEventListener("message", handleServiceWorkerMessage);
     };
-  }, [getSeatOrders]);
+  }, [enqueueNotification, getSeatOrders, isAdmin, token]);
 
-  // キュー制御（次を表示）
-  const showNext = () => {
-    setQueue((prev) => {
-      if (prev.length === 0) return prev;
+  const dismissCurrentNotification = () => {
+    const notificationId = current?.notification_id;
+    setQueue((prev) => prev.slice(1));
 
-      const [next, ...rest] = prev;
-      setCurrent(next);
-      return rest;
-    });
-  };
-
-  // キューが来たら最初だけ表示開始
-  useEffect(() => {
-    if (!current && queue.length > 0) {
-      showNext();
+    if (isAdmin && notificationId) {
+      axios
+        .put(
+          `${API_URL}/notifications/${notificationId}/read`,
+          {},
+          { headers: { Authorization: `Bearer ${token}` } },
+        )
+        .catch((error) => {
+          console.error("通知の確認状態を更新できませんでした", error);
+        });
     }
-  }, [current, queue]);
-
-  useEffect(() => {
-    currentRef.current = current;
-  }, [current]);
+  };
 
   // 提供状況変更
   const updateOrderStatus = async (order) => {
@@ -303,9 +369,7 @@ function Orders() {
 
           <button
             className="button-base"
-            onClick={() => {
-              setCurrent(null);
-            }}
+            onClick={dismissCurrentNotification}
           >
             次へ
           </button>
