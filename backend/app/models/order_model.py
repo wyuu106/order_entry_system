@@ -15,7 +15,11 @@ class Order(Base):
     quantity: Mapped[int] = mapped_column(Integer, default=1)
     remark: Mapped[str] = mapped_column(String, nullable=True)
     status: Mapped[str] = mapped_column(String, default='waiting')
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))
+    user_id: Mapped[int | None] = mapped_column(
+        Integer,
+        ForeignKey('users.id', ondelete='SET NULL'),
+        nullable=True,
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         default=lambda: datetime.now(ZoneInfo("Asia/Tokyo"))

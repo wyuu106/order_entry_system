@@ -75,13 +75,13 @@ def get_session_orders(session_id: int, db: Session) -> list[order_schema.OrderI
         select(
             order_model.Order,
             menu_model.Menu.is_drink,
-            user_model.User.name
+            func.coalesce(user_model.User.name, "情報なし").label("user_name")
         )
         .join(
             menu_model.Menu,
             order_model.Order.menu_id == menu_model.Menu.id
         )
-        .join(
+        .outerjoin(
             user_model.User,
             order_model.Order.user_id == user_model.User.id
         )
