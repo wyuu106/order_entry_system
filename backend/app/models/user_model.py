@@ -1,9 +1,14 @@
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import Integer, String
+from sqlalchemy import Integer, String, Index, text
 from app.db import Base
 
 class UserRequest(Base):
     __tablename__ = 'user_requests'
+    __table_args__ = (
+        Index("uq_pending_user_request_login_id", "login_id", unique=True,
+              postgresql_where=text("status = 'pending'"),
+              sqlite_where=text("status = 'pending'")),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     login_id: Mapped[str] = mapped_column(String)

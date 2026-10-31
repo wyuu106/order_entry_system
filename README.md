@@ -159,6 +159,18 @@ POST /init
 
 FastAPIのAPIドキュメントは `http://localhost:8000/docs` から確認できる。
 
+### 4. 自動テスト
+
+バックエンドの仮想環境を有効にして、次のコマンドで実行する。
+
+```bash
+cd backend
+PYTHONPATH=. python -m unittest discover -s tests -v
+```
+
+JWT・WebSocket認証、注文と席セッションのトランザクション、数量・登録入力の境界値、無効メニュー、利用履歴がある席の削除防止をテストしている。
+push・Pull Request時にもGitHub Actionsで同じテストを自動実行する。
+
 ---
 
 ## 画面・機能紹介

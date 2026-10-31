@@ -61,35 +61,26 @@ def create_access_token(data: dict):
         algorithm=ALGORITHM
     )
 
-# 管理者認証用
-def get_current_user(
-    token: str = Depends(oauth2_scheme),
-    db: Session = Depends(get_db)
-):
-
+def get_user_from_token(token: str, db: Session):
     try:
-        payload = jwt.decode(
-            token,
-            SECRET_KEY,
-            algorithms=[ALGORITHM]
-        )
-
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         user_id = int(payload.get("sub"))
-
     except (JWTError, TypeError, ValueError):
-        raise HTTPException(
-            status_code=401,
-            detail="認証に失敗しました"
-        )
+        raise HTTPException(status_code=401, detail="認証に失敗しました")
 
     user = db.execute(select(user_model.User).where(
         user_model.User.id == user_id
     )).scalar_one_or_none()
 
     if user is None:
-        raise HTTPException(
-            status_code=401,
-            detail="認証に失敗しました"
-        )
+        raise HTTPException(status_code=401, detail="認証に失敗しました")
 
     return user
+
+# 管理者認証用
+def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+):
+
+    return get_user_from_token(token, db)

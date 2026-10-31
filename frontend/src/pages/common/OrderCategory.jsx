@@ -21,6 +21,7 @@ function OrderCategory() {
   const [categories, setCategories] = useState([]);
 
   const [showCart, setShowCart] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [isMobile, setIsMobile] = useState(
     window.innerWidth <= 768
@@ -79,12 +80,14 @@ function OrderCategory() {
 
   // 注文送信
   const createOrders = async () => {
+    if (isSubmitting) return;
     try {
       if (cart.length === 0) {
         alert("商品を選択してください");
         return;
       }
 
+      setIsSubmitting(true);
       await axios.post(
         `${API_URL}/order`,
         {
@@ -110,6 +113,8 @@ function OrderCategory() {
     } catch (error) {
       console.log(error);
       alert(getErrorMessage(error));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -204,6 +209,7 @@ function OrderCategory() {
               increaseQuantity={increaseQuantity}
               decreaseQuantity={decreaseQuantity}
               createOrders={createOrders}
+              isSubmitting={isSubmitting}
             />
           </div>
         )}
@@ -292,6 +298,7 @@ function OrderCategory() {
                 createOrders();
                 setShowCart(false);
               }}
+              isSubmitting={isSubmitting}
             />
           </div>
         </div>

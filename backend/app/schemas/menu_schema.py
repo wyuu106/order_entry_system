@@ -1,7 +1,7 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 class CategoryCreate(BaseModel):
-    name: str
+    name: str = Field(min_length=1, max_length=100)
 
 class CategoryCreateResponse(BaseModel):
     id: int
@@ -9,8 +9,8 @@ class CategoryCreateResponse(BaseModel):
     is_active: bool
 
 class MenuCreate(BaseModel):
-    name: str
-    price: int | None = None
+    name: str = Field(min_length=1, max_length=100)
+    price: int | None = Field(default=None, ge=0)
     is_drink: bool
     category_id: int
 
@@ -34,8 +34,8 @@ class InactiveMenuResponse(BaseModel):
 
 
 class SakeCreate(BaseModel):
-    name: str
-    remark: str
+    name: str = Field(min_length=1, max_length=100)
+    remark: str = Field(max_length=500)
 
 class SakeCreateResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)

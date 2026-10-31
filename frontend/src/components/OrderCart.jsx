@@ -5,6 +5,7 @@ function OrderCart({
   increaseQuantity,
   decreaseQuantity,
   createOrders = null,
+  isSubmitting = false,
 }) {
   return (
     <div
@@ -100,25 +101,25 @@ function OrderCart({
       {createOrders && (
         <button
           onClick={createOrders}
-          disabled={cart.length === 0}
+          disabled={cart.length === 0 || isSubmitting}
           style={{
             width: "100%",
             height: "45px",
             border: "none",
             borderRadius: "8px",
             background:
-              cart.length === 0
+              cart.length === 0 || isSubmitting
                 ? "#ccc"
                 : "#333",
             color: "white",
             fontSize: "16px",
             cursor:
-              cart.length === 0
+              cart.length === 0 || isSubmitting
                 ? "default"
                 : "pointer",
           }}
         >
-          注文する
+          {isSubmitting ? "送信中..." : "注文する"}
         </button>
       )}
     </div>

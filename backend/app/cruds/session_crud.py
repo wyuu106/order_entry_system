@@ -1,12 +1,12 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from app.utils.get_info_util import get_seat_name
-from app.models import session_model, order_model
+from app.models import session_model, order_model, seat_model
 from app.schemas import session_schema
-from app.cruds import seat_crud
 
 # セッション作成
 def create_session(
@@ -28,11 +28,15 @@ def create_session(
         seat_id = seat_session.seat_id
     )
 
+    db_seat = db.get(seat_model.Seat, seat_session.seat_id)
+    db_seat.status = 'occupied'
     db.add(db_session)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=409, detail='この席は使用中です')
     db.refresh(db_session)
-
-    seat_crud.update_seat_status(seat_session.seat_id, 'occupied', db)
 
     return session_schema.SessionCreateResponse(
         id = db_session.id,
@@ -79,14 +83,12 @@ def end_session(session_id: int, db: Session) -> session_schema.SessionResponse:
     if noprice_order:
         raise HTTPException(status_code=400, detail='値段が未設定の商品があります')
 
+    seat_name = get_seat_name(db_session.seat_id, db)
+    db_seat = db.get(seat_model.Seat, db_session.seat_id)
     db_session.end_at = datetime.now(ZoneInfo("Asia/Tokyo"))
-
+    db_seat.status = 'empty'
     db.commit()
     db.refresh(db_session)
-
-    seat_name = get_seat_name(db_session.seat_id, db)
-
-    seat_crud.update_seat_status(db_session.seat_id, 'empty', db)
 
     return session_schema.SessionResponse(
         seat_name = seat_name,
