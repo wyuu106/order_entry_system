@@ -161,6 +161,7 @@ def update_menu(
     db_menu.name = new_menu.name
     db_menu.price = new_menu.price
     db_menu.is_drink = new_menu.is_drink
+    db_menu.category_id = new_menu.category_id
 
     db.commit()
     db.refresh(db_menu)

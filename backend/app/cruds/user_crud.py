@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from fastapi import Response, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from app.utils.auth import hash_password, verify_password, create_access_token
@@ -8,24 +9,24 @@ from app.schemas import user_schema
 
 # ユーザー登録申請
 def create_request(user: user_schema.UserCreate, db: Session) -> user_schema.RequestResponse:
-    exist_user = db.execute(select(user_model.User).where(
-        user_model.User.login_id == user.login_id
-    )).scalar_one_or_none()
-    if exist_user:
-        raise HTTPException(status_code=400, detail='このIDは既に使われています')
-    
-    exist_request = db.execute(select(user_model.UserRequest).where(
-        user_model.UserRequest.login_id == user.login_id,
-        user_model.UserRequest.status == 'pending'
-    )).scalar_one_or_none()
-    if exist_request:
-        raise HTTPException(status_code=400, detail='このIDは申請中です')
-    
     login_id = user.login_id.strip()
     name = user.name.strip()
     if not (login_id and name and user.password.strip()):
         raise HTTPException(status_code=400, detail="ID、名前、パスワードを入力してください")
 
+    exist_user = db.execute(select(user_model.User).where(
+        user_model.User.login_id == login_id
+    )).scalar_one_or_none()
+    if exist_user:
+        raise HTTPException(status_code=400, detail='このIDは既に使われています')
+    
+    exist_request = db.execute(select(user_model.UserRequest).where(
+        user_model.UserRequest.login_id == login_id,
+        user_model.UserRequest.status == 'pending'
+    )).scalar_one_or_none()
+    if exist_request:
+        raise HTTPException(status_code=400, detail='このIDは申請中です')
+    
     db_request = user_model.UserRequest(
         login_id = login_id,
         name = name,
@@ -33,7 +34,11 @@ def create_request(user: user_schema.UserCreate, db: Session) -> user_schema.Req
     )
 
     db.add(db_request)
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=409, detail='このIDは既に使用中または申請中です')
     db.refresh(db_request)
 
     return db_request

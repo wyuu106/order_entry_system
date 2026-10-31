@@ -1,10 +1,10 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 # ユーザー登録に関する入力
 class UserCreate(BaseModel):
-    login_id: str
-    name: str
-    password: str
+    login_id: str = Field(min_length=1, max_length=64)
+    name: str = Field(min_length=1, max_length=100)
+    password: str = Field(min_length=8, max_length=72)
 
 # 登録申請をした時のレスポンス
 class RequestResponse(BaseModel):

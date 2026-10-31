@@ -113,13 +113,12 @@ function Orders() {
 
     const connectWebSocket = () => {
       const token = localStorage.getItem("token");
-      const ws = new WebSocket(
-        `${WS_URL}/ws/orders?token=${encodeURIComponent(token ?? "")}`
-      );
+      const ws = new WebSocket(`${WS_URL}/ws/orders`);
 
       wsRef.current = ws;
 
       ws.onopen = () => {
+        ws.send(token ?? "");
         window.clearInterval(heartbeatTimer);
         heartbeatTimer = window.setInterval(() => {
           if (ws.readyState === WebSocket.OPEN) ws.send("ping");

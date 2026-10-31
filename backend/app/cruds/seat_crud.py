@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import select
 from fastapi import Response, HTTPException, status
-from app.models import seat_model
+from app.models import seat_model, session_model
 from app.schemas import seat_schema
 
 # 席情報作成
@@ -49,6 +49,12 @@ def delete_seat(seat_id: int, db: Session):
 
     if not db_seat:
         raise HTTPException(status_code=404, detail='該当する席がありません')
+
+    has_history = db.execute(select(session_model.SeatSession.id).where(
+        session_model.SeatSession.seat_id == seat_id
+    )).first()
+    if has_history:
+        raise HTTPException(status_code=409, detail='利用履歴がある席は削除できません')
     
     db.delete(db_seat)
     db.commit()
