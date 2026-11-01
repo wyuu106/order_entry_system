@@ -19,11 +19,20 @@ async def create_order(
     current_user: user_model.User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    res = order_crud.create_order(orders, current_user, db)
-    notification_id = order_crud.create_notification(res, db)
+    try:
+        res = order_crud.create_order(orders, current_user, db)
+        notification_id = order_crud.create_notification(res, db)
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
 
-    await broadcast_new_order(res, notification_id)
-    await send_new_order_notifications(db, res)
+    # 配信失敗で、保存済み注文をクライアント側に「失敗」と誤認させない。
+    try:
+        await broadcast_new_order(res, notification_id)
+        await send_new_order_notifications(db, res)
+    except Exception as error:
+        print("Order notification error:", error)
 
     return res
 

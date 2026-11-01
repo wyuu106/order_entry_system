@@ -13,7 +13,7 @@ function Order() {
         i === index
           ? {
               ...item,
-              quantity: item.quantity + 1,
+              quantity: Math.min(item.quantity + 1, 19),
             }
           : item
       )

@@ -1,14 +1,14 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
 
 class OrderItem(BaseModel):
     menu_id: int
-    quantity: int = 1
-    remark: str | None = None
+    quantity: int = Field(default=1, ge=1, lt=20)
+    remark: str | None = Field(default=None, max_length=500)
 
 class OrderCreate(BaseModel):
     session_id: int
-    orders: list[OrderItem]
+    orders: list[OrderItem] = Field(min_length=1)
 
 class OrderItemResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)

@@ -22,6 +22,7 @@ function OrderMenu() {
   const [selectedMenu, setSelectedMenu] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [remark, setRemark] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // スマホ用カート
   const [showCart, setShowCart] = useState(false);
@@ -93,6 +94,10 @@ function OrderMenu() {
     );
 
     if (exist) {
+      if (exist.quantity + quantity >= 20) {
+        alert("数量は19個までです");
+        return;
+      }
       setCart(
         cart.map((item) =>
           item.menu_id === selectedMenu.id &&
@@ -125,12 +130,14 @@ function OrderMenu() {
 
   // 注文送信
   const createOrders = async () => {
+    if (isSubmitting) return;
     try {
       if (cart.length === 0) {
         alert("商品を選択してください");
         return;
       }
 
+      setIsSubmitting(true);
       await axios.post(
         `${API_URL}/order`,
         {
@@ -156,6 +163,8 @@ function OrderMenu() {
     } catch (error) {
       console.log(error);
       alert(getErrorMessage(error));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -270,6 +279,7 @@ function OrderMenu() {
               increaseQuantity={increaseQuantity}
               decreaseQuantity={decreaseQuantity}
               createOrders={createOrders}
+              isSubmitting={isSubmitting}
             />
           </div>
         )}
@@ -363,6 +373,7 @@ function OrderMenu() {
                 createOrders();
                 setShowCart(false);
               }}
+              isSubmitting={isSubmitting}
             />
           </div>
         </div>
@@ -431,7 +442,7 @@ function OrderMenu() {
               <button
                 onClick={() =>
                   setQuantity(
-                    quantity + 1
+                    Math.min(quantity + 1, 19)
                   )
                 }
               >

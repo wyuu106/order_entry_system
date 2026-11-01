@@ -1,11 +1,14 @@
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import DateTime, ForeignKey, Integer, JSON, String, UniqueConstraint
+from sqlalchemy import CheckConstraint, DateTime, ForeignKey, Integer, JSON, String, UniqueConstraint
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from app.db import Base
 
 class Order(Base):
     __tablename__ = 'orders'
+    __table_args__ = (
+        CheckConstraint("quantity >= 1 AND quantity < 20", name="ck_orders_quantity"),
+    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     session_id: Mapped[int] = mapped_column(Integer, ForeignKey('seat_sessions.id'))

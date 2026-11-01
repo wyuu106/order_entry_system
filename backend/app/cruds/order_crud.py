@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import select, func
+from sqlalchemy import and_, select, func
 from fastapi import Response, HTTPException, status
 from datetime import date, time, datetime, timedelta
 from zoneinfo import ZoneInfo
@@ -25,8 +25,14 @@ def create_order(
     
     menu_ids = [item.menu_id for item in order.orders]
 
-    stmt = select(menu_model.Menu).where(
-        menu_model.Menu.id.in_(menu_ids)
+    stmt = (
+        select(menu_model.Menu)
+        .join(menu_model.Category)
+        .where(
+            menu_model.Menu.id.in_(menu_ids),
+            menu_model.Menu.is_active.is_(True),
+            menu_model.Category.is_active.is_(True),
+        )
     )
     
     menus = {
@@ -65,8 +71,6 @@ def create_order(
         
     res = create_order_response(order.session_id, orders, db)
 
-    db.commit()
-        
     return res
 
 # セッションごとのオーダー一覧
@@ -107,40 +111,37 @@ def get_session_orders(session_id: int, db: Session) -> list[order_schema.OrderI
 
 # 席ごとのオーダー一覧（ドリンクは除外）
 def get_seat_orders(db: Session) -> list[order_schema.OrderCreateResponse]:
-    stmt1 = select(seat_model.Seat).order_by(seat_model.Seat.id)
-    db_seats = db.execute(stmt1).scalars().all()
-
-    res = []
-
-    # 各席について
-    for seat in db_seats:
-        stmt2 = select(session_model.SeatSession).where(
-            session_model.SeatSession.seat_id == seat.id,
-            session_model.SeatSession.end_at.is_(None)
+    rows = db.execute(
+        select(
+            seat_model.Seat.id,
+            seat_model.Seat.name,
+            order_model.Order,
+            menu_model.Menu.is_drink,
+            func.coalesce(user_model.User.name, "情報なし"),
         )
-        db_session = db.execute(stmt2).scalar_one_or_none()
-
-        orders = []
-
-        # セッションがある場合、セッションごとのオーダー取得
-        if db_session:
-            session_orders = get_session_orders(db_session.id, db)
-
-            # ドリンクを除外
-            orders = [
-                order for order in session_orders
-                if not order.is_drink
-            ]
-
-        res.append(
-            order_schema.OrderCreateResponse(
-                seat_id = seat.id,
-                seat_name = seat.name,
-                orders = orders
-            )
+        .outerjoin(
+            session_model.SeatSession,
+            and_(
+                session_model.SeatSession.seat_id == seat_model.Seat.id,
+                session_model.SeatSession.end_at.is_(None),
+            ),
         )
+        .outerjoin(
+            order_model.Order,
+            order_model.Order.session_id == session_model.SeatSession.id,
+        )
+        .outerjoin(menu_model.Menu, order_model.Order.menu_id == menu_model.Menu.id)
+        .outerjoin(user_model.User, order_model.Order.user_id == user_model.User.id)
+        .order_by(seat_model.Seat.id, order_model.Order.created_at, order_model.Order.id)
+    ).all()
 
-    return res
+    seats = {}
+    for seat_id, seat_name, db_order, is_drink, user_name in rows:
+        seat = seats.setdefault(seat_id, {"seat_id": seat_id, "seat_name": seat_name, "orders": []})
+        if db_order is not None and not is_drink:
+            seat["orders"].append(create_order_item_response(db_order, user_name, is_drink))
+
+    return [order_schema.OrderCreateResponse(**seat) for seat in seats.values()]
 
 # オーダー取り消し
 def delete_order(order_id: int, db: Session):
@@ -304,7 +305,6 @@ def create_notification(
         )
         for user_id in admin_ids
     )
-    db.commit()
     return notification.id
 
 
