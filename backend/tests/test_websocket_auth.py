@@ -10,8 +10,16 @@ class WebSocketAuthTest(unittest.IsolatedAsyncioTestCase):
     async def test_authenticated_socket_is_registered(self):
         websocket = Mock()
         websocket.accept = AsyncMock()
+        db = Mock()
+
+        async def receive_text():
+            if websocket.receive_text.await_count == 1:
+                return "valid-token"
+            self.assertTrue(db.close.called, "DB session must close before waiting")
+            raise RuntimeError("disconnect")
+
         websocket.receive_text = AsyncMock(
-            side_effect=["valid-token", RuntimeError("disconnect")]
+            side_effect=receive_text
         )
 
         with (
@@ -19,10 +27,11 @@ class WebSocketAuthTest(unittest.IsolatedAsyncioTestCase):
             patch("app.ws.order_ws.connect") as connect,
             patch("app.ws.order_ws.disconnect") as disconnect,
         ):
-            await orders_ws(websocket, Mock())
+            await orders_ws(websocket, db)
 
         websocket.accept.assert_awaited_once_with()
         authenticate.assert_called_once()
+        db.close.assert_called_once_with()
         connect.assert_called_once_with(websocket)
         disconnect.assert_called_once_with(websocket)
 

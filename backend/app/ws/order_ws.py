@@ -16,6 +16,7 @@ async def orders_ws(websocket: WebSocket, db: Session = Depends(get_db)):
     try:
         token = await asyncio.wait_for(websocket.receive_text(), timeout=5)
         get_user_from_token(token, db)
+        db.close()
         connect(websocket)
 
         while True:
