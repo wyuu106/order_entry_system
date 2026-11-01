@@ -1,9 +1,16 @@
 export const getErrorMessage = (error) => {
 
   if (error.response) {
+    const detail = error.response.data.detail;
+    if (Array.isArray(detail)) {
+      return detail
+        .map((item) => typeof item === "string" ? item : item?.msg)
+        .filter(Boolean)
+        .join(" / ") || "入力内容を確認してください";
+    }
 
     return (
-      error.response.data.detail ||
+      (typeof detail === "string" && detail) ||
       "サーバーエラー"
     );
   }
